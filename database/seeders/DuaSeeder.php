@@ -14,7 +14,7 @@ class DuaSeeder extends Seeder
     public function run(): void
     {
         // Get the first user (test user) to assign duas to
-        $user = \App\Models\User::first();
+        $user = \App\Models\User::whereEmail("ammarabdulaziz99@gmail.com")->first();
 
         $duas = [
             [
