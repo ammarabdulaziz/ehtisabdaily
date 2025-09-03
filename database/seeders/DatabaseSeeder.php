@@ -31,9 +31,5 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Test@123'),
             'email_verified_at' => now(),
         ]);
-
-        $this->call([
-            DuaSeeder::class,
-        ]);
     }
 }

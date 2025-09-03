@@ -38,6 +38,7 @@ class HisabatPanelProvider extends PanelProvider
             ->id('hisabat')
             ->path('hisabat')
             ->login()
+            ->databaseNotifications()
             ->colors([
                 'danger' => [
                     50 => 'oklch(0.950 0.040 32.727)',

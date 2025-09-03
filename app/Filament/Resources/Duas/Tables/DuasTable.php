@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Duas\Tables;
 
+use App\Filament\Exports\DuaExporter;
+use App\Filament\Imports\DuaImporter;
 use App\Filament\Resources\Duas\DuaResource;
 use App\Models\Dua;
 use Filament\Actions\Action;
@@ -9,6 +11,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
+use Filament\Actions\ImportAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TagsColumn;
@@ -171,8 +176,22 @@ class DuasTable
             ->recordAction(ViewAction::class)
             ->recordUrl(null)
             ->recordAction('view')
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(DuaImporter::class)
+                    ->label('Import Duas')
+                    ->icon('heroicon-o-arrow-up-tray'),
+                ExportAction::make()
+                    ->exporter(DuaExporter::class)
+                    ->label('Export All')
+                    ->icon('heroicon-o-arrow-down-tray'),
+            ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(DuaExporter::class)
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-arrow-down-tray'),
                     DeleteBulkAction::make(),
                 ]),
             ])
