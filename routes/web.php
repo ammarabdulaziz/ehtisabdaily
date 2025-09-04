@@ -8,9 +8,9 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::get('/duas', [DuaController::class, 'index'])->name('duas.index');
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/duas', [DuaController::class, 'index'])->name('duas.index');
+
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

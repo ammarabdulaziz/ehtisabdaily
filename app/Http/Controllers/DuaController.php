@@ -12,7 +12,6 @@ class DuaController extends Controller
     {
         $query = Dua::with('user')->ordered();
 
-        // Filter by category if provided
         if ($request->filled('category')) {
             $query->byCategory($request->category);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,7 +61,8 @@ class Dua extends Model
         return $query->where('is_featured', true);
     }*/
 
-    public function scopeByCategory(Builder $query, string $category): Builder
+    #[Scope]
+    public function byCategory(Builder $query, string $category): Builder
     {
         return $query->whereJsonContains('categories', $category);
     }
@@ -70,9 +72,16 @@ class Dua extends Model
         return $query->whereJsonContains('occasions', $occasion);
     }*/
 
-    public function scopeOrdered(Builder $query): Builder
+    #[Scope]
+    public function ordered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('title');
+    }
+
+    #[Scope]
+    public function ofCurrentUser(Builder $query): Builder
+    {
+        return $query->where('user_id', auth()->id());
     }
 
     // Accessors
