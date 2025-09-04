@@ -118,7 +118,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
         )}
 
         {/* Stats */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
+        <div className="mt-12 flex justify-center gap-20 max-w-2xl mx-auto">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary">{duas.length}</div>
             <div className="text-sm text-muted-foreground">Total Duas</div>
