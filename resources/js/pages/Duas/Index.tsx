@@ -72,7 +72,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
               value={selectedCategory}
               onValueChange={handleCategoryChange}
               variant="outline"
-              className="flex-wrap gap-2 max-w-4xl"
+              className="flex-wrap gap-2 max-w-8xl"
             >
               <ToggleGroupItem value="all" className="px-4 py-2">
                 All Duas
@@ -88,7 +88,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
 
         {/* Duas Carousel */}
         {filteredDuas.length > 0 ? (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-8xl mx-auto">
             <Carousel
               opts={{
                 align: "start",
