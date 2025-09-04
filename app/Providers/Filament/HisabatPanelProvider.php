@@ -40,7 +40,8 @@ class HisabatPanelProvider extends PanelProvider
             ->path('hisabat')
             ->login()
             ->databaseNotifications()
-            ->brandName('EHITISAB DAILY')
+            ->brandName('Ehtisab Daily')
+            ->font('Instrument Sans')
             ->colors([
                 'danger' => [
                     50 => 'oklch(0.950 0.040 32.727)',
