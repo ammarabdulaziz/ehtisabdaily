@@ -92,7 +92,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
             <Carousel
               opts={{
                 align: "start",
-                loop: true,
+                loop: false,
               }}
               className="w-full"
             >
