@@ -31,5 +31,11 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Test@123'),
             'email_verified_at' => now(),
         ]);
+
+        // Seed currencies and account types
+        $this->call([
+            CurrencySeeder::class,
+            AccountTypeSeeder::class,
+        ]);
     }
 }

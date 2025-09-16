@@ -173,9 +173,10 @@ class DuasTable
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->recordAction(ViewAction::class)
+            ->recordActions([
+                ViewAction::make(),
+            ])
             ->recordUrl(null)
-            ->recordAction('view')
             ->headerActions([
                 ImportAction::make()
                     ->importer(DuaImporter::class)
