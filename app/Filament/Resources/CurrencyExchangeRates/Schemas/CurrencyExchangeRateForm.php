@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CurrencyExchangeRates\Schemas;
 
 use App\Models\Currency;
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;

@@ -24,6 +24,19 @@ class Currency extends Model
         ];
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($currency) {
+            if ($currency->is_base) {
+                // Remove base status from all other currencies
+                static::where('id', '!=', $currency->id)
+                    ->update(['is_base' => false]);
+            }
+        });
+    }
+
     public function fromExchangeRates(): HasMany
     {
         return $this->hasMany(CurrencyExchangeRate::class, 'from_currency_id');

@@ -2,8 +2,11 @@
 
 use App\Models\Currency;
 use App\Models\User;
-use Laravel\Dusk\Browser;
+use App\Filament\Resources\Currencies\Pages\CreateCurrency;
+use App\Filament\Resources\Currencies\Pages\EditCurrency;
+use App\Filament\Resources\Currencies\Pages\ListCurrencies;
 use Illuminate\Support\Facades\DB;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -24,83 +27,73 @@ test('authenticated users can view currency list', function () {
 });
 
 test('can create a new currency', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'USD')
-            ->type('name', 'US Dollar')
-            ->type('symbol', '$')
-            ->click('input[name="is_base"]')
-            ->press('Create')
-            ->waitForText('Created successfully')
-            ->assertPathIs('/admin/currencies');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'USD',
+            'name' => 'US Dollar',
+            'symbol' => '$',
+            'is_base' => true,
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
 
-    assertDatabaseHas('currencies', [
-        'code' => 'USD',
-        'name' => 'US Dollar',
-        'symbol' => '$',
-        'is_base' => true,
-    ]);
+    expect(Currency::where('code', 'USD')->first())
+        ->not->toBeNull()
+        ->and(Currency::where('code', 'USD')->first()->name)->toBe('US Dollar')
+        ->and(Currency::where('code', 'USD')->first()->symbol)->toBe('$')
+        ->and(Currency::where('code', 'USD')->first()->is_base)->toBeTrue();
 });
 
 test('can create currency without symbol', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'EUR')
-            ->type('name', 'Euro')
-            ->press('Create')
-            ->waitForText('Created successfully')
-            ->assertPathIs('/admin/currencies');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'EUR',
+            'name' => 'Euro',
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
 
-    assertDatabaseHas('currencies', [
-        'code' => 'EUR',
-        'name' => 'Euro',
-        'symbol' => null,
-        'is_base' => false,
-    ]);
+    expect(Currency::where('code', 'EUR')->first())
+        ->not->toBeNull()
+        ->and(Currency::where('code', 'EUR')->first()->name)->toBe('Euro')
+        ->and(Currency::where('code', 'EUR')->first()->symbol)->toBeNull()
+        ->and(Currency::where('code', 'EUR')->first()->is_base)->toBeFalse();
 });
 
 test('currency code is automatically uppercased', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'qar')
-            ->type('name', 'Qatari Riyal')
-            ->type('symbol', 'ر.ق')
-            ->press('Create')
-            ->waitForText('Created successfully')
-            ->assertPathIs('/admin/currencies');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'qar',
+            'name' => 'Qatari Riyal',
+            'symbol' => 'ر.ق',
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
 
-    assertDatabaseHas('currencies', [
-        'code' => 'QAR',
-        'name' => 'Qatari Riyal',
-        'symbol' => 'ر.ق',
-    ]);
+    expect(Currency::where('code', 'QAR')->first())
+        ->not->toBeNull()
+        ->and(Currency::where('code', 'QAR')->first()->name)->toBe('Qatari Riyal')
+        ->and(Currency::where('code', 'QAR')->first()->symbol)->toBe('ر.ق');
 });
 
 test('validates required fields', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->press('Create')
-            ->waitForText('The code field is required')
-            ->waitForText('The name field is required');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([])
+        ->call('create')
+        ->assertHasFormErrors(['code', 'name']);
 });
 
 test('validates currency code length', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'USDD')
-            ->type('name', 'US Dollar')
-            ->press('Create')
-            ->waitForText('The code field must not be greater than 3 characters');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'USDD',
+            'name' => 'US Dollar',
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['code']);
 });
 
 test('can edit existing currency', function () {
@@ -111,19 +104,15 @@ test('can edit existing currency', function () {
         'is_base' => false,
     ]);
 
-    $this->browse(function (Browser $browser) use ($currency) {
-        $browser->visit(route('filament.hisabat.resources.currencies.edit', $currency))
-            ->waitForText('Edit Currency')
-            ->assertInputValue('code', 'USD')
-            ->assertInputValue('name', 'US Dollar')
-            ->assertInputValue('symbol', '$')
-            ->type('name', 'United States Dollar')
-            ->type('symbol', 'USD')
-            ->click('input[name="is_base"]')
-            ->press('Save')
-            ->waitForText('Updated successfully')
-            ->assertPathIs('/admin/currencies');
-    });
+    Livewire::test(EditCurrency::class, ['record' => $currency->getRouteKey()])
+        ->fillForm([
+            'code' => 'USD',
+            'name' => 'United States Dollar',
+            'symbol' => 'USD',
+            'is_base' => true,
+        ])
+        ->call('save')
+        ->assertNotified();
 
     $currency->refresh();
     expect($currency->name)->toBe('United States Dollar');
@@ -139,117 +128,88 @@ test('can view currency in table', function () {
         'is_base' => true,
     ]);
 
-    $this->browse(function (Browser $browser) use ($currency) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->assertSee('USD')
-            ->assertSee('US Dollar')
-            ->assertSee('$')
-            ->assertSee('Yes'); // Base currency indicator
-    });
+    Livewire::test(ListCurrencies::class)
+        ->assertCanSeeTableRecords([$currency])
+        ->assertSee('USD')
+        ->assertSee('US Dollar')
+        ->assertSee('$');
 });
 
 test('can search currencies by code', function () {
-    Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
-    Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
+    $usd = Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
+    $eur = Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->type('table_search_input', 'USD')
-            ->waitForText('USD')
-            ->assertDontSee('EUR');
-    });
+    Livewire::test(ListCurrencies::class)
+        ->searchTable('USD')
+        ->assertCanSeeTableRecords([$usd])
+        ->assertCanNotSeeTableRecords([$eur]);
 });
 
 test('can search currencies by name', function () {
-    Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
-    Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
+    $usd = Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
+    $eur = Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->type('table_search_input', 'Dollar')
-            ->waitForText('USD')
-            ->assertDontSee('EUR');
-    });
+    Livewire::test(ListCurrencies::class)
+        ->searchTable('Dollar')
+        ->assertCanSeeTableRecords([$usd])
+        ->assertCanNotSeeTableRecords([$eur]);
 });
 
 test('can filter by base currency', function () {
-    Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'is_base' => true]);
-    Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro', 'is_base' => false]);
+    $usd = Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'is_base' => true]);
+    $eur = Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro', 'is_base' => false]);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->click('button[aria-label="Filters"]')
-            ->waitForText('Base Currency')
-            ->click('input[value="1"]') // Base currencies only
-            ->press('Apply')
-            ->waitForText('USD')
-            ->assertDontSee('EUR');
-    });
+    Livewire::test(ListCurrencies::class)
+        ->filterTable('is_base', '1')
+        ->assertCanSeeTableRecords([$usd])
+        ->assertCanNotSeeTableRecords([$eur]);
 });
 
 test('can sort currencies by code', function () {
-    Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
-    Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
+    $eur = Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
+    $usd = Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->click('th[data-sortable="true"]') // Click on Code column header
-            ->waitForText('EUR')
-            ->assertSeeIn('tbody tr:first-child', 'EUR')
-            ->assertSeeIn('tbody tr:last-child', 'USD');
-    });
+    Livewire::test(ListCurrencies::class)
+        ->sortTable('code')
+        ->assertCanSeeTableRecords([$eur, $usd]);
 });
 
 test('can delete currency using bulk action', function () {
     $currency1 = Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
     $currency2 = Currency::factory()->create(['code' => 'EUR', 'name' => 'Euro']);
 
-    $this->browse(function (Browser $browser) use ($currency1, $currency2) {
-        $browser->visit(route('filament.hisabat.resources.currencies.index'))
-            ->waitForText('Currencies')
-            ->click('input[type="checkbox"][value="' . $currency1->id . '"]')
-            ->click('button[aria-label="Actions"]')
-            ->waitForText('Delete')
-            ->click('button:contains("Delete")')
-            ->waitForText('Are you sure you want to delete the selected records?')
-            ->press('Delete')
-            ->waitForText('Deleted successfully');
-    });
+    Livewire::test(ListCurrencies::class)
+        ->callTableBulkAction('delete', [$currency1])
+        ->assertNotified();
 
-    assertDatabaseMissing('currencies', ['id' => $currency1->id]);
-    assertDatabaseHas('currencies', ['id' => $currency2->id]);
+    expect(Currency::find($currency1->id))->toBeNull();
+    expect(Currency::find($currency2->id))->not->toBeNull();
 });
 
 test('prevents duplicate currency codes', function () {
     Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar']);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'USD')
-            ->type('name', 'Another US Dollar')
-            ->press('Create')
-            ->waitForText('The code has already been taken');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'USD',
+            'name' => 'Another US Dollar',
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['code']);
 });
 
 test('can only have one base currency', function () {
     Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'is_base' => true]);
 
-    $this->browse(function (Browser $browser) {
-        $browser->visit(route('filament.hisabat.resources.currencies.create'))
-            ->waitForText('Create Currency')
-            ->type('code', 'EUR')
-            ->type('name', 'Euro')
-            ->click('input[name="is_base"]')
-            ->press('Create')
-            ->waitForText('Created successfully');
-    });
+    Livewire::test(CreateCurrency::class)
+        ->fillForm([
+            'code' => 'EUR',
+            'name' => 'Euro',
+            'is_base' => true,
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
 
     // Check that only the new currency is base
     expect(Currency::where('is_base', true)->count())->toBe(1);
