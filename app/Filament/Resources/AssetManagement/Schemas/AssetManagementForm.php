@@ -26,7 +26,8 @@ class AssetManagementForm
             ->components([
                 Section::make('Basic Information')
                     ->schema([
-                        Grid::make(2)
+                        Grid::make()
+                            ->columns(['default' => 2])
                             ->schema([
                                 Select::make('month')
                                     ->label('Month')
@@ -35,7 +36,6 @@ class AssetManagementForm
                                         5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
                                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
                                     ])
-                                    ->searchable()
                                     ->default(now()->month)
                                     ->required(),
                                 Select::make('year')
@@ -51,7 +51,6 @@ class AssetManagementForm
                         Hidden::make('user_id')
                             ->default(fn() => Auth::id()),
                     ])
-                    ->columns(1)
                     ->columnSpanFull(),
 
                 Tabs::make('Asset Management')
@@ -90,6 +89,7 @@ class AssetManagementForm
                                     ->label('Accounts')
                                     ->schema([
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 Select::make('account_type_id')
                                                     ->label('Account Type')
@@ -112,6 +112,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Amount')
@@ -163,6 +164,7 @@ class AssetManagementForm
                                     ->label('Lent Money')
                                     ->schema([
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 Select::make('friend_id')
                                                     ->label('Friend/Person Name')
@@ -185,6 +187,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
+                                                                        ->columns(['default' => 2])                            ->columns(['default' => 2])->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Amount')
@@ -236,6 +239,7 @@ class AssetManagementForm
                                     ->label('Borrowed Money')
                                     ->schema([
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 Select::make('friend_id')
                                                     ->label('Friend/Person Name')
@@ -258,6 +262,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Amount')
@@ -309,6 +314,7 @@ class AssetManagementForm
                                     ->label('Investments')
                                     ->schema([
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 Select::make('investment_type_id')
                                                     ->label('Investment Type')
@@ -331,6 +337,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Current Value')
@@ -382,6 +389,7 @@ class AssetManagementForm
                                     ->label('Deposits')
                                     ->schema([
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 Select::make('deposit_type_id')
                                                     ->label('Deposit Type')
@@ -404,6 +412,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Amount')
