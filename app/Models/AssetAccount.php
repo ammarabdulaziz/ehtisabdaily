@@ -13,7 +13,6 @@ class AssetAccount extends Model
     protected $fillable = [
         'asset_management_id',
         'account_type_id',
-        'account_name',
         'amount',
         'currency',
         'notes',

@@ -56,6 +56,26 @@ class AssetManagement extends Model
         return $this->hasMany(AssetDeposit::class);
     }
 
+    public function accountType(): BelongsTo
+    {
+        return $this->belongsTo(AccountType::class, 'account_type_id');
+    }
+    
+    public function friend(): BelongsTo
+    {
+        return $this->belongsTo(Friend::class, 'friend_id');
+    }
+
+    public function investmentType(): BelongsTo
+    {
+        return $this->belongsTo(InvestmentType::class, 'investment_type_id');
+    }
+
+    public function depositType(): BelongsTo
+    {
+        return $this->belongsTo(DepositType::class, 'deposit_type_id');
+    }
+
     public function getTotalAccountsAttribute(): float
     {
         return $this->accounts->sum(function ($account) {

@@ -12,8 +12,7 @@ class AssetDeposit extends Model
 
     protected $fillable = [
         'asset_management_id',
-        'deposit_type',
-        'deposit_name',
+        'deposit_type_id',
         'amount',
         'currency',
         'notes',
@@ -29,5 +28,10 @@ class AssetDeposit extends Model
     public function assetManagement(): BelongsTo
     {
         return $this->belongsTo(AssetManagement::class);
+    }
+
+    public function depositType(): BelongsTo
+    {
+        return $this->belongsTo(DepositType::class);
     }
 }

@@ -12,7 +12,7 @@ class AssetLentMoney extends Model
 
     protected $fillable = [
         'asset_management_id',
-        'friend_name',
+        'friend_id',
         'amount',
         'currency',
         'notes',
@@ -28,5 +28,10 @@ class AssetLentMoney extends Model
     public function assetManagement(): BelongsTo
     {
         return $this->belongsTo(AssetManagement::class);
+    }
+
+    public function friend(): BelongsTo
+    {
+        return $this->belongsTo(Friend::class);
     }
 }

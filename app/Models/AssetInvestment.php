@@ -12,8 +12,7 @@ class AssetInvestment extends Model
 
     protected $fillable = [
         'asset_management_id',
-        'investment_type',
-        'investment_name',
+        'investment_type_id',
         'amount',
         'currency',
         'notes',
@@ -29,5 +28,10 @@ class AssetInvestment extends Model
     public function assetManagement(): BelongsTo
     {
         return $this->belongsTo(AssetManagement::class);
+    }
+
+    public function investmentType(): BelongsTo
+    {
+        return $this->belongsTo(InvestmentType::class);
     }
 }
