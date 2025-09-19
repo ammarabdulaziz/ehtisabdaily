@@ -113,8 +113,8 @@ class AssetManagementForm
                                         Grid::make(2)
                                             ->columns(['default' => 2])
                                             ->schema([
-                                                TextInput::make('amount')
-                                                    ->label('Amount')
+                                                TextInput::make('actual_amount')
+                                                    ->label('Actual Amount')
                                                     ->numeric()
                                                     ->required()
                                                     ->minValue(0),
@@ -122,6 +122,21 @@ class AssetManagementForm
                                                     ->label('Notes')
                                                     ->placeholder('Optional notes about this account'),
                                             ]),
+                                        Placeholder::make('calculated_amount')
+                                            ->label('Calculated Amount (QAR)')
+                                            ->content(function ($get) {
+                                                $actualAmount = $get('actual_amount');
+                                                $exchangeRate = $get('exchange_rate');
+                                                
+                                                if ($actualAmount && $exchangeRate && $exchangeRate > 0) {
+                                                    $calculated = $actualAmount / $exchangeRate;
+                                                    return number_format($calculated, 2);
+                                                }
+                                                
+                                                return '0.00';
+                                            })
+                                            ->live()
+                                            ->extraAttributes(['class' => 'text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded']),
                                     ])
                                     ->addActionLabel('Add Account')
                                     ->collapsible()
@@ -186,8 +201,8 @@ class AssetManagementForm
                                         Grid::make(2)
                                             ->columns(['default' => 2])
                                             ->schema([
-                                                TextInput::make('amount')
-                                                    ->label('Amount')
+                                                TextInput::make('actual_amount')
+                                                    ->label('Actual Amount')
                                                     ->numeric()
                                                     ->required()
                                                     ->minValue(0),
@@ -195,6 +210,21 @@ class AssetManagementForm
                                                     ->label('Notes')
                                                     ->placeholder('Optional notes about this loan'),
                                             ]),
+                                        Placeholder::make('calculated_amount')
+                                            ->label('Calculated Amount (QAR)')
+                                            ->content(function ($get) {
+                                                $actualAmount = $get('actual_amount');
+                                                $exchangeRate = $get('exchange_rate');
+                                                
+                                                if ($actualAmount && $exchangeRate && $exchangeRate > 0) {
+                                                    $calculated = $actualAmount / $exchangeRate;
+                                                    return number_format($calculated, 2);
+                                                }
+                                                
+                                                return '0.00';
+                                            })
+                                            ->live()
+                                            ->extraAttributes(['class' => 'text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded']),
                                     ])
                                     ->addActionLabel('Add Lent Money')
                                     ->collapsible()
@@ -259,8 +289,8 @@ class AssetManagementForm
                                         Grid::make(2)
                                             ->columns(['default' => 2])
                                             ->schema([
-                                                TextInput::make('amount')
-                                                    ->label('Amount')
+                                                TextInput::make('actual_amount')
+                                                    ->label('Actual Amount')
                                                     ->numeric()
                                                     ->required()
                                                     ->minValue(0),
@@ -268,6 +298,21 @@ class AssetManagementForm
                                                     ->label('Notes')
                                                     ->placeholder('Optional notes about this loan'),
                                             ]),
+                                        Placeholder::make('calculated_amount')
+                                            ->label('Calculated Amount (QAR)')
+                                            ->content(function ($get) {
+                                                $actualAmount = $get('actual_amount');
+                                                $exchangeRate = $get('exchange_rate');
+                                                
+                                                if ($actualAmount && $exchangeRate && $exchangeRate > 0) {
+                                                    $calculated = $actualAmount / $exchangeRate;
+                                                    return number_format($calculated, 2);
+                                                }
+                                                
+                                                return '0.00';
+                                            })
+                                            ->live()
+                                            ->extraAttributes(['class' => 'text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded']),
                                     ])
                                     ->addActionLabel('Add Borrowed Money')
                                     ->collapsible()
@@ -332,8 +377,8 @@ class AssetManagementForm
                                         Grid::make(2)
                                             ->columns(['default' => 2])
                                             ->schema([
-                                                TextInput::make('amount')
-                                                    ->label('Current Value')
+                                                TextInput::make('actual_amount')
+                                                    ->label('Actual Amount')
                                                     ->numeric()
                                                     ->required()
                                                     ->minValue(0),
@@ -341,6 +386,21 @@ class AssetManagementForm
                                                     ->label('Notes')
                                                     ->placeholder('Optional notes about this investment'),
                                             ]),
+                                        Placeholder::make('calculated_amount')
+                                            ->label('Calculated Amount (QAR)')
+                                            ->content(function ($get) {
+                                                $actualAmount = $get('actual_amount');
+                                                $exchangeRate = $get('exchange_rate');
+                                                
+                                                if ($actualAmount && $exchangeRate && $exchangeRate > 0) {
+                                                    $calculated = $actualAmount / $exchangeRate;
+                                                    return number_format($calculated, 2);
+                                                }
+                                                
+                                                return '0.00';
+                                            })
+                                            ->live()
+                                            ->extraAttributes(['class' => 'text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded']),
                                     ])
                                     ->addActionLabel('Add Investment')
                                     ->collapsible()
@@ -405,8 +465,8 @@ class AssetManagementForm
                                         Grid::make(2)
                                             ->columns(['default' => 2])
                                             ->schema([
-                                                TextInput::make('amount')
-                                                    ->label('Amount')
+                                                TextInput::make('actual_amount')
+                                                    ->label('Actual Amount')
                                                     ->numeric()
                                                     ->required()
                                                     ->minValue(0),
@@ -414,6 +474,21 @@ class AssetManagementForm
                                                     ->label('Notes')
                                                     ->placeholder('Optional notes about this deposit'),
                                             ]),
+                                        Placeholder::make('calculated_amount')
+                                            ->label('Calculated Amount (QAR)')
+                                            ->content(function ($get) {
+                                                $actualAmount = $get('actual_amount');
+                                                $exchangeRate = $get('exchange_rate');
+                                                
+                                                if ($actualAmount && $exchangeRate && $exchangeRate > 0) {
+                                                    $calculated = $actualAmount / $exchangeRate;
+                                                    return number_format($calculated, 2);
+                                                }
+                                                
+                                                return '0.00';
+                                            })
+                                            ->live()
+                                            ->extraAttributes(['class' => 'text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded']),
                                     ])
                                     ->addActionLabel('Add Deposit')
                                     ->collapsible()
@@ -435,8 +510,8 @@ class AssetManagementForm
                                         $total = 0;
                                         $accounts = $get('accounts') ?? [];
                                         foreach ($accounts as $account) {
-                                            if (isset($account['amount']) && is_numeric($account['amount'])) {
-                                                $total += (float) $account['amount'];
+                                            if (isset($account['actual_amount']) && is_numeric($account['actual_amount'])) {
+                                                $total += (float) $account['actual_amount'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -451,8 +526,8 @@ class AssetManagementForm
                                         $total = 0;
                                         $lentMoney = $get('lent_money') ?? [];
                                         foreach ($lentMoney as $loan) {
-                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
-                                                $total += (float) $loan['amount'];
+                                            if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount'])) {
+                                                $total += (float) $loan['actual_amount'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -467,8 +542,8 @@ class AssetManagementForm
                                         $total = 0;
                                         $borrowedMoney = $get('borrowed_money') ?? [];
                                         foreach ($borrowedMoney as $loan) {
-                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
-                                                $total += (float) $loan['amount'];
+                                            if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount'])) {
+                                                $total += (float) $loan['actual_amount'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -483,8 +558,8 @@ class AssetManagementForm
                                         $total = 0;
                                         $investments = $get('investments') ?? [];
                                         foreach ($investments as $investment) {
-                                            if (isset($investment['amount']) && is_numeric($investment['amount'])) {
-                                                $total += (float) $investment['amount'];
+                                            if (isset($investment['actual_amount']) && is_numeric($investment['actual_amount'])) {
+                                                $total += (float) $investment['actual_amount'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -499,8 +574,8 @@ class AssetManagementForm
                                         $total = 0;
                                         $deposits = $get('deposits') ?? [];
                                         foreach ($deposits as $deposit) {
-                                            if (isset($deposit['amount']) && is_numeric($deposit['amount'])) {
-                                                $total += (float) $deposit['amount'];
+                                            if (isset($deposit['actual_amount']) && is_numeric($deposit['actual_amount'])) {
+                                                $total += (float) $deposit['actual_amount'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -517,40 +592,40 @@ class AssetManagementForm
                                         // Current Accounts
                                         $accounts = $get('accounts') ?? [];
                                         foreach ($accounts as $account) {
-                                            if (isset($account['amount']) && is_numeric($account['amount'])) {
-                                                $total += (float) $account['amount'];
+                                            if (isset($account['actual_amount']) && is_numeric($account['actual_amount'])) {
+                                                $total += (float) $account['actual_amount'];
                                             }
                                         }
 
                                         // Lent Money
                                         $lentMoney = $get('lent_money') ?? [];
                                         foreach ($lentMoney as $loan) {
-                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
-                                                $total += (float) $loan['amount'];
+                                            if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount'])) {
+                                                $total += (float) $loan['actual_amount'];
                                             }
                                         }
 
                                         // Borrowed Money
                                         $borrowedMoney = $get('borrowed_money') ?? [];
                                         foreach ($borrowedMoney as $loan) {
-                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
-                                                $total -= (float) $loan['amount'];
+                                            if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount'])) {
+                                                $total -= (float) $loan['actual_amount'];
                                             }
                                         }
 
                                         // Investments
                                         $investments = $get('investments') ?? [];
                                         foreach ($investments as $investment) {
-                                            if (isset($investment['amount']) && is_numeric($investment['amount'])) {
-                                                $total += (float) $investment['amount'];
+                                            if (isset($investment['actual_amount']) && is_numeric($investment['actual_amount'])) {
+                                                $total += (float) $investment['actual_amount'];
                                             }
                                         }
 
                                         // Deposits
                                         $deposits = $get('deposits') ?? [];
                                         foreach ($deposits as $deposit) {
-                                            if (isset($deposit['amount']) && is_numeric($deposit['amount'])) {
-                                                $total += (float) $deposit['amount'];
+                                            if (isset($deposit['actual_amount']) && is_numeric($deposit['actual_amount'])) {
+                                                $total += (float) $deposit['actual_amount'];
                                             }
                                         }
 

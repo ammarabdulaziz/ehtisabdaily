@@ -60,7 +60,7 @@ class AssetManagement extends Model
     {
         return $this->belongsTo(AccountType::class, 'account_type_id');
     }
-    
+
     public function friend(): BelongsTo
     {
         return $this->belongsTo(Friend::class, 'friend_id');
@@ -79,42 +79,42 @@ class AssetManagement extends Model
     public function getTotalAccountsAttribute(): float
     {
         return $this->accounts->sum(function ($account) {
-            return $this->convertToQAR($account->amount, $account->exchange_rate);
+            return $this->convertToQAR($account->actual_amount, $account->exchange_rate);
         });
     }
 
     public function getTotalLentMoneyAttribute(): float
     {
         return $this->lentMoney->sum(function ($lent) {
-            return $this->convertToQAR($lent->amount, $lent->exchange_rate);
+            return $this->convertToQAR($lent->actual_amount, $lent->exchange_rate);
         });
     }
 
     public function getTotalBorrowedMoneyAttribute(): float
     {
         return $this->borrowedMoney->sum(function ($borrowed) {
-            return $this->convertToQAR($borrowed->amount, $borrowed->exchange_rate);
+            return $this->convertToQAR($borrowed->actual_amount, $borrowed->exchange_rate);
         });
     }
 
     public function getTotalInvestmentsAttribute(): float
     {
         return $this->investments->sum(function ($investment) {
-            return $this->convertToQAR($investment->amount, $investment->exchange_rate);
+            return $this->convertToQAR($investment->actual_amount, $investment->exchange_rate);
         });
     }
 
     public function getTotalDepositsAttribute(): float
     {
         return $this->deposits->sum(function ($deposit) {
-            return $this->convertToQAR($deposit->amount, $deposit->exchange_rate);
+            return $this->convertToQAR($deposit->actual_amount, $deposit->exchange_rate);
         });
     }
 
     public function getTotalInHandAttribute(): float
     {
         return $this->accounts->where('accountType.name', 'Cash-in-Hand')->sum(function ($account) {
-            return $this->convertToQAR($account->amount, $account->exchange_rate);
+            return $this->convertToQAR($account->actual_amount, $account->exchange_rate);
         });
     }
 
@@ -144,10 +144,9 @@ class AssetManagement extends Model
         return $previousMonth->grand_total - $this->grand_total;
     }
 
-    private function convertToQAR(float $amount, float $exchangeRate): float
+    private function convertToQAR(float $amount_amount, float $exchangeRate): float
     {
-        // Convert amount using the exchange rate
-        return $amount * $exchangeRate;
+        return $amount_amount / $exchangeRate;
     }
 
     public function getMonthNameAttribute(): string

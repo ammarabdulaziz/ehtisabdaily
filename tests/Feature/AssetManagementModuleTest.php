@@ -89,7 +89,7 @@ test('can create asset management with accounts', function () {
                     'account_type_id' => $accountType->id,
                     'account_name' => 'Main Cash',
                     'exchange_rate' => 1.000000,
-                    'amount' => 1000,
+                    'actual_amount' => 1000,
                     'notes' => 'Main cash account',
                 ]
             ],
@@ -112,7 +112,7 @@ test('can create asset management with lent money', function () {
             'lent_money' => [
                 [
                     'friend_name' => 'John Doe',
-                    'amount' => 500,
+                    'actual_amount' => 500,
                     'exchange_rate' => 3.650000,
                     'notes' => 'Loan to John',
                 ]
@@ -135,7 +135,7 @@ test('can create asset management with borrowed money', function () {
             'borrowed_money' => [
                 [
                     'friend_name' => 'Jane Smith',
-                    'amount' => 200,
+                    'actual_amount' => 200,
                     'exchange_rate' => 1.000000,
                     'notes' => 'Borrowed from Jane',
                 ]
@@ -159,7 +159,7 @@ test('can create asset management with investments', function () {
                 [
                     'investment_name' => 'Apple Stock',
                     'exchange_rate' => 3.650000,
-                    'amount' => 1000,
+                    'actual_amount' => 1000,
                     'notes' => 'Apple stock investment',
                 ]
             ],
@@ -182,7 +182,7 @@ test('can create asset management with deposits', function () {
                 [
                     'deposit_name' => 'Bank FD',
                     'exchange_rate' => 1.000000,
-                    'amount' => 5000,
+                    'actual_amount' => 5000,
                     'notes' => 'Bank fixed deposit',
                 ]
             ],
@@ -320,7 +320,7 @@ test('shows correct totals in table', function () {
         'account_type_id' => $accountType->id,
         'account_name' => 'Main Cash',
         'exchange_rate' => 1.000000,
-        'amount' => 1000,
+        'actual_amount' => 1000,
     ]);
 
     Livewire::test(ListAssetManagement::class)
