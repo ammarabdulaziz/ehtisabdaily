@@ -70,6 +70,7 @@ class AssetManagementForm
                                             )
                                             ->searchable()
                                             ->required()
+                                            ->preload()
                                             ->createOptionForm([
                                                 TextInput::make('name')
                                                     ->required()
@@ -77,11 +78,13 @@ class AssetManagementForm
                                                 TextInput::make('description')
                                                     ->maxLength(255),
                                             ])
-                                            ->createOptionAction(function (Action $action) {
-                                                return $action
-                                                    ->modalHeading('Create Account Type')
-                                                    ->modalSubmitActionLabel('Create Account Type')
-                                                    ->modalWidth('lg');
+                                            ->createOptionUsing(function (array $data): int {
+                                                return AccountType::create([
+                                                    'user_id' => Auth::id(),
+                                                    'name' => $data['name'],
+                                                    'description' => $data['description'] ?? null,
+                                                    'is_default' => false,
+                                                ])->id;
                                             }),
                                         Select::make('currency')
                                             ->label('Currency')
