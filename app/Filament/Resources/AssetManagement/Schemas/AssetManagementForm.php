@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\Facades\Auth;
 
 class AssetManagementForm
@@ -187,7 +188,7 @@ class AssetManagementForm
                                                     ->preload(),
                                             ]),
                                         Grid::make(2)
-                                                                        ->columns(['default' => 2])                            ->columns(['default' => 2])->columns(['default' => 2])
+                                            ->columns(['default' => 2])
                                             ->schema([
                                                 TextInput::make('amount')
                                                     ->label('Amount')
@@ -432,6 +433,141 @@ class AssetManagementForm
                             ]),
                     ])
                     ->columnSpanFull(),
+
+                Section::make('Summary')
+                    ->schema([
+                        Grid::make()
+                            ->columns(['default' => 2, 'md' => 3, 'lg' => 5])
+                            ->schema([
+                                Placeholder::make('total_current_accounts')
+                                    ->label('Total Current Amount')
+                                    ->content(function ($get) {
+                                        $total = 0;
+                                        $accounts = $get('accounts') ?? [];
+                                        foreach ($accounts as $account) {
+                                            if (isset($account['amount']) && is_numeric($account['amount'])) {
+                                                $total += (float) $account['amount'];
+                                            }
+                                        }
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-lg font-semibold text-green-600']),
+
+                                Placeholder::make('total_lent_money')
+                                    ->label('Total Lent Money')
+                                    ->content(function ($get) {
+                                        $total = 0;
+                                        $lentMoney = $get('lent_money') ?? [];
+                                        foreach ($lentMoney as $loan) {
+                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
+                                                $total += (float) $loan['amount'];
+                                            }
+                                        }
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-lg font-semibold text-blue-600']),
+
+                                Placeholder::make('total_borrowed_money')
+                                    ->label('Total Borrowed Money')
+                                    ->content(function ($get) {
+                                        $total = 0;
+                                        $borrowedMoney = $get('borrowed_money') ?? [];
+                                        foreach ($borrowedMoney as $loan) {
+                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
+                                                $total += (float) $loan['amount'];
+                                            }
+                                        }
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-lg font-semibold text-orange-600']),
+
+                                Placeholder::make('total_investments')
+                                    ->label('Total Investments')
+                                    ->content(function ($get) {
+                                        $total = 0;
+                                        $investments = $get('investments') ?? [];
+                                        foreach ($investments as $investment) {
+                                            if (isset($investment['amount']) && is_numeric($investment['amount'])) {
+                                                $total += (float) $investment['amount'];
+                                            }
+                                        }
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-lg font-semibold text-purple-600']),
+
+                                Placeholder::make('total_deposits')
+                                    ->label('Total Unusable Deposits')
+                                    ->content(function ($get) {
+                                        $total = 0;
+                                        $deposits = $get('deposits') ?? [];
+                                        foreach ($deposits as $deposit) {
+                                            if (isset($deposit['amount']) && is_numeric($deposit['amount'])) {
+                                                $total += (float) $deposit['amount'];
+                                            }
+                                        }
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-lg font-semibold text-gray-600']),
+
+                                Placeholder::make('grand_total')
+                                    ->label('Total Asset Amount')
+                                    ->content(function ($get) {
+                                        $total = 0;
+
+                                        // Current Accounts
+                                        $accounts = $get('accounts') ?? [];
+                                        foreach ($accounts as $account) {
+                                            if (isset($account['amount']) && is_numeric($account['amount'])) {
+                                                $total += (float) $account['amount'];
+                                            }
+                                        }
+
+                                        // Lent Money
+                                        $lentMoney = $get('lent_money') ?? [];
+                                        foreach ($lentMoney as $loan) {
+                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
+                                                $total += (float) $loan['amount'];
+                                            }
+                                        }
+
+                                        // Borrowed Money
+                                        $borrowedMoney = $get('borrowed_money') ?? [];
+                                        foreach ($borrowedMoney as $loan) {
+                                            if (isset($loan['amount']) && is_numeric($loan['amount'])) {
+                                                $total -= (float) $loan['amount'];
+                                            }
+                                        }
+
+                                        // Investments
+                                        $investments = $get('investments') ?? [];
+                                        foreach ($investments as $investment) {
+                                            if (isset($investment['amount']) && is_numeric($investment['amount'])) {
+                                                $total += (float) $investment['amount'];
+                                            }
+                                        }
+
+                                        // Deposits
+                                        $deposits = $get('deposits') ?? [];
+                                        foreach ($deposits as $deposit) {
+                                            if (isset($deposit['amount']) && is_numeric($deposit['amount'])) {
+                                                $total += (float) $deposit['amount'];
+                                            }
+                                        }
+
+                                        return number_format($total, 2);
+                                    })
+                                    ->live()
+                                    ->extraAttributes(['class' => 'text-2xl font-bold text-indigo-600 text-center']),
+                            ]),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible()
+                    ->collapsed(false),
             ]);
     }
 }
