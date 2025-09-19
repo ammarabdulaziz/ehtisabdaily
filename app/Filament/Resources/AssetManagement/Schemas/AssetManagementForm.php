@@ -56,6 +56,34 @@ class AssetManagementForm
                 Section::make('Current Accounts')
                     ->description('Manage your bank accounts, cash in hand, and other current accounts')
                     ->schema([
+                        Select::make('new_account_type')
+                            ->label('Create New Account Type')
+                            ->placeholder('Select to create a new account type')
+                            ->options([])
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('description')
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): string {
+                                return AccountType::create([
+                                    'user_id' => Auth::id(),
+                                    'name' => $data['name'],
+                                    'description' => $data['description'] ?? null,
+                                    'is_default' => false,
+                                ])->name;
+                            })
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Account Type')
+                                    ->modalSubmitActionLabel('Create Account Type')
+                                    ->modalWidth('lg');
+                            }),
                         Repeater::make('accounts')
                             ->label('Accounts')
                             ->schema([
@@ -71,28 +99,15 @@ class AssetManagementForm
                                             ->searchable()
                                             ->required()
                                             ->preload()
-                                            ->createOptionForm([
-                                                TextInput::make('name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('description')
-                                                    ->maxLength(255),
-                                            ])
-                                            ->createOptionUsing(function (array $data): int {
-                                                return AccountType::create([
-                                                    'user_id' => Auth::id(),
-                                                    'name' => $data['name'],
-                                                    'description' => $data['description'] ?? null,
-                                                    'is_default' => false,
-                                                ])->id;
-                                            }),
+                                            ->live(),
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
                                             ->searchable()
                                             ->default('QAR')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->preload(),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
@@ -118,6 +133,33 @@ class AssetManagementForm
                 Section::make('Lent Money')
                     ->description('Money you have lent to friends and family')
                     ->schema([
+                        Select::make('new_friend_lent')
+                            ->label('Create New Friend')
+                            ->placeholder('Select to create a new friend')
+                            ->options([])
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('description')
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): string {
+                                return Friend::create([
+                                    'user_id' => Auth::id(),
+                                    'name' => $data['name'],
+                                    'description' => $data['description'] ?? null,
+                                ])->name;
+                            })
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Friend')
+                                    ->modalSubmitActionLabel('Create Friend')
+                                    ->modalWidth('lg');
+                            }),
                         Repeater::make('lent_money')
                             ->label('Lent Money')
                             ->schema([
@@ -132,26 +174,16 @@ class AssetManagementForm
                                             )
                                             ->searchable()
                                             ->required()
-                                            ->createOptionForm([
-                                                TextInput::make('name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('description')
-                                                    ->maxLength(255),
-                                            ])
-                                            ->createOptionAction(function (Action $action) {
-                                                return $action
-                                                    ->modalHeading('Create Friend')
-                                                    ->modalSubmitActionLabel('Create Friend')
-                                                    ->modalWidth('lg');
-                                            }),
+                                            ->live()
+                                            ->preload(),
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
                                             ->searchable()
                                             ->default('QAR')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->preload(),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
@@ -177,6 +209,33 @@ class AssetManagementForm
                 Section::make('Borrowed Money')
                     ->description('Money you have borrowed from friends and family')
                     ->schema([
+                        Select::make('new_friend_borrowed')
+                            ->label('Create New Friend')
+                            ->placeholder('Select to create a new friend')
+                            ->options([])
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('description')
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): string {
+                                return Friend::create([
+                                    'user_id' => Auth::id(),
+                                    'name' => $data['name'],
+                                    'description' => $data['description'] ?? null,
+                                ])->name;
+                            })
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Friend')
+                                    ->modalSubmitActionLabel('Create Friend')
+                                    ->modalWidth('lg');
+                            }),
                         Repeater::make('borrowed_money')
                             ->label('Borrowed Money')
                             ->schema([
@@ -191,26 +250,16 @@ class AssetManagementForm
                                             )
                                             ->searchable()
                                             ->required()
-                                            ->createOptionForm([
-                                                TextInput::make('name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('description')
-                                                    ->maxLength(255),
-                                            ])
-                                            ->createOptionAction(function (Action $action) {
-                                                return $action
-                                                    ->modalHeading('Create Friend')
-                                                    ->modalSubmitActionLabel('Create Friend')
-                                                    ->modalWidth('lg');
-                                            }),
+                                            ->live()
+                                            ->preload(),
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
                                             ->searchable()
                                             ->default('QAR')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->preload(),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
@@ -236,6 +285,33 @@ class AssetManagementForm
                 Section::make('Investments')
                     ->description('Your investment holdings')
                     ->schema([
+                        Select::make('new_investment_type')
+                            ->label('Create New Investment Type')
+                            ->placeholder('Select to create a new investment type')
+                            ->options([])
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('description')
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): string {
+                                return InvestmentType::create([
+                                    'user_id' => Auth::id(),
+                                    'name' => $data['name'],
+                                    'description' => $data['description'] ?? null,
+                                ])->name;
+                            })
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Investment Type')
+                                    ->modalSubmitActionLabel('Create Investment Type')
+                                    ->modalWidth('lg');
+                            }),
                         Repeater::make('investments')
                             ->label('Investments')
                             ->schema([
@@ -250,26 +326,16 @@ class AssetManagementForm
                                             )
                                             ->searchable()
                                             ->required()
-                                            ->createOptionForm([
-                                                TextInput::make('name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('description')
-                                                    ->maxLength(255),
-                                            ])
-                                            ->createOptionAction(function (Action $action) {
-                                                return $action
-                                                    ->modalHeading('Create Investment Type')
-                                                    ->modalSubmitActionLabel('Create Investment Type')
-                                                    ->modalWidth('lg');
-                                            }),
+                                            ->live()
+                                            ->preload(),
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
                                             ->searchable()
                                             ->default('QAR')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->preload(),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
@@ -295,6 +361,33 @@ class AssetManagementForm
                 Section::make('Unusable Deposits')
                     ->description('Deposits that are currently unusable but part of your assets')
                     ->schema([
+                        Select::make('new_deposit_type')
+                            ->label('Create New Deposit Type')
+                            ->placeholder('Select to create a new deposit type')
+                            ->options([])
+                            ->searchable()
+                            ->live()
+                            ->preload()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('description')
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data): string {
+                                return DepositType::create([
+                                    'user_id' => Auth::id(),
+                                    'name' => $data['name'],
+                                    'description' => $data['description'] ?? null,
+                                ])->name;
+                            })
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Deposit Type')
+                                    ->modalSubmitActionLabel('Create Deposit Type')
+                                    ->modalWidth('lg');
+                            }),
                         Repeater::make('deposits')
                             ->label('Deposits')
                             ->schema([
@@ -309,26 +402,16 @@ class AssetManagementForm
                                             )
                                             ->searchable()
                                             ->required()
-                                            ->createOptionForm([
-                                                TextInput::make('name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                TextInput::make('description')
-                                                    ->maxLength(255),
-                                            ])
-                                            ->createOptionAction(function (Action $action) {
-                                                return $action
-                                                    ->modalHeading('Create Deposit Type')
-                                                    ->modalSubmitActionLabel('Create Deposit Type')
-                                                    ->modalWidth('lg');
-                                            }),
+                                            ->live()
+                                            ->preload(),
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
                                             ->searchable()
                                             ->default('QAR')
                                             ->required()
-                                            ->live(),
+                                            ->live()
+                                            ->preload(),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
