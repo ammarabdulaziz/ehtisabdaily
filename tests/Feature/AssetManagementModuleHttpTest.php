@@ -1,18 +1,16 @@
 <?php
 
 use App\Models\AssetManagement;
-use App\Models\Currency;
 use App\Models\User;
 use App\Models\AccountType;
 use Illuminate\Support\Facades\DB;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
     
-    // Create some currencies for testing
-    Currency::factory()->create(['code' => 'QAR', 'name' => 'Qatari Riyal', 'symbol' => 'ر.ق', 'is_base' => true]);
-    Currency::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$', 'is_base' => false]);
     
     // Create some account types for testing
     AccountType::factory()->create(['user_id' => $this->user->id, 'name' => 'Cash-in-Hand', 'is_default' => true]);
@@ -167,7 +165,7 @@ test('can create asset management with accounts data', function () {
             [
                 'account_type_id' => $accountType->id,
                 'account_name' => 'Main Cash',
-                'currency' => 'QAR',
+                'exchange_rate' => 1.000000,
                 'amount' => 1000,
                 'notes' => 'Main cash account',
             ]
@@ -190,7 +188,7 @@ test('can create asset management with lent money data', function () {
             [
                 'friend_name' => 'John Doe',
                 'amount' => 500,
-                'currency' => 'USD',
+                'exchange_rate' => 3.650000,
                 'notes' => 'Loan to John',
             ]
         ],
@@ -212,7 +210,7 @@ test('can create asset management with borrowed money data', function () {
             [
                 'friend_name' => 'Jane Smith',
                 'amount' => 200,
-                'currency' => 'QAR',
+                'exchange_rate' => 1.000000,
                 'notes' => 'Borrowed from Jane',
             ]
         ],
@@ -234,7 +232,7 @@ test('can create asset management with investments data', function () {
             [
                 'investment_type' => 'Stocks',
                 'investment_name' => 'Apple Stock',
-                'currency' => 'USD',
+                'exchange_rate' => 3.650000,
                 'amount' => 1000,
                 'notes' => 'Apple stock investment',
             ]
@@ -257,7 +255,7 @@ test('can create asset management with deposits data', function () {
             [
                 'deposit_type' => 'Fixed Deposit',
                 'deposit_name' => 'Bank FD',
-                'currency' => 'QAR',
+                'exchange_rate' => 1.000000,
                 'amount' => 5000,
                 'notes' => 'Bank fixed deposit',
             ]

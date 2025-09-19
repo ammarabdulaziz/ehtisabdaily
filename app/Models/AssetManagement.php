@@ -79,42 +79,42 @@ class AssetManagement extends Model
     public function getTotalAccountsAttribute(): float
     {
         return $this->accounts->sum(function ($account) {
-            return $this->convertToQAR($account->amount, $account->currency);
+            return $this->convertToQAR($account->amount, $account->exchange_rate);
         });
     }
 
     public function getTotalLentMoneyAttribute(): float
     {
         return $this->lentMoney->sum(function ($lent) {
-            return $this->convertToQAR($lent->amount, $lent->currency);
+            return $this->convertToQAR($lent->amount, $lent->exchange_rate);
         });
     }
 
     public function getTotalBorrowedMoneyAttribute(): float
     {
         return $this->borrowedMoney->sum(function ($borrowed) {
-            return $this->convertToQAR($borrowed->amount, $borrowed->currency);
+            return $this->convertToQAR($borrowed->amount, $borrowed->exchange_rate);
         });
     }
 
     public function getTotalInvestmentsAttribute(): float
     {
         return $this->investments->sum(function ($investment) {
-            return $this->convertToQAR($investment->amount, $investment->currency);
+            return $this->convertToQAR($investment->amount, $investment->exchange_rate);
         });
     }
 
     public function getTotalDepositsAttribute(): float
     {
         return $this->deposits->sum(function ($deposit) {
-            return $this->convertToQAR($deposit->amount, $deposit->currency);
+            return $this->convertToQAR($deposit->amount, $deposit->exchange_rate);
         });
     }
 
     public function getTotalInHandAttribute(): float
     {
         return $this->accounts->where('accountType.name', 'Cash-in-Hand')->sum(function ($account) {
-            return $this->convertToQAR($account->amount, $account->currency);
+            return $this->convertToQAR($account->amount, $account->exchange_rate);
         });
     }
 
@@ -144,23 +144,10 @@ class AssetManagement extends Model
         return $previousMonth->grand_total - $this->grand_total;
     }
 
-    private function convertToQAR(float $amount, string $currency): float
+    private function convertToQAR(float $amount, float $exchangeRate): float
     {
-        if ($currency === 'QAR') {
-            return $amount;
-        }
-
-        $exchangeRate = CurrencyExchangeRate::where('from_currency_id', function ($query) use ($currency) {
-            $query->select('id')->from('currencies')->where('code', $currency);
-        })
-        ->where('to_currency_id', function ($query) {
-            $query->select('id')->from('currencies')->where('code', 'QAR');
-        })
-        ->where('date', '<=', now()->toDateString())
-        ->orderBy('date', 'desc')
-        ->value('rate');
-
-        return $exchangeRate ? $amount * $exchangeRate : $amount;
+        // Convert amount using the exchange rate
+        return $amount * $exchangeRate;
     }
 
     public function getMonthNameAttribute(): string

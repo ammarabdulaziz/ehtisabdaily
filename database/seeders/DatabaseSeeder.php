@@ -32,9 +32,8 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Seed currencies and account types
+        // Seed account types
         $this->call([
-            CurrencySeeder::class,
             AccountTypeSeeder::class,
         ]);
     }

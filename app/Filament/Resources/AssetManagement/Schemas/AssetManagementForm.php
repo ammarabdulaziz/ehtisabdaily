@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\AssetManagement\Schemas;
 
 use App\Models\AccountType;
-use App\Models\Currency;
 use App\Models\Friend;
 use App\Models\InvestmentType;
 use App\Models\DepositType;
@@ -103,14 +102,13 @@ class AssetManagementForm
                                                     ->required()
                                                     ->preload()
                                                     ->live(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::pluck('name', 'code'))
-                                                    ->searchable()
-                                                    ->default('QAR')
+                                                TextInput::make('exchange_rate')
+                                                    ->label('Exchange Rate')
+                                                    ->default(1.000000)
                                                     ->required()
-                                                    ->live()
-                                                    ->preload(),
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->minValue(0.000001),
                                             ]),
                                         Grid::make(2)
                                             ->columns(['default' => 2])
@@ -118,7 +116,6 @@ class AssetManagementForm
                                                 TextInput::make('amount')
                                                     ->label('Amount')
                                                     ->numeric()
-                                                    ->prefix(fn($get) => Currency::whereCode($get('currency'))->first()?->symbol ?? '$')
                                                     ->required()
                                                     ->minValue(0),
                                                 TextInput::make('notes')
@@ -178,14 +175,13 @@ class AssetManagementForm
                                                     ->required()
                                                     ->live()
                                                     ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::pluck('name', 'code'))
-                                                    ->searchable()
-                                                    ->default('QAR')
+                                                TextInput::make('exchange_rate')
+                                                    ->label('Exchange Rate')
+                                                    ->default(1.000000)
                                                     ->required()
-                                                    ->live()
-                                                    ->preload(),
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->minValue(0.000001),
                                             ]),
                                         Grid::make(2)
                                             ->columns(['default' => 2])
@@ -193,7 +189,6 @@ class AssetManagementForm
                                                 TextInput::make('amount')
                                                     ->label('Amount')
                                                     ->numeric()
-                                                    ->prefix(fn($get) => Currency::whereCode($get('currency'))->first()?->symbol ?? '$')
                                                     ->required()
                                                     ->minValue(0),
                                                 TextInput::make('notes')
@@ -253,14 +248,13 @@ class AssetManagementForm
                                                     ->required()
                                                     ->live()
                                                     ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::pluck('name', 'code'))
-                                                    ->searchable()
-                                                    ->default('QAR')
+                                                TextInput::make('exchange_rate')
+                                                    ->label('Exchange Rate')
+                                                    ->default(1.000000)
                                                     ->required()
-                                                    ->live()
-                                                    ->preload(),
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->minValue(0.000001),
                                             ]),
                                         Grid::make(2)
                                             ->columns(['default' => 2])
@@ -268,7 +262,6 @@ class AssetManagementForm
                                                 TextInput::make('amount')
                                                     ->label('Amount')
                                                     ->numeric()
-                                                    ->prefix(fn($get) => Currency::whereCode($get('currency'))->first()?->symbol ?? '$')
                                                     ->required()
                                                     ->minValue(0),
                                                 TextInput::make('notes')
@@ -328,14 +321,13 @@ class AssetManagementForm
                                                     ->required()
                                                     ->live()
                                                     ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::pluck('name', 'code'))
-                                                    ->searchable()
-                                                    ->default('QAR')
+                                                TextInput::make('exchange_rate')
+                                                    ->label('Exchange Rate')
+                                                    ->default(1.000000)
                                                     ->required()
-                                                    ->live()
-                                                    ->preload(),
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->minValue(0.000001),
                                             ]),
                                         Grid::make(2)
                                             ->columns(['default' => 2])
@@ -343,7 +335,6 @@ class AssetManagementForm
                                                 TextInput::make('amount')
                                                     ->label('Current Value')
                                                     ->numeric()
-                                                    ->prefix(fn($get) => Currency::whereCode($get('currency'))->first()?->symbol ?? '$')
                                                     ->required()
                                                     ->minValue(0),
                                                 TextInput::make('notes')
@@ -403,14 +394,13 @@ class AssetManagementForm
                                                     ->required()
                                                     ->live()
                                                     ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::pluck('name', 'code'))
-                                                    ->searchable()
-                                                    ->default('QAR')
+                                                TextInput::make('exchange_rate')
+                                                    ->label('Exchange Rate')
+                                                    ->default(1.000000)
                                                     ->required()
-                                                    ->live()
-                                                    ->preload(),
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->minValue(0.000001),
                                             ]),
                                         Grid::make(2)
                                             ->columns(['default' => 2])
@@ -418,7 +408,6 @@ class AssetManagementForm
                                                 TextInput::make('amount')
                                                     ->label('Amount')
                                                     ->numeric()
-                                                    ->prefix(fn($get) => Currency::whereCode($get('currency'))->first()?->symbol ?? '$')
                                                     ->required()
                                                     ->minValue(0),
                                                 TextInput::make('notes')
@@ -440,6 +429,7 @@ class AssetManagementForm
                             ->columns(['default' => 2, 'md' => 3, 'lg' => 5])
                             ->schema([
                                 Placeholder::make('total_current_accounts')
+                                    ->prefix('QAR ')
                                     ->label('Total Current Amount')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -449,12 +439,13 @@ class AssetManagementForm
                                                 $total += (float) $account['amount'];
                                             }
                                         }
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-lg font-semibold text-green-600']),
 
                                 Placeholder::make('total_lent_money')
+                                    ->prefix('QAR ')
                                     ->label('Total Lent Money')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -464,12 +455,13 @@ class AssetManagementForm
                                                 $total += (float) $loan['amount'];
                                             }
                                         }
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-lg font-semibold text-blue-600']),
 
                                 Placeholder::make('total_borrowed_money')
+                                    ->prefix('QAR ')
                                     ->label('Total Borrowed Money')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -479,12 +471,13 @@ class AssetManagementForm
                                                 $total += (float) $loan['amount'];
                                             }
                                         }
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-lg font-semibold text-orange-600']),
 
                                 Placeholder::make('total_investments')
+                                    ->prefix('QAR ')
                                     ->label('Total Investments')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -494,12 +487,13 @@ class AssetManagementForm
                                                 $total += (float) $investment['amount'];
                                             }
                                         }
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-lg font-semibold text-purple-600']),
 
                                 Placeholder::make('total_deposits')
+                                    ->prefix('QAR ')
                                     ->label('Total Unusable Deposits')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -509,12 +503,13 @@ class AssetManagementForm
                                                 $total += (float) $deposit['amount'];
                                             }
                                         }
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-lg font-semibold text-gray-600']),
 
                                 Placeholder::make('grand_total')
+                                    ->prefix('QAR ')
                                     ->label('Total Asset Amount')
                                     ->content(function ($get) {
                                         $total = 0;
@@ -559,7 +554,7 @@ class AssetManagementForm
                                             }
                                         }
 
-                                        return number_format($total, 2);
+                                        return number_format($total, 0);
                                     })
                                     ->live()
                                     ->extraAttributes(['class' => 'text-2xl font-bold text-indigo-600 text-center']),

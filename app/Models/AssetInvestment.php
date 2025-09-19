@@ -14,7 +14,7 @@ class AssetInvestment extends Model
         'asset_management_id',
         'investment_type_id',
         'amount',
-        'currency',
+        'exchange_rate',
         'notes',
     ];
 
@@ -22,6 +22,7 @@ class AssetInvestment extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'exchange_rate' => 'decimal:6',
         ];
     }
 

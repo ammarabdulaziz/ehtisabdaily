@@ -14,7 +14,7 @@ class AssetDeposit extends Model
         'asset_management_id',
         'deposit_type_id',
         'amount',
-        'currency',
+        'exchange_rate',
         'notes',
     ];
 
@@ -22,6 +22,7 @@ class AssetDeposit extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'exchange_rate' => 'decimal:6',
         ];
     }
 

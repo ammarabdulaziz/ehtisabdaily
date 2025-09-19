@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('deposit_type');
             $table->string('deposit_name');
             $table->decimal('amount', 15, 2);
-            $table->string('currency', 3)->default('QAR');
+            $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->text('notes')->nullable();
             $table->timestamps();
             
