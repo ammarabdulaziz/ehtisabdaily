@@ -161,7 +161,6 @@ test('can create asset management with investments', function () {
             'year' => 2025,
             'investments' => [
                 [
-                    'investment_type' => 'Stocks',
                     'investment_name' => 'Apple Stock',
                     'currency' => 'USD',
                     'amount' => 1000,
@@ -185,7 +184,6 @@ test('can create asset management with deposits', function () {
             'year' => 2025,
             'deposits' => [
                 [
-                    'deposit_type' => 'Fixed Deposit',
                     'deposit_name' => 'Bank FD',
                     'currency' => 'QAR',
                     'amount' => 5000,

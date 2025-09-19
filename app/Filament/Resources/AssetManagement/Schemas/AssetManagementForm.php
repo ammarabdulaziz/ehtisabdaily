@@ -7,7 +7,6 @@ use App\Models\Currency;
 use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Section;
@@ -31,21 +30,24 @@ class AssetManagementForm
                                         5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
                                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
                                     ])
+                                    ->searchable()
                                     ->default(now()->month)
                                     ->required(),
                                 Select::make('year')
                                     ->label('Year')
                                     ->options(range(2020, now()->year + 5))
+                                    ->searchable()
                                     ->default(now()->year)
                                     ->required(),
                             ]),
-                        Textarea::make('notes')
+                        TextInput::make('notes')
                             ->label('Notes')
-                            ->placeholder('Add any notes about this month\'s assets...')
-                            ->rows(3),
+                            ->placeholder('Add any notes about this month\'s assets...'),
                         Hidden::make('user_id')
                             ->default(fn() => Auth::id()),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Current Accounts')
                     ->description('Manage your bank accounts, cash in hand, and other current accounts')
@@ -83,6 +85,7 @@ class AssetManagementForm
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
+                                            ->searchable()
                                             ->default('QAR')
                                             ->required(),
                                     ]),
@@ -94,17 +97,18 @@ class AssetManagementForm
                                             ->prefix(fn($get) => Currency::where('code', $get('currency'))->first()?->symbol ?? '$')
                                             ->required()
                                             ->minValue(0),
-                                        Textarea::make('notes')
+                                        TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this account')
-                                            ->rows(2),
+                                            ->placeholder('Optional notes about this account'),
                                     ]),
                             ])
                             ->addActionLabel('Add Account')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['account_name'] ?? null)
                             ->defaultItems(0),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Lent Money')
                     ->description('Money you have lent to friends and family')
@@ -127,19 +131,21 @@ class AssetManagementForm
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
+                                            ->searchable()
                                             ->default('QAR')
                                             ->required(),
                                     ]),
-                                Textarea::make('notes')
+                                TextInput::make('notes')
                                     ->label('Notes')
-                                    ->placeholder('Optional notes about this loan')
-                                    ->rows(2),
+                                    ->placeholder('Optional notes about this loan'),
                             ])
                             ->addActionLabel('Add Lent Money')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['friend_name'] ?? null)
                             ->defaultItems(0),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Borrowed Money')
                     ->description('Money you have borrowed from friends and family')
@@ -162,19 +168,21 @@ class AssetManagementForm
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
+                                            ->searchable()
                                             ->default('QAR')
                                             ->required(),
                                     ]),
-                                Textarea::make('notes')
+                                TextInput::make('notes')
                                     ->label('Notes')
-                                    ->placeholder('Optional notes about this loan')
-                                    ->rows(2),
+                                    ->placeholder('Optional notes about this loan'),
                             ])
                             ->addActionLabel('Add Borrowed Money')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['friend_name'] ?? null)
                             ->defaultItems(0),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Investments')
                     ->description('Your investment holdings')
@@ -182,13 +190,8 @@ class AssetManagementForm
                         Repeater::make('investments')
                             ->label('Investments')
                             ->schema([
-                                Grid::make(3)
+                                Grid::make(2)
                                     ->schema([
-                                        TextInput::make('investment_type')
-                                            ->label('Investment Type')
-                                            ->placeholder('e.g., Stocks, Bonds, Mutual Funds')
-                                            ->required()
-                                            ->maxLength(255),
                                         TextInput::make('investment_name')
                                             ->label('Investment Name')
                                             ->placeholder('e.g., Apple Stock, S&P 500 Fund')
@@ -197,6 +200,7 @@ class AssetManagementForm
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
+                                            ->searchable()
                                             ->default('QAR')
                                             ->required(),
                                     ]),
@@ -208,17 +212,18 @@ class AssetManagementForm
                                             ->prefix(fn($get) => Currency::where('code', $get('currency'))->first()?->symbol ?? '$')
                                             ->required()
                                             ->minValue(0),
-                                        Textarea::make('notes')
+                                        TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this investment')
-                                            ->rows(2),
+                                            ->placeholder('Optional notes about this investment'),
                                     ]),
                             ])
                             ->addActionLabel('Add Investment')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['investment_name'] ?? null)
                             ->defaultItems(0),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
 
                 Section::make('Unusable Deposits')
                     ->description('Deposits that are currently unusable but part of your assets')
@@ -226,13 +231,8 @@ class AssetManagementForm
                         Repeater::make('deposits')
                             ->label('Deposits')
                             ->schema([
-                                Grid::make(3)
+                                Grid::make(2)
                                     ->schema([
-                                        TextInput::make('deposit_type')
-                                            ->label('Deposit Type')
-                                            ->placeholder('e.g., Fixed Deposit, Security Deposit')
-                                            ->required()
-                                            ->maxLength(255),
                                         TextInput::make('deposit_name')
                                             ->label('Deposit Name')
                                             ->placeholder('e.g., Bank FD, Apartment Security')
@@ -241,6 +241,7 @@ class AssetManagementForm
                                         Select::make('currency')
                                             ->label('Currency')
                                             ->options(Currency::pluck('name', 'code'))
+                                            ->searchable()
                                             ->default('QAR')
                                             ->required(),
                                     ]),
@@ -252,17 +253,18 @@ class AssetManagementForm
                                             ->prefix(fn($get) => Currency::where('code', $get('currency'))->first()?->symbol ?? '$')
                                             ->required()
                                             ->minValue(0),
-                                        Textarea::make('notes')
+                                        TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this deposit')
-                                            ->rows(2),
+                                            ->placeholder('Optional notes about this deposit'),
                                     ]),
                             ])
                             ->addActionLabel('Add Deposit')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['deposit_name'] ?? null)
                             ->defaultItems(0),
-                    ]),
+                    ])
+                    ->columns(1)
+                    ->columnSpanFull(),
             ]);
     }
 }
