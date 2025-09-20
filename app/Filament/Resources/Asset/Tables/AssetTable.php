@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Asset\Tables;
 
+use App\Currency;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,40 +22,40 @@ class AssetTable
                     ->label('Period')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('total_accounts')
-                    ->label('Total Accounts')
-                    ->money('QAR')
-                    ->sortable(),
-                TextColumn::make('total_lent_money')
-                    ->label('Total Lent')
-                    ->money('QAR')
-                    ->sortable(),
-                TextColumn::make('total_borrowed_money')
-                    ->label('Total Borrowed')
-                    ->money('QAR')
-                    ->sortable(),
-                TextColumn::make('total_investments')
-                    ->label('Total Investments')
-                    ->money('QAR')
-                    ->sortable(),
-                TextColumn::make('total_deposits')
-                    ->label('Total Deposits')
-                    ->money('QAR')
-                    ->sortable(),
-                TextColumn::make('total_in_hand')
-                    ->label('Cash in Hand')
-                    ->money('QAR')
-                    ->sortable(),
                 TextColumn::make('grand_total')
                     ->label('Grand Total')
-                    ->money('QAR')
                     ->sortable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
                 TextColumn::make('savings')
                     ->label('Savings')
-                    ->money('QAR')
                     ->sortable()
-                    ->color(fn ($state) => $state >= 0 ? 'success' : 'danger'),
+                    ->color(fn ($state) => $state >= 0 ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_accounts')
+                    ->label('Total Accounts')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_lent_money')
+                    ->label('Total Lent')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_borrowed_money')
+                    ->label('Total Borrowed')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_investments')
+                    ->label('Total Investments')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_deposits')
+                    ->label('Total Deposits')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                TextColumn::make('total_in_hand')
+                    ->label('Cash in Hand')
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()

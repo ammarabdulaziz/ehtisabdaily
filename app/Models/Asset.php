@@ -113,14 +113,14 @@ class Asset extends Model
 
     public function getTotalInHandAttribute(): float
     {
-        return $this->accounts->where('accountType.name', 'Cash-in-Hand')->sum(function ($account) {
+        return $this->accounts->sum(function ($account) {
             return $this->convertToQAR($account->actual_amount, $account->exchange_rate);
         });
     }
 
     public function getGrandTotalAttribute(): float
     {
-        return $this->total_accounts + $this->total_lent_money + $this->total_investments + $this->total_deposits;
+        return $this->total_accounts + $this->total_lent_money + $this->total_investments + $this->total_deposits - $this->total_borrowed_money;
     }
 
     public function getSavingsAttribute(): float
@@ -141,7 +141,7 @@ class Asset extends Model
             return 0;
         }
 
-        return $previousMonth->grand_total - $this->grand_total;
+        return $this->grand_total - $previousMonth->grand_total;
     }
 
     private function convertToQAR(float $amount_amount, float $exchangeRate): float

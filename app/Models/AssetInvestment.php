@@ -43,7 +43,7 @@ class AssetInvestment extends Model
     {
         return $this->belongsTo(Asset::class);
     }
-
+                                                                                                                                                                                                                                        
     public function investmentType(): BelongsTo
     {
         return $this->belongsTo(InvestmentType::class);
