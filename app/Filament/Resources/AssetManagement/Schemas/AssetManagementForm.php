@@ -90,7 +90,7 @@ class AssetManagementForm
                                     ->label('Accounts')
                                     ->schema([
                                         Grid::make(2)
-                                            ->columns(['default' => 2])
+                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
                                             ->schema([
                                                 Select::make('account_type_id')
                                                     ->label('Account Type')
@@ -117,10 +117,6 @@ class AssetManagementForm
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
-                                            ]),
-                                        Grid::make(2)
-                                            ->columns(['default' => 2])
-                                            ->schema([
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -132,10 +128,11 @@ class AssetManagementForm
                                                         return Currency::from($currency)?->getSymbol() ?? 'QAR';
                                                     })
                                                     ->live(),
-                                                TextInput::make('notes')
-                                                    ->label('Notes')
-                                                    ->placeholder('Optional notes about this account'),
                                             ]),
+                                        TextInput::make('notes')
+                                            ->label('Notes')
+                                            ->placeholder('Optional notes about this account')
+                                            ->columnSpanFull(),
                                     ])
                                     ->addActionLabel('Add Account')
                                     ->collapsible()
@@ -176,7 +173,7 @@ class AssetManagementForm
                                     ->label('Lent Money')
                                     ->schema([
                                         Grid::make(2)
-                                            ->columns(['default' => 2])
+                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
                                             ->schema([
                                                 Select::make('friend_id')
                                                     ->label('Friend/Person Name')
@@ -203,10 +200,6 @@ class AssetManagementForm
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
-                                            ]),
-                                        Grid::make(2)
-                                            ->columns(['default' => 2])
-                                            ->schema([
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -218,10 +211,11 @@ class AssetManagementForm
                                                         return Currency::from($currency)?->getSymbol() ?? 'QAR';
                                                     })
                                                     ->live(),
-                                                TextInput::make('notes')
-                                                    ->label('Notes')
-                                                    ->placeholder('Optional notes about this loan'),
                                             ]),
+                                        TextInput::make('notes')
+                                            ->label('Notes')
+                                            ->placeholder('Optional notes about this loan')
+                                            ->columnSpanFull(),
                                     ])
                                     ->addActionLabel('Add Lent Money')
                                     ->collapsible()
@@ -262,7 +256,7 @@ class AssetManagementForm
                                     ->label('Borrowed Money')
                                     ->schema([
                                         Grid::make(2)
-                                            ->columns(['default' => 2])
+                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
                                             ->schema([
                                                 Select::make('friend_id')
                                                     ->label('Friend/Person Name')
@@ -289,10 +283,6 @@ class AssetManagementForm
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
-                                            ]),
-                                        Grid::make(2)
-                                            ->columns(['default' => 2])
-                                            ->schema([
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -304,10 +294,11 @@ class AssetManagementForm
                                                         return Currency::from($currency)?->getSymbol() ?? 'QAR';
                                                     })
                                                     ->live(),
-                                                TextInput::make('notes')
-                                                    ->label('Notes')
-                                                    ->placeholder('Optional notes about this loan'),
                                             ]),
+                                        TextInput::make('notes')
+                                            ->label('Notes')
+                                            ->placeholder('Optional notes about this loan')
+                                            ->columnSpanFull(),
                                     ])
                                     ->addActionLabel('Add Borrowed Money')
                                     ->collapsible()
@@ -348,7 +339,7 @@ class AssetManagementForm
                                     ->label('Investments')
                                     ->schema([
                                         Grid::make(2)
-                                            ->columns(['default' => 2])
+                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
                                             ->schema([
                                                 Select::make('investment_type_id')
                                                     ->label('Investment Type')
@@ -375,10 +366,6 @@ class AssetManagementForm
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
-                                            ]),
-                                        Grid::make(2)
-                                            ->columns(['default' => 2])
-                                            ->schema([
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -390,10 +377,11 @@ class AssetManagementForm
                                                         return Currency::from($currency)?->getSymbol() ?? 'QAR';
                                                     })
                                                     ->live(),
-                                                TextInput::make('notes')
-                                                    ->label('Notes')
-                                                    ->placeholder('Optional notes about this investment'),
                                             ]),
+                                        TextInput::make('notes')
+                                            ->label('Notes')
+                                            ->placeholder('Optional notes about this investment')
+                                            ->columnSpanFull(),
                                     ])
                                     ->addActionLabel('Add Investment')
                                     ->collapsible()
@@ -434,7 +422,7 @@ class AssetManagementForm
                                     ->label('Deposits')
                                     ->schema([
                                         Grid::make(2)
-                                            ->columns(['default' => 2])
+                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
                                             ->schema([
                                                 Select::make('deposit_type_id')
                                                     ->label('Deposit Type')
@@ -461,10 +449,6 @@ class AssetManagementForm
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
-                                            ]),
-                                        Grid::make(2)
-                                            ->columns(['default' => 2])
-                                            ->schema([
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -476,10 +460,11 @@ class AssetManagementForm
                                                         return Currency::from($currency)?->getSymbol() ?? 'QAR';
                                                     })
                                                     ->live(),
-                                                TextInput::make('notes')
-                                                    ->label('Notes')
-                                                    ->placeholder('Optional notes about this deposit'),
                                             ]),
+                                        TextInput::make('notes')
+                                            ->label('Notes')
+                                            ->placeholder('Optional notes about this deposit')
+                                            ->columnSpanFull(),
                                     ])
                                     ->addActionLabel('Add Deposit')
                                     ->collapsible()
