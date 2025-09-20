@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Seed all AssetManagementForm related data
+        // Seed all AssetForm related data
         $this->call([
             AccountTypeSeeder::class,
             FriendSeeder::class,

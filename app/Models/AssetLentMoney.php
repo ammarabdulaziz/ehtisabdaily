@@ -11,7 +11,7 @@ class AssetLentMoney extends Model
     use HasFactory;
 
     protected $fillable = [
-        'asset_management_id',
+        'asset_id',
         'friend_id',
         'actual_amount',
         'amount',
@@ -39,9 +39,9 @@ class AssetLentMoney extends Model
         });
     }
 
-    public function assetManagement(): BelongsTo
+    public function asset(): BelongsTo
     {
-        return $this->belongsTo(AssetManagement::class);
+        return $this->belongsTo(Asset::class);
     }
 
     public function friend(): BelongsTo

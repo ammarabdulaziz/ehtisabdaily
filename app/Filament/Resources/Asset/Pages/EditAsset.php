@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\AssetManagement\Pages;
+namespace App\Filament\Resources\Asset\Pages;
 
-use App\Filament\Resources\AssetManagement\AssetManagementResource;
+use App\Filament\Resources\Asset\AssetResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditAssetManagement extends EditRecord
+class EditAsset extends EditRecord
 {
-    protected static string $resource = AssetManagementResource::class;
+    protected static string $resource = AssetResource::class;
 
     protected function getHeaderActions(): array
     {

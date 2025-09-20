@@ -11,7 +11,7 @@ class AssetDeposit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'asset_management_id',
+        'asset_id',
         'deposit_type_id',
         'actual_amount',
         'amount',
@@ -39,9 +39,9 @@ class AssetDeposit extends Model
         });
     }
 
-    public function assetManagement(): BelongsTo
+    public function asset(): BelongsTo
     {
-        return $this->belongsTo(AssetManagement::class);
+        return $this->belongsTo(Asset::class);
     }
 
     public function depositType(): BelongsTo

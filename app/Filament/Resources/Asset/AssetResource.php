@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\AssetManagement;
+namespace App\Filament\Resources\Asset;
 
-use App\Filament\Resources\AssetManagement\Pages\CreateAssetManagement;
-use App\Filament\Resources\AssetManagement\Pages\EditAssetManagement;
-use App\Filament\Resources\AssetManagement\Pages\ListAssetManagement;
-use App\Filament\Resources\AssetManagement\Schemas\AssetManagementForm;
-use App\Filament\Resources\AssetManagement\Tables\AssetManagementTable;
-use App\Models\AssetManagement;
+use App\Filament\Resources\Asset\Pages\CreateAsset;
+use App\Filament\Resources\Asset\Pages\EditAsset;
+use App\Filament\Resources\Asset\Pages\ListAsset;
+use App\Filament\Resources\Asset\Schemas\AssetForm;
+use App\Filament\Resources\Asset\Tables\AssetTable;
+use App\Models\Asset;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -17,13 +17,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
-class AssetManagementResource extends Resource
+class AssetResource extends Resource
 {
-    protected static ?string $model = AssetManagement::class;
+    protected static ?string $model = Asset::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Asset Management';
+    protected static ?string $navigationLabel = 'Assets';
 
     protected static UnitEnum|string|null $navigationGroup = 'Finance';
 
@@ -37,12 +37,12 @@ class AssetManagementResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return AssetManagementForm::configure($schema);
+        return AssetForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return AssetManagementTable::configure($table);
+        return AssetTable::configure($table);
     }
 
     public static function getRelations(): array
@@ -55,9 +55,9 @@ class AssetManagementResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListAssetManagement::route('/'),
-            'create' => CreateAssetManagement::route('/create'),
-            'edit' => EditAssetManagement::route('/{record}/edit'),
+            'index' => ListAsset::route('/'),
+            'create' => CreateAsset::route('/create'),
+            'edit' => EditAsset::route('/{record}/edit'),
         ];
     }
 }

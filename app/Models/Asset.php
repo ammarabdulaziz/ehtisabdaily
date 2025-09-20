@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class AssetManagement extends Model
+class Asset extends Model
 {
     use HasFactory;
-
-    protected $table = 'asset_managements';
 
     protected $fillable = [
         'user_id',

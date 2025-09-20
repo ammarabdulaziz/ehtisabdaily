@@ -11,7 +11,7 @@ class AssetAccount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'asset_management_id',
+        'asset_id',
         'account_type_id',
         'actual_amount',
         'amount',
@@ -39,9 +39,9 @@ class AssetAccount extends Model
         });
     }
 
-    public function assetManagement(): BelongsTo
+    public function asset(): BelongsTo
     {
-        return $this->belongsTo(AssetManagement::class);
+        return $this->belongsTo(Asset::class);
     }
 
     public function accountType(): BelongsTo

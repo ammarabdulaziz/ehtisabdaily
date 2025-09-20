@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AssetManagement\Schemas;
+namespace App\Filament\Resources\Asset\Schemas;
 
 use App\Models\AccountType;
 use App\Models\Friend;
@@ -19,7 +19,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\Facades\Auth;
 
-class AssetManagementForm
+class AssetForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -61,7 +61,9 @@ class AssetManagementForm
                                 Select::make('new_account_type')
                                     ->label('Create New Account Type')
                                     ->placeholder('Select to create a new account type')
-                                    ->options(AccountType::whereUserId(Auth::id())->pluck('name', 'id')->toArray())
+                                    ->options(function () {
+                                        return AccountType::whereUserId(Auth::id())->pluck('name', 'id')->toArray();
+                                    })
                                     ->searchable()
                                     ->live()
                                     ->preload()
@@ -147,7 +149,9 @@ class AssetManagementForm
                                 Select::make('new_friend_lent')
                                     ->label('Create New Friend')
                                     ->placeholder('Select to create a new friend')
-                                    ->options(Friend::whereUserId(Auth::id())->pluck('name', 'id')->toArray())
+                                    ->options(function () {
+                                        return Friend::whereUserId(Auth::id())->pluck('name', 'id')->toArray();
+                                    })
                                     ->searchable()
                                     ->live()
                                     ->preload()
@@ -232,7 +236,9 @@ class AssetManagementForm
                                 Select::make('new_friend_borrowed')
                                     ->label('Create New Friend')
                                     ->placeholder('Select to create a new friend')
-                                    ->options(Friend::whereUserId(Auth::id())->pluck('name', 'id')->toArray())
+                                    ->options(function () {
+                                        return Friend::whereUserId(Auth::id())->pluck('name', 'id')->toArray();
+                                    })
                                     ->searchable()
                                     ->live()
                                     ->preload()
@@ -317,7 +323,9 @@ class AssetManagementForm
                                 Select::make('new_investment_type')
                                     ->label('Create New Investment Type')
                                     ->placeholder('Select to create a new investment type')
-                                    ->options(InvestmentType::whereUserId(Auth::id())->pluck('name', 'id')->toArray())
+                                    ->options(function () {
+                                        return InvestmentType::whereUserId(Auth::id())->pluck('name', 'id')->toArray();
+                                    })
                                     ->searchable()
                                     ->live()
                                     ->preload()
@@ -402,7 +410,9 @@ class AssetManagementForm
                                 Select::make('new_deposit_type')
                                     ->label('Create New Deposit Type')
                                     ->placeholder('Select to create a new deposit type')
-                                    ->options(DepositType::whereUserId(Auth::id())->pluck('name', 'id')->toArray())
+                                    ->options(function () {
+                                        return DepositType::whereUserId(Auth::id())->pluck('name', 'id')->toArray();
+                                    })
                                     ->searchable()
                                     ->live()
                                     ->preload()

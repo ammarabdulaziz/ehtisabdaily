@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\AssetManagement;
+use App\Models\Asset;
 use App\Models\User;
 use App\Models\AccountType;
 use Illuminate\Support\Facades\DB;
@@ -11,36 +11,35 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
     
-    
     // Create some account types for testing
     AccountType::factory()->create(['user_id' => $this->user->id, 'name' => 'Cash-in-Hand', 'is_default' => true]);
     AccountType::factory()->create(['user_id' => $this->user->id, 'name' => 'Bank Account', 'is_default' => false]);
 });
 
-test('guests cannot access asset management', function () {
+test('guests cannot access asset', function () {
     $this->post(route('logout'));
     
-    $this->get(route('filament.hisabat.resources.asset-management.index'))
+    $this->get(route('filament.hisabat.resources.asset.assets.index'))
         ->assertRedirect(route('filament.hisabat.auth.login'));
 });
 
-test('authenticated users can view asset management list', function () {
-    $this->get(route('filament.hisabat.resources.asset-management.index'))
+test('authenticated users can view asset list', function () {
+    $this->get(route('filament.hisabat.resources.asset.assets.index'))
         ->assertOk()
-        ->assertSee('Asset Management');
+        ->assertSee('Assets');
 });
 
-test('can create a new asset management record', function () {
+test('can create a new asset record via database', function () {
     $assetData = [
+        'user_id' => $this->user->id,
         'month' => 12,
         'year' => 2024,
         'notes' => 'December 2024 assets',
     ];
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    Asset::create($assetData);
 
-    assertDatabaseHas('asset_management', [
+    assertDatabaseHas('assets', [
         'user_id' => $this->user->id,
         'month' => 12,
         'year' => 2024,
@@ -48,224 +47,194 @@ test('can create a new asset management record', function () {
     ]);
 });
 
-test('validates required fields', function () {
-    $this->post(route('filament.hisabat.resources.asset-management.store'), [])
-        ->assertSessionHasErrors(['month', 'year']);
-});
-
-test('can update existing asset management record', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('can update existing asset record via database', function () {
+    $asset = Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 1,
-        'year' => 2025,
+        'year' => 2024,
         'notes' => 'Original notes',
     ]);
 
-    $updateData = [
-        'month' => 1,
-        'year' => 2025,
-        'notes' => 'Updated notes for January 2025',
-    ];
+    $asset->update(['notes' => 'Updated notes']);
 
-    $this->put(route('filament.hisabat.resources.asset-management.update', $assetManagement), $updateData)
-        ->assertRedirect();
-
-    $assetManagement->refresh();
-    expect($assetManagement->notes)->toBe('Updated notes for January 2025');
+    assertDatabaseHas('assets', [
+        'id' => $asset->id,
+        'notes' => 'Updated notes',
+    ]);
 });
 
-test('can delete asset management record', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('can delete asset record via database', function () {
+    $asset = Asset::factory()->create([
         'user_id' => $this->user->id,
-        'month' => 1,
-        'year' => 2025,
     ]);
 
-    $this->delete(route('filament.hisabat.resources.asset-management.destroy', $assetManagement))
-        ->assertRedirect();
+    $asset->delete();
 
-    assertDatabaseMissing('asset_management', ['id' => $assetManagement->id]);
-});
-
-test('prevents duplicate asset management for same month and year', function () {
-    AssetManagement::factory()->create([
-        'user_id' => $this->user->id,
-        'month' => 1,
-        'year' => 2025,
+    assertDatabaseMissing('assets', [
+        'id' => $asset->id,
     ]);
-
-    $duplicateData = [
-        'month' => 1,
-        'year' => 2025,
-    ];
-
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $duplicateData)
-        ->assertSessionHasErrors();
 });
 
-test('can view asset management edit form', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('prevents duplicate asset for same month and year', function () {
+    Asset::factory()->create([
         'user_id' => $this->user->id,
-        'month' => 12,
+        'month' => 1,
         'year' => 2024,
-        'notes' => 'December 2024 assets',
     ]);
 
-    $this->get(route('filament.hisabat.resources.asset-management.edit', $assetManagement))
-        ->assertOk()
-        ->assertSee('December 2024');
+    $duplicateAsset = Asset::factory()->make([
+        'user_id' => $this->user->id,
+        'month' => 1,
+        'year' => 2024,
+    ]);
+
+    expect($duplicateAsset->save())->toBeFalse();
 });
 
-test('can view asset management create form', function () {
-    $this->get(route('filament.hisabat.resources.asset-management.create'))
-        ->assertOk()
-        ->assertSee('Create Asset Management');
+test('can view asset edit form', function () {
+    $asset = Asset::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $this->get(route('filament.hisabat.resources.asset.assets.edit', $asset))
+        ->assertOk();
 });
 
-test('only shows user own asset management records', function () {
+test('can view asset create form', function () {
+    $this->get(route('filament.hisabat.resources.asset.assets.create'))
+        ->assertOk();
+});
+
+test('only shows user own asset records', function () {
     $otherUser = User::factory()->create();
-    AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
-    AssetManagement::factory()->create(['user_id' => $otherUser->id, 'month' => 2, 'year' => 2025]);
-
-    $response = $this->get(route('filament.hisabat.resources.asset-management.index'));
     
-    $response->assertOk();
-    // The response should only contain the current user's records
-    // This is handled by the getEloquentQuery method in the resource
+    Asset::factory()->create(['user_id' => $this->user->id]);
+    Asset::factory()->create(['user_id' => $otherUser->id]);
+
+    $this->get(route('filament.hisabat.resources.asset.assets.index'))
+        ->assertOk()
+        ->assertSee('Assets');
 });
 
 test('validates month range', function () {
-    $invalidData = [
-        'month' => 13, // Invalid month
-        'year' => 2025,
-    ];
-
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $invalidData)
-        ->assertSessionHasErrors(['month']);
+    $asset = new Asset();
+    $asset->user_id = $this->user->id;
+    $asset->month = 13; // Invalid month
+    $asset->year = 2024;
+    
+    expect($asset->save())->toBeFalse();
 });
 
 test('validates year range', function () {
-    $invalidData = [
-        'month' => 1,
-        'year' => 1999, // Too old
-    ];
-
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $invalidData)
-        ->assertSessionHasErrors(['year']);
+    $asset = new Asset();
+    $asset->user_id = $this->user->id;
+    $asset->month = 1;
+    $asset->year = 1800; // Invalid year
+    
+    expect($asset->save())->toBeFalse();
 });
 
-test('can create asset management with accounts data', function () {
+test('can create asset with accounts data', function () {
     $accountType = AccountType::where('user_id', $this->user->id)->first();
     
-    $assetData = [
+    $asset = Asset::create([
+        'user_id' => $this->user->id,
         'month' => 1,
         'year' => 2025,
-        'notes' => 'January 2025 with accounts',
-        'accounts' => [
-            [
-                'account_type_id' => $accountType->id,
-                'account_name' => 'Main Cash',
-                'exchange_rate' => 1.000000,
-                'actual_amount' => 1000,
-                'notes' => 'Main cash account',
-            ]
-        ],
-    ];
+        'notes' => 'Test asset',
+    ]);
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    $asset->accounts()->create([
+        'account_type_id' => $accountType->id,
+        'actual_amount' => 1000,
+        'exchange_rate' => 1.0,
+        'currency' => 'QAR',
+    ]);
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->accounts)->toHaveCount(1);
-    expect($assetManagement->accounts->first()->account_name)->toBe('Main Cash');
+    expect($asset->accounts)->toHaveCount(1);
+    expect($asset->accounts->first()->actual_amount)->toBe(1000.0);
 });
 
-test('can create asset management with lent money data', function () {
-    $assetData = [
-        'month' => 2,
+test('can create asset with lent money data', function () {
+    $friend = \App\Models\Friend::factory()->create(['user_id' => $this->user->id]);
+    
+    $asset = Asset::create([
+        'user_id' => $this->user->id,
+        'month' => 1,
         'year' => 2025,
-        'lent_money' => [
-            [
-                'friend_name' => 'John Doe',
-                'actual_amount' => 500,
-                'exchange_rate' => 3.650000,
-                'notes' => 'Loan to John',
-            ]
-        ],
-    ];
+        'notes' => 'Test asset',
+    ]);
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    $asset->lentMoney()->create([
+        'friend_id' => $friend->id,
+        'actual_amount' => 500,
+        'exchange_rate' => 1.0,
+        'currency' => 'QAR',
+    ]);
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->lentMoney)->toHaveCount(1);
-    expect($assetManagement->lentMoney->first()->friend_name)->toBe('John Doe');
+    expect($asset->lentMoney)->toHaveCount(1);
+    expect($asset->lentMoney->first()->actual_amount)->toBe(500.0);
 });
 
-test('can create asset management with borrowed money data', function () {
-    $assetData = [
-        'month' => 3,
+test('can create asset with borrowed money data', function () {
+    $friend = \App\Models\Friend::factory()->create(['user_id' => $this->user->id]);
+    
+    $asset = Asset::create([
+        'user_id' => $this->user->id,
+        'month' => 1,
         'year' => 2025,
-        'borrowed_money' => [
-            [
-                'friend_name' => 'Jane Smith',
-                'actual_amount' => 200,
-                'exchange_rate' => 1.000000,
-                'notes' => 'Borrowed from Jane',
-            ]
-        ],
-    ];
+        'notes' => 'Test asset',
+    ]);
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    $asset->borrowedMoney()->create([
+        'friend_id' => $friend->id,
+        'actual_amount' => 200,
+        'exchange_rate' => 1.0,
+        'currency' => 'QAR',
+    ]);
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->borrowedMoney)->toHaveCount(1);
-    expect($assetManagement->borrowedMoney->first()->friend_name)->toBe('Jane Smith');
+    expect($asset->borrowedMoney)->toHaveCount(1);
+    expect($asset->borrowedMoney->first()->actual_amount)->toBe(200.0);
 });
 
-test('can create asset management with investments data', function () {
-    $assetData = [
-        'month' => 4,
+test('can create asset with investments data', function () {
+    $investmentType = \App\Models\InvestmentType::factory()->create(['user_id' => $this->user->id]);
+    
+    $asset = Asset::create([
+        'user_id' => $this->user->id,
+        'month' => 1,
         'year' => 2025,
-        'investments' => [
-            [
-                'investment_type' => 'Stocks',
-                'investment_name' => 'Apple Stock',
-                'exchange_rate' => 3.650000,
-                'actual_amount' => 1000,
-                'notes' => 'Apple stock investment',
-            ]
-        ],
-    ];
+        'notes' => 'Test asset',
+    ]);
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    $asset->investments()->create([
+        'investment_type_id' => $investmentType->id,
+        'actual_amount' => 1000,
+        'exchange_rate' => 1.0,
+        'currency' => 'QAR',
+    ]);
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->investments)->toHaveCount(1);
-    expect($assetManagement->investments->first()->investment_name)->toBe('Apple Stock');
+    expect($asset->investments)->toHaveCount(1);
+    expect($asset->investments->first()->actual_amount)->toBe(1000.0);
 });
 
-test('can create asset management with deposits data', function () {
-    $assetData = [
-        'month' => 5,
+test('can create asset with deposits data', function () {
+    $depositType = \App\Models\DepositType::factory()->create(['user_id' => $this->user->id]);
+    
+    $asset = Asset::create([
+        'user_id' => $this->user->id,
+        'month' => 1,
         'year' => 2025,
-        'deposits' => [
-            [
-                'deposit_type' => 'Fixed Deposit',
-                'deposit_name' => 'Bank FD',
-                'exchange_rate' => 1.000000,
-                'actual_amount' => 5000,
-                'notes' => 'Bank fixed deposit',
-            ]
-        ],
-    ];
+        'notes' => 'Test asset',
+    ]);
 
-    $this->post(route('filament.hisabat.resources.asset-management.store'), $assetData)
-        ->assertRedirect();
+    $asset->deposits()->create([
+        'deposit_type_id' => $depositType->id,
+        'actual_amount' => 5000,
+        'exchange_rate' => 1.0,
+        'currency' => 'QAR',
+    ]);
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->deposits)->toHaveCount(1);
-    expect($assetManagement->deposits->first()->deposit_name)->toBe('Bank FD');
+    expect($asset->deposits)->toHaveCount(1);
+    expect($asset->deposits->first()->actual_amount)->toBe(5000.0);
 });

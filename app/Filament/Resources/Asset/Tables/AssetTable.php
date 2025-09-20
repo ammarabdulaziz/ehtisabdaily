@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AssetManagement\Tables;
+namespace App\Filament\Resources\Asset\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -11,7 +11,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class AssetManagementTable
+class AssetTable
 {
     public static function configure(Table $table): Table
     {

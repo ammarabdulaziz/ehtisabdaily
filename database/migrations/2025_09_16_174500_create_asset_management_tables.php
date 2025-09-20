@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Create asset_managements table
-        Schema::create('asset_managements', function (Blueprint $table) {
+        // Create assets table
+        Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->integer('month');
@@ -79,7 +79,7 @@ return new class extends Migration
         // Create asset_accounts table
         Schema::create('asset_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_management_id')->constrained('asset_managements')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('account_type_id')->constrained('account_types')->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
@@ -88,13 +88,13 @@ return new class extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['asset_management_id', 'account_type_id']);
+            $table->index(['asset_id', 'account_type_id']);
         });
 
         // Create asset_lent_money table
         Schema::create('asset_lent_money', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_management_id')->constrained('asset_managements')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('friend_id')->constrained('friends')->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
@@ -103,13 +103,13 @@ return new class extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['asset_management_id', 'friend_id']);
+            $table->index(['asset_id', 'friend_id']);
         });
 
         // Create asset_borrowed_money table
         Schema::create('asset_borrowed_money', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_management_id')->constrained('asset_managements')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('friend_id')->constrained('friends')->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
@@ -118,13 +118,13 @@ return new class extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['asset_management_id', 'friend_id']);
+            $table->index(['asset_id', 'friend_id']);
         });
 
         // Create asset_investments table
         Schema::create('asset_investments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_management_id')->constrained('asset_managements')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('investment_type_id')->constrained('investment_types')->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
@@ -133,13 +133,13 @@ return new class extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['asset_management_id', 'investment_type_id']);
+            $table->index(['asset_id', 'investment_type_id']);
         });
 
         // Create asset_deposits table
         Schema::create('asset_deposits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_management_id')->constrained('asset_managements')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->foreignId('deposit_type_id')->constrained('deposit_types')->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
@@ -148,7 +148,7 @@ return new class extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['asset_management_id', 'deposit_type_id']);
+            $table->index(['asset_id', 'deposit_type_id']);
         });
     }
 
@@ -166,6 +166,6 @@ return new class extends Migration
         Schema::dropIfExists('deposit_types');
         Schema::dropIfExists('friends');
         Schema::dropIfExists('account_types');
-        Schema::dropIfExists('asset_managements');
+        Schema::dropIfExists('assets');
     }
 };

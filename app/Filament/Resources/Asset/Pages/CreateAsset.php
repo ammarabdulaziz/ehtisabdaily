@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\AssetManagement\Pages;
+namespace App\Filament\Resources\Asset\Pages;
 
-use App\Filament\Resources\AssetManagement\AssetManagementResource;
+use App\Filament\Resources\Asset\AssetResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateAssetManagement extends CreateRecord
+class CreateAsset extends CreateRecord
 {
-    protected static string $resource = AssetManagementResource::class;
+    protected static string $resource = AssetResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

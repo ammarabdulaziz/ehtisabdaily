@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\AssetManagement;
+use App\Models\Asset;
 use App\Models\User;
 use App\Models\AccountType;
-use App\Filament\Resources\AssetManagement\Pages\CreateAssetManagement;
-use App\Filament\Resources\AssetManagement\Pages\EditAssetManagement;
-use App\Filament\Resources\AssetManagement\Pages\ListAssetManagement;
+use App\Filament\Resources\Asset\Pages\CreateAsset;
+use App\Filament\Resources\Asset\Pages\EditAsset;
+use App\Filament\Resources\Asset\Pages\ListAsset;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
@@ -19,24 +19,24 @@ beforeEach(function () {
     AccountType::factory()->create(['user_id' => $this->user->id, 'name' => 'Bank Account', 'is_default' => false]);
 });
 
-test('guests cannot access asset management', function () {
+test('guests cannot access assets', function () {
     $this->post(route('logout'));
     
-    $this->get(route('filament.hisabat.resources.asset-management.index'))
+    $this->get(route('filament.hisabat.resources.asset.assets.index'))
         ->assertRedirect(route('filament.hisabat.auth.login'));
 });
 
-test('authenticated users can view asset management list', function () {
-    $this->get(route('filament.hisabat.resources.asset-management.index'))
+test('authenticated users can view assets list', function () {
+    $this->get(route('filament.hisabat.resources.asset.assets.index'))
         ->assertOk()
-        ->assertSee('Asset Management');
+        ->assertSee('Assets');
 });
 
-test('can create a new asset management record', function () {
+test('can create a new asset record', function () {
     // Clear any existing records first
-    AssetManagement::where('user_id', $this->user->id)->delete();
+    Asset::where('user_id', $this->user->id)->delete();
     
-    $component = Livewire::test(CreateAssetManagement::class)
+    $component = Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 12,
             'year' => 2024,
@@ -61,10 +61,10 @@ test('can create a new asset management record', function () {
     $component->assertSuccessful();
 
     // Check if record was created
-    $record = AssetManagement::where('user_id', $this->user->id)->first();
+    $record = Asset::where('user_id', $this->user->id)->first();
     if (!$record) {
         // If no record was created, let's check what happened
-        $allRecords = AssetManagement::all();
+        $allRecords = Asset::all();
         dump('No record created for user ' . $this->user->id);
         dump('All records:', $allRecords->toArray());
         dump('User count:', \App\Models\User::count());
@@ -76,10 +76,10 @@ test('can create a new asset management record', function () {
     expect($record->notes)->toBe('December 2024 assets');
 });
 
-test('can create asset management with accounts', function () {
+test('can create asset with accounts', function () {
     $accountType = AccountType::where('user_id', $this->user->id)->first();
     
-    Livewire::test(CreateAssetManagement::class)
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 1,
             'year' => 2025,
@@ -97,15 +97,15 @@ test('can create asset management with accounts', function () {
         ->call('create')
         ->assertNotified();
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
-    expect($assetManagement->month)->toBe(1);
-    expect($assetManagement->year)->toBe(2025);
-    expect($assetManagement->accounts)->toHaveCount(1);
-    expect($assetManagement->accounts->first()->account_name)->toBe('Main Cash');
+    $asset = Asset::where('user_id', $this->user->id)->first();
+    expect($asset->month)->toBe(1);
+    expect($asset->year)->toBe(2025);
+    expect($asset->accounts)->toHaveCount(1);
+    expect($asset->accounts->first()->account_name)->toBe('Main Cash');
 });
 
-test('can create asset management with lent money', function () {
-    Livewire::test(CreateAssetManagement::class)
+test('can create asset with lent money', function () {
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 2,
             'year' => 2025,
@@ -121,14 +121,14 @@ test('can create asset management with lent money', function () {
         ->call('create')
         ->assertNotified();
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
+    $assetManagement = Asset::where('user_id', $this->user->id)->first();
     expect($assetManagement->lentMoney)->toHaveCount(1);
     expect($assetManagement->lentMoney->first()->friend_name)->toBe('John Doe');
     expect($assetManagement->lentMoney->first()->amount)->toBe(500.0);
 });
 
-test('can create asset management with borrowed money', function () {
-    Livewire::test(CreateAssetManagement::class)
+test('can create asset with borrowed money', function () {
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 3,
             'year' => 2025,
@@ -144,14 +144,14 @@ test('can create asset management with borrowed money', function () {
         ->call('create')
         ->assertNotified();
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
+    $assetManagement = Asset::where('user_id', $this->user->id)->first();
     expect($assetManagement->borrowedMoney)->toHaveCount(1);
     expect($assetManagement->borrowedMoney->first()->friend_name)->toBe('Jane Smith');
     expect($assetManagement->borrowedMoney->first()->amount)->toBe(200.0);
 });
 
-test('can create asset management with investments', function () {
-    Livewire::test(CreateAssetManagement::class)
+test('can create asset with investments', function () {
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 4,
             'year' => 2025,
@@ -167,14 +167,14 @@ test('can create asset management with investments', function () {
         ->call('create')
         ->assertNotified();
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
+    $assetManagement = Asset::where('user_id', $this->user->id)->first();
     expect($assetManagement->investments)->toHaveCount(1);
     expect($assetManagement->investments->first()->investment_name)->toBe('Apple Stock');
     expect($assetManagement->investments->first()->amount)->toBe(1000.0);
 });
 
-test('can create asset management with deposits', function () {
-    Livewire::test(CreateAssetManagement::class)
+test('can create asset with deposits', function () {
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 5,
             'year' => 2025,
@@ -190,7 +190,7 @@ test('can create asset management with deposits', function () {
         ->call('create')
         ->assertNotified();
 
-    $assetManagement = AssetManagement::where('user_id', $this->user->id)->first();
+    $assetManagement = Asset::where('user_id', $this->user->id)->first();
     expect($assetManagement->deposits)->toHaveCount(1);
     expect($assetManagement->deposits->first()->deposit_name)->toBe('Bank FD');
     expect($assetManagement->deposits->first()->amount)->toBe(5000.0);
@@ -204,21 +204,21 @@ test('can create new account type inline', function () {
 });
 
 test('validates required fields', function () {
-    Livewire::test(CreateAssetManagement::class)
+    Livewire::test(CreateAsset::class)
         ->fillForm([])
         ->call('create')
         ->assertHasFormErrors(['month', 'year']);
 });
 
-test('can edit existing asset management record', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('can edit existing asset record', function () {
+    $assetManagement = Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 1,
         'year' => 2025,
         'notes' => 'Original notes',
     ]);
 
-    Livewire::test(EditAssetManagement::class, ['record' => $assetManagement->getRouteKey()])
+    Livewire::test(EditAsset::class, ['record' => $assetManagement->getRouteKey()])
         ->fillForm([
             'month' => 1,
             'year' => 2025,
@@ -231,69 +231,69 @@ test('can edit existing asset management record', function () {
     expect($assetManagement->notes)->toBe('Updated notes for January 2025');
 });
 
-test('can view asset management in table', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('can view asset in table', function () {
+    $assetManagement = Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 12,
         'year' => 2024,
         'notes' => 'December 2024 assets',
     ]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->assertCanSeeTableRecords([$assetManagement])
         ->assertSee('December 2024');
 });
 
 test('can filter by year', function () {
-    $asset2024 = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2024]);
-    $asset2025 = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
+    $asset2024 = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2024]);
+    $asset2025 = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->filterTable('year', '2024')
         ->assertCanSeeTableRecords([$asset2024])
         ->assertCanNotSeeTableRecords([$asset2025]);
 });
 
 test('can filter by month', function () {
-    $assetJan = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
-    $assetDec = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 12, 'year' => 2025]);
+    $assetJan = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
+    $assetDec = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 12, 'year' => 2025]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->filterTable('month', '1')
         ->assertCanSeeTableRecords([$assetJan])
         ->assertCanNotSeeTableRecords([$assetDec]);
 });
 
 test('can search by period', function () {
-    $assetJan = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
-    $assetDec = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 12, 'year' => 2025]);
+    $assetJan = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
+    $assetDec = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 12, 'year' => 2025]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->searchTable('January')
         ->assertCanSeeTableRecords([$assetJan])
         ->assertCanNotSeeTableRecords([$assetDec]);
 });
 
-test('can delete asset management using bulk action', function () {
-    $assetManagement1 = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
-    $assetManagement2 = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 2, 'year' => 2025]);
+test('can delete asset using bulk action', function () {
+    $assetManagement1 = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
+    $assetManagement2 = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 2, 'year' => 2025]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->callTableBulkAction('delete', [$assetManagement1])
         ->assertNotified();
 
-    expect(AssetManagement::find($assetManagement1->id))->toBeNull();
-    expect(AssetManagement::find($assetManagement2->id))->not->toBeNull();
+    expect(Asset::find($assetManagement1->id))->toBeNull();
+    expect(Asset::find($assetManagement2->id))->not->toBeNull();
 });
 
-test('prevents duplicate asset management for same month and year', function () {
-    AssetManagement::factory()->create([
+test('prevents duplicate asset for same month and year', function () {
+    Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 1,
         'year' => 2025,
     ]);
 
-    Livewire::test(CreateAssetManagement::class)
+    Livewire::test(CreateAsset::class)
         ->fillForm([
             'month' => 1,
             'year' => 2025,
@@ -303,7 +303,7 @@ test('prevents duplicate asset management for same month and year', function () 
 });
 
 test('shows correct totals in table', function () {
-    $assetManagement = AssetManagement::factory()->create([
+    $assetManagement = Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 1,
         'year' => 2025,
@@ -323,30 +323,30 @@ test('shows correct totals in table', function () {
         'actual_amount' => 1000,
     ]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->assertCanSeeTableRecords([$assetManagement])
         ->assertSee('1,000.00'); // Total accounts
 });
 
-test('can view asset management details', function () {
-    $assetManagement = AssetManagement::factory()->create([
+test('can view asset details', function () {
+    $assetManagement = Asset::factory()->create([
         'user_id' => $this->user->id,
         'month' => 1,
         'year' => 2025,
         'notes' => 'January 2025 assets',
     ]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->assertCanSeeTableRecords([$assetManagement])
         ->assertSee('January 2025');
 });
 
-test('only shows user own asset management records', function () {
+test('only shows user own asset records', function () {
     $otherUser = User::factory()->create();
-    $userAsset = AssetManagement::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
-    $otherAsset = AssetManagement::factory()->create(['user_id' => $otherUser->id, 'month' => 2, 'year' => 2025]);
+    $userAsset = Asset::factory()->create(['user_id' => $this->user->id, 'month' => 1, 'year' => 2025]);
+    $otherAsset = Asset::factory()->create(['user_id' => $otherUser->id, 'month' => 2, 'year' => 2025]);
 
-    Livewire::test(ListAssetManagement::class)
+    Livewire::test(ListAsset::class)
         ->assertCanSeeTableRecords([$userAsset])
         ->assertCanNotSeeTableRecords([$otherAsset]);
 });
