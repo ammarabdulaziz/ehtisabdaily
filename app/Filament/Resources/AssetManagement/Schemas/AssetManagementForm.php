@@ -88,6 +88,7 @@ class AssetManagementForm
                                     }),
                                 Repeater::make('accounts')
                                     ->label('Accounts')
+                                    ->relationship('accounts')
                                     ->schema([
                                         Grid::make(2)
                                             ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
@@ -170,8 +171,9 @@ class AssetManagementForm
                                             ->modalSubmitActionLabel('Create Friend')
                                             ->modalWidth('lg');
                                     }),
-                                Repeater::make('lent_money')
+                                Repeater::make('lentMoney')
                                     ->label('Lent Money')
+                                    ->relationship('lentMoney')
                                     ->schema([
                                         Grid::make(2)
                                             ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
@@ -254,8 +256,9 @@ class AssetManagementForm
                                             ->modalSubmitActionLabel('Create Friend')
                                             ->modalWidth('lg');
                                     }),
-                                Repeater::make('borrowed_money')
+                                Repeater::make('borrowedMoney')
                                     ->label('Borrowed Money')
+                                    ->relationship('borrowedMoney')
                                     ->schema([
                                         Grid::make(2)
                                             ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
@@ -340,6 +343,7 @@ class AssetManagementForm
                                     }),
                                 Repeater::make('investments')
                                     ->label('Investments')
+                                    ->relationship('investments')
                                     ->schema([
                                         Grid::make(2)
                                             ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
@@ -424,6 +428,7 @@ class AssetManagementForm
                                     }),
                                 Repeater::make('deposits')
                                     ->label('Deposits')
+                                    ->relationship('deposits')
                                     ->schema([
                                         Grid::make(2)
                                             ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
@@ -507,7 +512,7 @@ class AssetManagementForm
                                     ->label('Total Lent Money')
                                     ->content(function ($get) {
                                         $total = 0;
-                                        $lentMoney = $get('lent_money') ?? [];
+                                        $lentMoney = $get('lentMoney') ?? [];
                                         foreach ($lentMoney as $loan) {
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
@@ -525,7 +530,7 @@ class AssetManagementForm
                                     ->label('Total Borrowed Money')
                                     ->content(function ($get) {
                                         $total = 0;
-                                        $borrowedMoney = $get('borrowed_money') ?? [];
+                                        $borrowedMoney = $get('borrowedMoney') ?? [];
                                         foreach ($borrowedMoney as $loan) {
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
@@ -591,7 +596,7 @@ class AssetManagementForm
                                         }
 
                                         // Lent Money
-                                        $lentMoney = $get('lent_money') ?? [];
+                                        $lentMoney = $get('lentMoney') ?? [];
                                         foreach ($lentMoney as $loan) {
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
@@ -601,7 +606,7 @@ class AssetManagementForm
                                         }
 
                                         // Borrowed Money
-                                        $borrowedMoney = $get('borrowed_money') ?? [];
+                                        $borrowedMoney = $get('borrowedMoney') ?? [];
                                         foreach ($borrowedMoney as $loan) {
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
