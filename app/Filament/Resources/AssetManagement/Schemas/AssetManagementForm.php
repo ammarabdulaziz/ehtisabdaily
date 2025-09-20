@@ -98,7 +98,7 @@ class AssetManagementForm
                                                     ->relationship(
                                                         name: 'accountType',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereUserId(Auth::id())
+                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
                                                     )
                                                     ->searchable()
                                                     ->required()
@@ -138,7 +138,7 @@ class AssetManagementForm
                                     ])
                                     ->addActionLabel('Add Account')
                                     ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => AccountType::find($state['account_type_id'])?->name ?? 'New Account')
+                                    ->itemLabel(fn(array $state): ?string => AccountType::find($state['account_type_id'])?->name ?? 'New Account')
                                     ->defaultItems(0),
                             ]),
 
@@ -183,7 +183,7 @@ class AssetManagementForm
                                                     ->relationship(
                                                         name: 'friend',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereUserId(Auth::id())
+                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
                                                     )
                                                     ->searchable()
                                                     ->required()
@@ -223,7 +223,7 @@ class AssetManagementForm
                                     ])
                                     ->addActionLabel('Add Lent Money')
                                     ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => isset($state['friend_id']) ? Friend::find($state['friend_id'])?->name ?? 'New Friend' : 'New Friend')
+                                    ->itemLabel(fn(array $state): ?string => isset($state['friend_id']) ? Friend::find($state['friend_id'])?->name ?? 'New Friend' : 'New Friend')
                                     ->defaultItems(0),
                             ]),
 
@@ -268,7 +268,7 @@ class AssetManagementForm
                                                     ->relationship(
                                                         name: 'friend',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereUserId(Auth::id())
+                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
                                                     )
                                                     ->searchable()
                                                     ->required()
@@ -308,7 +308,7 @@ class AssetManagementForm
                                     ])
                                     ->addActionLabel('Add Borrowed Money')
                                     ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => isset($state['friend_id']) ? Friend::find($state['friend_id'])?->name ?? 'New Friend' : 'New Friend')
+                                    ->itemLabel(fn(array $state): ?string => isset($state['friend_id']) ? Friend::find($state['friend_id'])?->name ?? 'New Friend' : 'New Friend')
                                     ->defaultItems(0),
                             ]),
 
@@ -353,7 +353,7 @@ class AssetManagementForm
                                                     ->relationship(
                                                         name: 'investmentType',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereUserId(Auth::id())
+                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
                                                     )
                                                     ->searchable()
                                                     ->required()
@@ -393,7 +393,7 @@ class AssetManagementForm
                                     ])
                                     ->addActionLabel('Add Investment')
                                     ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => isset($state['investment_type_id']) ? InvestmentType::find($state['investment_type_id'])?->name ?? 'New Investment' : 'New Investment')
+                                    ->itemLabel(fn(array $state): ?string => isset($state['investment_type_id']) ? InvestmentType::find($state['investment_type_id'])?->name ?? 'New Investment' : 'New Investment')
                                     ->defaultItems(0),
                             ]),
 
@@ -438,7 +438,7 @@ class AssetManagementForm
                                                     ->relationship(
                                                         name: 'depositType',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn ($query) => $query->whereUserId(Auth::id())
+                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
                                                     )
                                                     ->searchable()
                                                     ->required()
@@ -478,7 +478,7 @@ class AssetManagementForm
                                     ])
                                     ->addActionLabel('Add Deposit')
                                     ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => isset($state['deposit_type_id']) ? DepositType::find($state['deposit_type_id'])?->name ?? 'New Deposit' : 'New Deposit')
+                                    ->itemLabel(fn(array $state): ?string => isset($state['deposit_type_id']) ? DepositType::find($state['deposit_type_id'])?->name ?? 'New Deposit' : 'New Deposit')
                                     ->defaultItems(0),
                             ]),
                     ])
@@ -499,7 +499,7 @@ class AssetManagementForm
                                             if (isset($account['actual_amount']) && is_numeric($account['actual_amount']) &&
                                                 isset($account['exchange_rate']) && is_numeric($account['exchange_rate']) &&
                                                 $account['exchange_rate'] > 0) {
-                                                $total += (float) $account['actual_amount'] / (float) $account['exchange_rate'];
+                                                $total += (float)$account['actual_amount'] / (float)$account['exchange_rate'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -517,7 +517,7 @@ class AssetManagementForm
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
                                                 $loan['exchange_rate'] > 0) {
-                                                $total += (float) $loan['actual_amount'] / (float) $loan['exchange_rate'];
+                                                $total += (float)$loan['actual_amount'] / (float)$loan['exchange_rate'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -535,7 +535,7 @@ class AssetManagementForm
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
                                                 $loan['exchange_rate'] > 0) {
-                                                $total += (float) $loan['actual_amount'] / (float) $loan['exchange_rate'];
+                                                $total += (float)$loan['actual_amount'] / (float)$loan['exchange_rate'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -553,7 +553,7 @@ class AssetManagementForm
                                             if (isset($investment['actual_amount']) && is_numeric($investment['actual_amount']) &&
                                                 isset($investment['exchange_rate']) && is_numeric($investment['exchange_rate']) &&
                                                 $investment['exchange_rate'] > 0) {
-                                                $total += (float) $investment['actual_amount'] / (float) $investment['exchange_rate'];
+                                                $total += (float)$investment['actual_amount'] / (float)$investment['exchange_rate'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -571,7 +571,7 @@ class AssetManagementForm
                                             if (isset($deposit['actual_amount']) && is_numeric($deposit['actual_amount']) &&
                                                 isset($deposit['exchange_rate']) && is_numeric($deposit['exchange_rate']) &&
                                                 $deposit['exchange_rate'] > 0) {
-                                                $total += (float) $deposit['actual_amount'] / (float) $deposit['exchange_rate'];
+                                                $total += (float)$deposit['actual_amount'] / (float)$deposit['exchange_rate'];
                                             }
                                         }
                                         return number_format($total, 0);
@@ -591,7 +591,7 @@ class AssetManagementForm
                                             if (isset($account['actual_amount']) && is_numeric($account['actual_amount']) &&
                                                 isset($account['exchange_rate']) && is_numeric($account['exchange_rate']) &&
                                                 $account['exchange_rate'] > 0) {
-                                                $total += (float) $account['actual_amount'] / (float) $account['exchange_rate'];
+                                                $total += (float)$account['actual_amount'] / (float)$account['exchange_rate'];
                                             }
                                         }
 
@@ -601,7 +601,7 @@ class AssetManagementForm
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
                                                 $loan['exchange_rate'] > 0) {
-                                                $total += (float) $loan['actual_amount'] / (float) $loan['exchange_rate'];
+                                                $total += (float)$loan['actual_amount'] / (float)$loan['exchange_rate'];
                                             }
                                         }
 
@@ -611,7 +611,7 @@ class AssetManagementForm
                                             if (isset($loan['actual_amount']) && is_numeric($loan['actual_amount']) &&
                                                 isset($loan['exchange_rate']) && is_numeric($loan['exchange_rate']) &&
                                                 $loan['exchange_rate'] > 0) {
-                                                $total -= (float) $loan['actual_amount'] / (float) $loan['exchange_rate'];
+                                                $total -= (float)$loan['actual_amount'] / (float)$loan['exchange_rate'];
                                             }
                                         }
 
@@ -621,7 +621,7 @@ class AssetManagementForm
                                             if (isset($investment['actual_amount']) && is_numeric($investment['actual_amount']) &&
                                                 isset($investment['exchange_rate']) && is_numeric($investment['exchange_rate']) &&
                                                 $investment['exchange_rate'] > 0) {
-                                                $total += (float) $investment['actual_amount'] / (float) $investment['exchange_rate'];
+                                                $total += (float)$investment['actual_amount'] / (float)$investment['exchange_rate'];
                                             }
                                         }
 
@@ -631,7 +631,7 @@ class AssetManagementForm
                                             if (isset($deposit['actual_amount']) && is_numeric($deposit['actual_amount']) &&
                                                 isset($deposit['exchange_rate']) && is_numeric($deposit['exchange_rate']) &&
                                                 $deposit['exchange_rate'] > 0) {
-                                                $total += (float) $deposit['actual_amount'] / (float) $deposit['exchange_rate'];
+                                                $total += (float)$deposit['actual_amount'] / (float)$deposit['exchange_rate'];
                                             }
                                         }
 

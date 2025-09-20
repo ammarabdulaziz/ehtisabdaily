@@ -11,6 +11,8 @@ class AssetManagement extends Model
 {
     use HasFactory;
 
+    protected $table = 'asset_managements';
+
     protected $fillable = [
         'user_id',
         'month',
