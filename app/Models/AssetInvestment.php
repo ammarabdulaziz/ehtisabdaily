@@ -15,6 +15,7 @@ class AssetInvestment extends Model
         'investment_type_id',
         'actual_amount',
         'amount',
+        'currency',
         'exchange_rate',
         'notes',
     ];
@@ -24,6 +25,7 @@ class AssetInvestment extends Model
         return [
             'actual_amount' => 'decimal:2',
             'amount' => 'decimal:2',
+            'currency' => 'string',
             'exchange_rate' => 'decimal:6',
         ];
     }

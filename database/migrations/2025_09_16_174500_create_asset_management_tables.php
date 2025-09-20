@@ -83,6 +83,7 @@ return new class extends Migration
             $table->foreignId('account_type_id')->constrained()->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
+            $table->string('currency', 3)->default('QAR');
             $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->string('notes')->nullable();
             $table->timestamps();
@@ -97,6 +98,7 @@ return new class extends Migration
             $table->foreignId('friend_id')->constrained()->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
+            $table->string('currency', 3)->default('QAR');
             $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->string('notes')->nullable();
             $table->timestamps();
@@ -111,6 +113,7 @@ return new class extends Migration
             $table->foreignId('friend_id')->constrained()->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
+            $table->string('currency', 3)->default('QAR');
             $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->string('notes')->nullable();
             $table->timestamps();
@@ -125,6 +128,7 @@ return new class extends Migration
             $table->foreignId('investment_type_id')->constrained()->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
+            $table->string('currency', 3)->default('QAR');
             $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->string('notes')->nullable();
             $table->timestamps();
@@ -139,6 +143,7 @@ return new class extends Migration
             $table->foreignId('deposit_type_id')->constrained()->onDelete('cascade');
             $table->decimal('actual_amount', 15, 2);
             $table->decimal('amount', 15, 2)->nullable();
+            $table->string('currency', 3)->default('QAR');
             $table->decimal('exchange_rate', 10, 6)->default(1.000000);
             $table->string('notes')->nullable();
             $table->timestamps();
