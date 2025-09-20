@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Create asset_management table
-        Schema::create('asset_management', function (Blueprint $table) {
+        Schema::create('asset_managements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('month');
@@ -166,6 +166,6 @@ return new class extends Migration
         Schema::dropIfExists('deposit_types');
         Schema::dropIfExists('friends');
         Schema::dropIfExists('account_types');
-        Schema::dropIfExists('asset_management');
+        Schema::dropIfExists('asset_managements');
     }
 };
