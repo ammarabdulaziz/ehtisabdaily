@@ -108,6 +108,7 @@ class AssetManagementForm
                                                     ->options(Currency::options())
                                                     ->default('QAR')
                                                     ->required()
+                                                    ->searchable()
                                                     ->live(),
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
@@ -191,6 +192,7 @@ class AssetManagementForm
                                                     ->options(Currency::options())
                                                     ->default('QAR')
                                                     ->required()
+                                                    ->searchable()
                                                     ->live(),
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
@@ -274,6 +276,7 @@ class AssetManagementForm
                                                     ->options(Currency::options())
                                                     ->default('QAR')
                                                     ->required()
+                                                    ->searchable()
                                                     ->live(),
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
@@ -357,6 +360,7 @@ class AssetManagementForm
                                                     ->options(Currency::options())
                                                     ->default('QAR')
                                                     ->required()
+                                                    ->searchable()
                                                     ->live(),
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
@@ -440,6 +444,7 @@ class AssetManagementForm
                                                     ->options(Currency::options())
                                                     ->default('QAR')
                                                     ->required()
+                                                    ->searchable()
                                                     ->live(),
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
