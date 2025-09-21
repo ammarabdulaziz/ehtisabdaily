@@ -3,16 +3,56 @@
 namespace App\Filament\Resources\Asset\Pages;
 
 use App\Filament\Resources\Asset\AssetResource;
+use App\Models\Asset;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 
 class CreateAsset extends CreateRecord
 {
     protected static string $resource = AssetResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // Ensure user_id is set
+        if (!isset($data['user_id']) || $data['user_id'] === null) {
+            $data['user_id'] = Auth::id();
+        }
+        
         // Calculate the amount field for each related record
         $this->calculateAmounts($data);
+        
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Get current month and year from the form data or use current date
+        $month = $data['month'] ?? now()->month;
+        $year = $data['year'] ?? now()->year;
+        
+        // Get previous month's asset data
+        $previousAsset = Asset::getPreviousMonthData(Auth::id(), $month, $year);
+        
+        if ($previousAsset) {
+            // Pre-populate with previous month's data
+            $previousData = $previousAsset->getFormDataForPrePopulation();
+            
+            // Merge the previous data with current form data
+            // This allows users to override the pre-populated values
+            $data = array_merge($previousData, $data);
+            
+            // Add a note to indicate data was pre-populated
+            if (empty($data['notes'])) {
+                $data['notes'] = "Pre-populated from {$previousAsset->formatted_period}";
+            } else {
+                $data['notes'] = "Pre-populated from {$previousAsset->formatted_period}. " . $data['notes'];
+            }
+        }
         
         return $data;
     }

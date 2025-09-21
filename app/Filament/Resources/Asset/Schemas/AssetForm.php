@@ -15,7 +15,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
-use Filament\Actions\Action;
+use Filament\Actions\Action as FilamentAction;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,7 +48,44 @@ class AssetForm
                             ]),
                         TextInput::make('notes')
                             ->label('Notes')
-                            ->placeholder('Add any notes about this month\'s assets...'),
+                            ->placeholder('Add any notes about this month\'s assets...')
+                            ->afterContent(
+                                FilamentAction::make('loadPreviousMonth')
+                                    ->label('Load Previous')
+                                    ->icon('heroicon-o-arrow-down-tray')
+                                    ->color('info')
+                                    ->action(function ($livewire, $get) {
+                                        $month = $get('month') ?? now()->month;
+                                        $year = $get('year') ?? now()->year;
+
+                                        $previousAsset = \App\Models\Asset::getPreviousMonthData(Auth::id(), $month, $year);
+
+                                        if ($previousAsset) {
+                                            $previousData = $previousAsset->getFormDataForPrePopulation();
+
+                                            // Update the form data
+                                            $livewire->form->fill($previousData);
+
+                                            // Show notification
+                                            \Filament\Notifications\Notification::make()
+                                                ->title('Previous month data loaded')
+                                                ->body("Data from {$previousAsset->formatted_period} has been loaded. You can now edit the values as needed.")
+                                                ->success()
+                                                ->send();
+                                        } else {
+                                            \Filament\Notifications\Notification::make()
+                                                ->title('No previous data found')
+                                                ->body('No asset data found for the previous month.')
+                                                ->warning()
+                                                ->send();
+                                        }
+                                    })
+                                    ->requiresConfirmation()
+                                    ->modalHeading('Load Previous Month Data')
+                                    ->modalDescription('This will load all data from the previous month and allow you to edit it for the current month. Any existing data will be replaced.')
+                                    ->modalSubmitActionLabel('Load Data')
+                                    ->modalCancelActionLabel('Cancel')
+                            ),
                         Hidden::make('user_id')
                             ->default(fn() => Auth::id()),
                     ])
@@ -82,7 +119,7 @@ class AssetForm
                                             'is_default' => false,
                                         ])->name;
                                     })
-                                    ->createOptionAction(function (Action $action) {
+                                    ->createOptionAction(function (FilamentAction $action) {
                                         return $action
                                             ->modalHeading('Create Account Type')
                                             ->modalSubmitActionLabel('Create Account Type')
@@ -169,7 +206,7 @@ class AssetForm
                                             'description' => $data['description'] ?? null,
                                         ])->name;
                                     })
-                                    ->createOptionAction(function (Action $action) {
+                                    ->createOptionAction(function (FilamentAction $action) {
                                         return $action
                                             ->modalHeading('Create Friend')
                                             ->modalSubmitActionLabel('Create Friend')
@@ -256,7 +293,7 @@ class AssetForm
                                             'description' => $data['description'] ?? null,
                                         ])->name;
                                     })
-                                    ->createOptionAction(function (Action $action) {
+                                    ->createOptionAction(function (FilamentAction $action) {
                                         return $action
                                             ->modalHeading('Create Friend')
                                             ->modalSubmitActionLabel('Create Friend')
@@ -343,7 +380,7 @@ class AssetForm
                                             'description' => $data['description'] ?? null,
                                         ])->name;
                                     })
-                                    ->createOptionAction(function (Action $action) {
+                                    ->createOptionAction(function (FilamentAction $action) {
                                         return $action
                                             ->modalHeading('Create Investment Type')
                                             ->modalSubmitActionLabel('Create Investment Type')
@@ -430,7 +467,7 @@ class AssetForm
                                             'description' => $data['description'] ?? null,
                                         ])->name;
                                     })
-                                    ->createOptionAction(function (Action $action) {
+                                    ->createOptionAction(function (FilamentAction $action) {
                                         return $action
                                             ->modalHeading('Create Deposit Type')
                                             ->modalSubmitActionLabel('Create Deposit Type')

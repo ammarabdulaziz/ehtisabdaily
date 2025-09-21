@@ -158,4 +158,101 @@ class Asset extends Model
     {
         return $this->month_name . ' ' . $this->year;
     }
+
+    /**
+     * Get the previous month's asset data for the same user
+     */
+    public static function getPreviousMonthData(int $userId, int $month, int $year): ?Asset
+    {
+        // First try to get the previous month in the same year
+        $previousMonth = $month - 1;
+        $previousYear = $year;
+
+        // If we're in January, go to December of previous year
+        if ($previousMonth < 1) {
+            $previousMonth = 12;
+            $previousYear = $year - 1;
+        }
+
+        return static::where('user_id', $userId)
+            ->where('month', $previousMonth)
+            ->where('year', $previousYear)
+            ->with(['accounts', 'lentMoney', 'borrowedMoney', 'investments', 'deposits'])
+            ->first();
+    }
+
+    /**
+     * Get form data for pre-population from previous month
+     */
+    public function getFormDataForPrePopulation(): array
+    {
+        $data = [
+            'user_id' => $this->user_id,
+            'month' => $this->month,
+            'year' => $this->year,
+            'notes' => $this->notes,
+            'accounts' => [],
+            'lentMoney' => [],
+            'borrowedMoney' => [],
+            'investments' => [],
+            'deposits' => [],
+        ];
+
+        // Pre-populate accounts
+        foreach ($this->accounts as $account) {
+            $data['accounts'][] = [
+                'account_type_id' => $account->account_type_id,
+                'actual_amount' => $account->actual_amount,
+                'currency' => $account->currency,
+                'exchange_rate' => $account->exchange_rate,
+                'notes' => $account->notes,
+            ];
+        }
+
+        // Pre-populate lent money
+        foreach ($this->lentMoney as $lent) {
+            $data['lentMoney'][] = [
+                'friend_id' => $lent->friend_id,
+                'actual_amount' => $lent->actual_amount,
+                'currency' => $lent->currency,
+                'exchange_rate' => $lent->exchange_rate,
+                'notes' => $lent->notes,
+            ];
+        }
+
+        // Pre-populate borrowed money
+        foreach ($this->borrowedMoney as $borrowed) {
+            $data['borrowedMoney'][] = [
+                'friend_id' => $borrowed->friend_id,
+                'actual_amount' => $borrowed->actual_amount,
+                'currency' => $borrowed->currency,
+                'exchange_rate' => $borrowed->exchange_rate,
+                'notes' => $borrowed->notes,
+            ];
+        }
+
+        // Pre-populate investments
+        foreach ($this->investments as $investment) {
+            $data['investments'][] = [
+                'investment_type_id' => $investment->investment_type_id,
+                'actual_amount' => $investment->actual_amount,
+                'currency' => $investment->currency,
+                'exchange_rate' => $investment->exchange_rate,
+                'notes' => $investment->notes,
+            ];
+        }
+
+        // Pre-populate deposits
+        foreach ($this->deposits as $deposit) {
+            $data['deposits'][] = [
+                'deposit_type_id' => $deposit->deposit_type_id,
+                'actual_amount' => $deposit->actual_amount,
+                'currency' => $deposit->currency,
+                'exchange_rate' => $deposit->exchange_rate,
+                'notes' => $deposit->notes,
+            ];
+        }
+
+        return $data;
+    }
 }
