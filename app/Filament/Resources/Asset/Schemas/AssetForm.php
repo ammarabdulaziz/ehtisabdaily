@@ -551,8 +551,7 @@ class AssetForm
                                         }
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->live(),
 
                                 Placeholder::make('total_lent_money')
                                     ->prefix('QAR ')
@@ -569,8 +568,7 @@ class AssetForm
                                         }
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->live(),
 
                                 Placeholder::make('total_borrowed_money')
                                     ->prefix('QAR ')
@@ -587,8 +585,7 @@ class AssetForm
                                         }
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->live(),
 
                                 Placeholder::make('total_investments')
                                     ->prefix('QAR ')
@@ -605,8 +602,7 @@ class AssetForm
                                         }
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->live(),
 
                                 Placeholder::make('total_deposits')
                                     ->prefix('QAR ')
@@ -623,8 +619,7 @@ class AssetForm
                                         }
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->live(),
 
                                 Placeholder::make('grand_total')
                                     ->prefix('QAR ')
@@ -684,8 +679,7 @@ class AssetForm
 
                                         return number_format($total, 0);
                                     })
-                                    ->live()
-                                    ->extraAttributes(['class' => 'text-2xl font-bold']),
+                                    ->live(),
                             ]),
                     ])
                     ->columnSpanFull()
