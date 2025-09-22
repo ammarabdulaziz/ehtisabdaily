@@ -11,11 +11,13 @@ class UniqueAssetForUser implements ValidationRule
 {
     protected $month;
     protected $year;
+    protected $excludeId;
 
-    public function __construct($month, $year)
+    public function __construct($month, $year, $excludeId = null)
     {
         $this->month = $month;
         $this->year = $year;
+        $this->excludeId = $excludeId;
     }
 
     /**
@@ -25,10 +27,16 @@ class UniqueAssetForUser implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $exists = Asset::where('user_id', Auth::id())
+        $query = Asset::where('user_id', Auth::id())
             ->where('month', $this->month)
-            ->where('year', $this->year)
-            ->exists();
+            ->where('year', $this->year);
+            
+        // Exclude the current record if we're editing
+        if ($this->excludeId) {
+            $query->where('id', '!=', $this->excludeId);
+        }
+        
+        $exists = $query->exists();
             
         if ($exists) {
             $fail('An asset record already exists for this month and year. Please edit the existing record instead.');
