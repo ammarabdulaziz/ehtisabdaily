@@ -34,11 +34,12 @@ class DatabaseSeeder extends Seeder
 
         // Seed all AssetForm related data
         $this->call([
+            DuaSeeder::class,
             AccountTypeSeeder::class,
             FriendSeeder::class,
             InvestmentTypeSeeder::class,
             DepositTypeSeeder::class,
-            // AssetSeeder::class,
+            AssetSeeder::class,
         ]);
     }
 }
