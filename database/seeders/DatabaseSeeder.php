@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             FriendSeeder::class,
             InvestmentTypeSeeder::class,
             DepositTypeSeeder::class,
-            AssetSeeder::class,
+            // AssetSeeder::class,
         ]);
     }
 }

@@ -37,11 +37,12 @@ class AssetForm
                                         5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
                                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
                                     ])
+                                    ->searchable()
                                     ->default(now()->month)
                                     ->required(),
                                 Select::make('year')
                                     ->label('Year')
-                                    ->options(range(2020, now()->year + 5))
+                                    ->options(array_combine(range(2020, now()->year + 5), range(2020, now()->year + 5)))
                                     ->searchable()
                                     ->default(now()->year)
                                     ->required(),

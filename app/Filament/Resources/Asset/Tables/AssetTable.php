@@ -26,36 +26,36 @@ class AssetTable
                     ->label('Grand Total')
                     ->sortable()
                     ->weight('bold')
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('savings')
                     ->label('Savings')
                     ->sortable()
                     ->color(fn ($state) => $state >= 0 ? 'success' : 'danger')
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_accounts')
                     ->label('Total Accounts')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_lent_money')
                     ->label('Total Lent')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_borrowed_money')
                     ->label('Total Borrowed')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_investments')
                     ->label('Total Investments')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_deposits')
                     ->label('Total Deposits')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_in_hand')
                     ->label('Cash in Hand')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . $state),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
