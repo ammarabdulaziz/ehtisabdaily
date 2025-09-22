@@ -182,11 +182,11 @@ class AssetForm
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000000)
+                                                    ->default(1.000)
                                                     ->required()
                                                     ->rules(['numeric'])
-                                                    ->step(0.000001)
-                                                    ->minValue(0.000001),
+                                                    ->step(0.001)
+                                                    ->minValue(0.001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -269,11 +269,11 @@ class AssetForm
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000000)
+                                                    ->default(1.000)
                                                     ->required()
                                                     ->rules(['numeric'])
-                                                    ->step(0.000001)
-                                                    ->minValue(0.000001),
+                                                    ->step(0.001)
+                                                    ->minValue(0.001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -356,11 +356,11 @@ class AssetForm
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000000)
+                                                    ->default(1.000)
                                                     ->required()
                                                     ->rules(['numeric'])
-                                                    ->step(0.000001)
-                                                    ->minValue(0.000001),
+                                                    ->step(0.001)
+                                                    ->minValue(0.001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -443,11 +443,11 @@ class AssetForm
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000000)
+                                                    ->default(1.000)
                                                     ->required()
                                                     ->rules(['numeric'])
-                                                    ->step(0.000001)
-                                                    ->minValue(0.000001),
+                                                    ->step(0.001)
+                                                    ->minValue(0.001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
@@ -530,11 +530,11 @@ class AssetForm
                                                 TextInput::make('exchange_rate')
                                                     ->label('Exchange Rate')
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000000)
+                                                    ->default(1.000)
                                                     ->required()
                                                     ->rules(['numeric'])
-                                                    ->step(0.000001)
-                                                    ->minValue(0.000001),
+                                                    ->step(0.001)
+                                                    ->minValue(0.001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
