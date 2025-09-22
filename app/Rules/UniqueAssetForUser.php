@@ -30,14 +30,14 @@ class UniqueAssetForUser implements ValidationRule
         $query = Asset::where('user_id', Auth::id())
             ->where('month', $this->month)
             ->where('year', $this->year);
-            
+
         // Exclude the current record if we're editing
         if ($this->excludeId) {
             $query->where('id', '!=', $this->excludeId);
         }
-        
+
         $exists = $query->exists();
-            
+
         if ($exists) {
             $fail('An asset record already exists for this month and year. Please edit the existing record instead.');
         }

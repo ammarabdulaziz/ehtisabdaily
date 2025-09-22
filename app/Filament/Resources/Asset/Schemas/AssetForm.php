@@ -47,9 +47,10 @@ class AssetForm
                                         function ($get) {
                                             $month = $get('month');
                                             $year = $get('year');
+                                            $recordId = $get('id'); // Get the current record ID
                                             
                                             if ($month && $year) {
-                                                return new UniqueAssetForUser($month, $year);
+                                                return new UniqueAssetForUser($month, $year, $recordId);
                                             }
                                             
                                             return null;
@@ -66,9 +67,10 @@ class AssetForm
                                         function ($get) {
                                             $month = $get('month');
                                             $year = $get('year');
+                                            $recordId = $get('id'); // Get the current record ID
                                             
                                             if ($month && $year) {
-                                                return new UniqueAssetForUser($month, $year);
+                                                return new UniqueAssetForUser($month, $year, $recordId);
                                             }
                                             
                                             return null;

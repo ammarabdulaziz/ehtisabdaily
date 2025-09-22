@@ -264,3 +264,100 @@ test('can create asset with deposits data', function () {
     expect($asset->deposits)->toHaveCount(1);
     expect($asset->deposits->first()->actual_amount)->toBe('5000.00');
 });
+
+test('prevents duplicate asset for same month and year', function () {
+    // Create a separate user for this test to avoid conflicts
+    $testUser = User::factory()->create();
+    
+    // Use a very specific combination that should be unique
+    $month = 12;
+    $year = 2099;
+    
+    // First, ensure no asset exists with this combination
+    Asset::where('user_id', $testUser->id)
+        ->where('month', $month)
+        ->where('year', $year)
+        ->forceDelete();
+    
+    // Create a fresh asset with unique month/year
+    $firstAsset = Asset::factory()->create([
+        'user_id' => $testUser->id,
+        'month' => $month,
+        'year' => $year,
+    ]);
+
+    // Try to create another asset with same month and year
+    // This should fail due to database unique constraint
+    expect(function () use ($testUser, $month, $year) {
+        Asset::factory()->create([
+            'user_id' => $testUser->id,
+            'month' => $month,
+            'year' => $year,
+        ]);
+    })->toThrow(\Illuminate\Database\UniqueConstraintViolationException::class);
+    
+    // Verify only one asset exists (database constraint prevents duplicates)
+    expect(Asset::where('user_id', $testUser->id)
+        ->where('month', $month)
+        ->where('year', $year)
+        ->count())->toBe(1);
+});
+
+test('allows editing asset with same month and year', function () {
+    // Create a separate user for this test to avoid conflicts
+    $testUser = User::factory()->create();
+    
+    // Create an asset
+    $asset = Asset::factory()->create([
+        'user_id' => $testUser->id,
+        'month' => 1,
+        'year' => 2025,
+    ]);
+
+    // Update the same asset with same month and year
+    $asset->notes = 'Updated notes';
+    $asset->save();
+    
+    // This should work fine since we're editing the same record
+    expect($asset->fresh()->notes)->toBe('Updated notes');
+});
+
+test('validation rule excludes current record during edit', function () {
+    // Create an asset for the authenticated user
+    $asset = Asset::factory()->create([
+        'user_id' => $this->user->id,
+        'month' => 6,
+        'year' => 2025,
+    ]);
+
+    // Test the validation rule directly
+    $rule = new \App\Rules\UniqueAssetForUser(6, 2025, $asset->id);
+    
+    // This should pass validation since we're excluding the current record
+    $validationFailed = false;
+    $rule->validate('month', 6, function ($message) use (&$validationFailed) {
+        $validationFailed = true;
+    });
+    
+    expect($validationFailed)->toBeFalse();
+});
+
+test('validation rule fails for duplicate month and year without exclusion', function () {
+    // Create an asset for the authenticated user
+    $asset = Asset::factory()->create([
+        'user_id' => $this->user->id,
+        'month' => 7,
+        'year' => 2025,
+    ]);
+
+    // Test the validation rule without excluding any record
+    $rule = new \App\Rules\UniqueAssetForUser(7, 2025);
+    
+    $failed = false;
+    $rule->validate('month', 7, function ($message) use (&$failed) {
+        $failed = true;
+        expect($message)->toContain('An asset record already exists');
+    });
+    
+    expect($failed)->toBeTrue();
+});
