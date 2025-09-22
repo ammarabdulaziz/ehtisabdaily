@@ -33,7 +33,27 @@ interface Props {
 }
 
 export default function DuasIndex({ duas, categories, currentCategory }: Props) {
-  const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory || 'all')
+  // Find the category with the most duas
+  const getCategoryWithMostDuas = () => {
+    const categoryCounts: Record<string, number> = {}
+    
+    duas.forEach(dua => {
+      dua.categories.forEach(category => {
+        categoryCounts[category] = (categoryCounts[category] || 0) + 1
+      })
+    })
+    
+    // Find the category with the highest count
+    const mostPopularCategory = Object.entries(categoryCounts).reduce((a, b) => 
+      categoryCounts[a[0]] > categoryCounts[b[0]] ? a : b
+    )
+    
+    return mostPopularCategory ? mostPopularCategory[0] : 'all'
+  }
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    currentCategory || getCategoryWithMostDuas()
+  )
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState<boolean>(false)
 
   const handleCategoryChange = (category: string) => {
