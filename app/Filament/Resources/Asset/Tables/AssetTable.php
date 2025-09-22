@@ -21,40 +21,49 @@ class AssetTable
                 TextColumn::make('formatted_period')
                     ->label('Period')
                     ->sortable()
+                    ->toggleable()
                     ->searchable(),
+                TextColumn::make('total_accounts')
+                    ->label('Total Accounts')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                TextColumn::make('total_lent_money')
+                    ->label('Total Lent')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                TextColumn::make('total_borrowed_money')
+                    ->label('Total Borrowed')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                TextColumn::make('total_investments')
+                    ->label('Total Investments')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                TextColumn::make('total_deposits')
+                    ->label('Total Deposits')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                TextColumn::make('total_in_hand')
+                    ->label('Cash in Hand')
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('grand_total')
                     ->label('Grand Total')
                     ->sortable()
+                    ->toggleable()
                     ->weight('bold')
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('savings')
                     ->label('Savings')
                     ->sortable()
+                    ->toggleable()
                     ->color(fn ($state) => $state >= 0 ? 'success' : 'danger')
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_accounts')
-                    ->label('Total Accounts')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_lent_money')
-                    ->label('Total Lent')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_borrowed_money')
-                    ->label('Total Borrowed')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_investments')
-                    ->label('Total Investments')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_deposits')
-                    ->label('Total Deposits')
-                    ->sortable()
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                TextColumn::make('total_in_hand')
-                    ->label('Cash in Hand')
-                    ->sortable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('created_at')
                     ->label('Created')
