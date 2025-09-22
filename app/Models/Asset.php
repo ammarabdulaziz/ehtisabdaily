@@ -184,13 +184,13 @@ class Asset extends Model
     /**
      * Get form data for pre-population from previous month
      */
-    public function getFormDataForPrePopulation(): array
+    public function getFormDataForPrePopulation($get): array
     {
         $data = [
             'user_id' => $this->user_id,
-            'month' => $this->month,
-            'year' => $this->year,
-            'notes' => $this->notes,
+            'month' => $get('month'),
+            'year' => $get('year'),
+            'notes' => $get('notes'),
             'accounts' => [],
             'lentMoney' => [],
             'borrowedMoney' => [],

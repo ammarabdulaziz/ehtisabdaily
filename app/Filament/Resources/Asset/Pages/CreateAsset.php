@@ -6,6 +6,7 @@ use App\Filament\Resources\Asset\AssetResource;
 use App\Models\Asset;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class CreateAsset extends CreateRecord
 {
@@ -29,6 +30,28 @@ class CreateAsset extends CreateRecord
         return $data;
     }
 
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    {
+        try {
+            return parent::handleRecordCreation($data);
+        } catch (UniqueConstraintViolationException $e) {
+            // Check if this is the specific unique constraint we're handling
+            if (str_contains($e->getMessage(), 'UNIQUE constraint failed: assets.user_id, assets.month, assets.year')) {
+                // Find the existing asset and redirect to edit it
+                $existingAsset = Asset::where('user_id', $data['user_id'])
+                    ->where('month', $data['month'])
+                    ->where('year', $data['year'])
+                    ->first();
+                    
+                if ($existingAsset) {
+                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $existingAsset->id]));
+                }
+            }
+            
+            throw $e;
+        }
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Get current month and year from the form data or use current date
@@ -40,7 +63,7 @@ class CreateAsset extends CreateRecord
         
         if ($previousAsset) {
             // Pre-populate with previous month's data
-            $previousData = $previousAsset->getFormDataForPrePopulation();
+            $previousData = $previousAsset->getFormDataForPrePopulation($data);
             
             // Merge the previous data with current form data
             // This allows users to override the pre-populated values

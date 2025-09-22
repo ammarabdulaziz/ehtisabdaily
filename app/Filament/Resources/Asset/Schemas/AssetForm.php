@@ -18,6 +18,8 @@ use Filament\Schemas\Schema;
 use Filament\Actions\Action as FilamentAction;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use App\Rules\UniqueAssetForUser;
 
 class AssetForm
 {
@@ -39,13 +41,39 @@ class AssetForm
                                     ])
                                     ->searchable()
                                     ->default(now()->month)
-                                    ->required(),
+                                    ->required()
+                                    ->live()
+                                    ->rules([
+                                        function ($get) {
+                                            $month = $get('month');
+                                            $year = $get('year');
+                                            
+                                            if ($month && $year) {
+                                                return new UniqueAssetForUser($month, $year);
+                                            }
+                                            
+                                            return null;
+                                        }
+                                    ]),
                                 Select::make('year')
                                     ->label('Year')
                                     ->options(array_combine(range(2020, now()->year + 5), range(2020, now()->year + 5)))
                                     ->searchable()
                                     ->default(now()->year)
-                                    ->required(),
+                                    ->required()
+                                    ->live()
+                                    ->rules([
+                                        function ($get) {
+                                            $month = $get('month');
+                                            $year = $get('year');
+                                            
+                                            if ($month && $year) {
+                                                return new UniqueAssetForUser($month, $year);
+                                            }
+                                            
+                                            return null;
+                                        }
+                                    ]),
                             ]),
                         TextInput::make('notes')
                             ->label('Notes')
@@ -62,7 +90,7 @@ class AssetForm
                                         $previousAsset = \App\Models\Asset::getPreviousMonthData(Auth::id(), $month, $year);
 
                                         if ($previousAsset) {
-                                            $previousData = $previousAsset->getFormDataForPrePopulation();
+                                            $previousData = $previousAsset->getFormDataForPrePopulation($get);
 
                                             // Update the form data
                                             $livewire->form->fill($previousData);
@@ -156,13 +184,13 @@ class AssetForm
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
                                                     ->default(1.000000)
                                                     ->required()
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->required()
                                                     ->minValue(0)
                                                     ->prefix(function ($get) {
@@ -243,13 +271,13 @@ class AssetForm
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
                                                     ->default(1.000000)
                                                     ->required()
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->required()
                                                     ->minValue(0)
                                                     ->prefix(function ($get) {
@@ -330,13 +358,13 @@ class AssetForm
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
                                                     ->default(1.000000)
                                                     ->required()
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->required()
                                                     ->minValue(0)
                                                     ->prefix(function ($get) {
@@ -417,13 +445,13 @@ class AssetForm
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
                                                     ->default(1.000000)
                                                     ->required()
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->required()
                                                     ->minValue(0)
                                                     ->prefix(function ($get) {
@@ -504,13 +532,13 @@ class AssetForm
                                                     ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
                                                     ->default(1.000000)
                                                     ->required()
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->step(0.000001)
                                                     ->minValue(0.000001),
                                                 TextInput::make('actual_amount')
                                                     ->label('Actual Amount')
                                                     ->placeholder('Enter amount in original currency')
-                                                    ->numeric()
+                                                    ->rules(['numeric'])
                                                     ->required()
                                                     ->minValue(0)
                                                     ->prefix(function ($get) {

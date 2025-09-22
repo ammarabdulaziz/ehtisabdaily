@@ -350,3 +350,33 @@ test('only shows user own asset records', function () {
         ->assertCanSeeTableRecords([$userAsset])
         ->assertCanNotSeeTableRecords([$otherAsset]);
 });
+
+test('prevents creating duplicate asset for same month and year', function () {
+    // Create an existing asset
+    Asset::factory()->create([
+        'user_id' => $this->user->id,
+        'month' => 3,
+        'year' => 2024,
+        'notes' => 'March 2024 assets',
+    ]);
+
+    // Try to create another asset with the same month and year
+    $component = Livewire::test(CreateAsset::class)
+        ->fillForm([
+            'month' => 3,
+            'year' => 2024,
+            'notes' => 'Another March 2024 assets',
+        ])
+        ->call('create');
+
+    // Should have validation errors for month and year
+    $component->assertHasFormErrors(['month', 'year']);
+    
+    // Check that only one asset exists for this month/year combination
+    $assetCount = Asset::where('user_id', $this->user->id)
+        ->where('month', 3)
+        ->where('year', 2024)
+        ->count();
+    
+    expect($assetCount)->toBe(1);
+});
