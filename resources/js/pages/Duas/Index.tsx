@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Heart, Star, Clock } from 'lucide-react'
+import { BookOpen, Heart, ChevronDown, ChevronUp } from 'lucide-react'
 
 interface Dua {
   id: number
@@ -34,6 +34,7 @@ interface Props {
 
 export default function DuasIndex({ duas, categories, currentCategory }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory || 'all')
+  const [isCategoriesExpanded, setIsCategoriesExpanded] = useState<boolean>(false)
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category)
@@ -54,35 +55,60 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
       
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Dua Collection
-          </h1>
-          {/* <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover beautiful duas for every occasion. Swipe through our collection of authentic Islamic supplications.
-          </p> */}
+        <div className="mb-8">
+          {/* Mobile: Title and Filter Button in same row */}
+          <div className="md:hidden flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-foreground">
+              Dua Collection
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => setIsCategoriesExpanded(!isCategoriesExpanded)}
+              className="flex items-center gap-2"
+            >
+              Categories
+              {isCategoriesExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
+          {/* Desktop: Centered title */}
+          <div className="hidden md:block text-center">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              Dua Collection
+            </h1>
+            {/* <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover beautiful duas for every occasion. Swipe through our collection of authentic Islamic supplications.
+            </p> */}
+          </div>
         </div>
 
         {/* Category Filters */}
         <div className="mb-8">
-          {/* <h2 className="text-xl font-semibold mb-4 text-center">Filter by Category</h2> */}
-          <div className="flex justify-center">
-            <ToggleGroup
-              type="single"
-              value={selectedCategory}
-              onValueChange={handleCategoryChange}
-              variant="outline"
-              className="flex-wrap gap-2 max-w-8xl"
-            >
-              <ToggleGroupItem value="all" className="px-4 py-2">
-                All Duas
-              </ToggleGroupItem>
-              {Object.entries(categories).map(([key, label]) => (
-                <ToggleGroupItem key={key} value={key} className="px-4 py-2">
-                  {label}
+
+          {/* Desktop: Always visible, Mobile: Collapsible */}
+          <div className={`${isCategoriesExpanded ? 'block' : 'hidden'} md:block`}>
+            <div className="flex justify-center">
+              <ToggleGroup
+                type="single"
+                value={selectedCategory}
+                onValueChange={handleCategoryChange}
+                variant="outline"
+                className="flex-wrap gap-2 max-w-8xl"
+              >
+                <ToggleGroupItem value="all" className="px-4 py-2">
+                  All Duas
                 </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+                {Object.entries(categories).map(([key, label]) => (
+                  <ToggleGroupItem key={key} value={key} className="px-4 py-2">
+                    {label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
           </div>
         </div>
 
