@@ -23,164 +23,67 @@ class AssetSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
-        
-        foreach ($users as $user) {
-            // Create assets for the last 6 months
-            for ($i = 5; $i >= 0; $i--) {
-                $date = now()->subMonths($i);
-                $month = $date->month;
-                $year = $date->year;
-                
-                // Check if asset already exists for this month/year
-                $asset = Asset::updateOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'month' => $month,
-                        'year' => $year,
-                    ],
-                    [
-                        'notes' => "Asset data for {$date->format('F Y')}",
-                    ]
-                );
-                
-                // Create asset accounts
-                $this->createAssetAccounts($asset, $user);
-                
-                // Create lent money entries
-                $this->createLentMoney($asset, $user);
-                
-                // Create borrowed money entries
-                $this->createBorrowedMoney($asset, $user);
-                
-                // Create investments
-                $this->createInvestments($asset, $user);
-                
-                // Create deposits
-                $this->createDeposits($asset, $user);
-            }
+        // First, ensure we have the user
+        $user = User::first();
+        if (!$user) {
+            $this->command->error('No user found. Please run UserSeeder first.');
+            return;
         }
+
+        // Create all assets from SQL dump
+        $this->createAssets($user);
+        
+        // Create all asset accounts
+        $this->call(AssetAccountSeeder::class);
+        
+        // Create all asset investments
+        $this->call(AssetInvestmentSeeder::class);
+        
+        // Create all asset deposits
+        $this->call(AssetDepositSeeder::class);
+        
+        // Create all asset borrowed money
+        $this->call(AssetBorrowedMoneySeeder::class);
+        
+        // Create all asset lent money
+        $this->call(AssetLentMoneySeeder::class);
     }
     
-    private function createAssetAccounts(Asset $asset, User $user): void
+    private function createAssets(User $user): void
     {
-        $accountTypes = AccountType::where('user_id', $user->id)->get();
-        
-        foreach ($accountTypes as $accountType) {
-            AssetAccount::updateOrCreate(
+        $assetsData = [
+            ['id' => 1, 'month' => 4, 'year' => 2024, 'notes' => null],
+            ['id' => 2, 'month' => 5, 'year' => 2024, 'notes' => null],
+            ['id' => 3, 'month' => 6, 'year' => 2024, 'notes' => null],
+            ['id' => 4, 'month' => 7, 'year' => 2024, 'notes' => null],
+            ['id' => 5, 'month' => 8, 'year' => 2024, 'notes' => null],
+            ['id' => 6, 'month' => 9, 'year' => 2024, 'notes' => null],
+            ['id' => 7, 'month' => 10, 'year' => 2024, 'notes' => null],
+            ['id' => 8, 'month' => 11, 'year' => 2024, 'notes' => null],
+            ['id' => 9, 'month' => 12, 'year' => 2024, 'notes' => null],
+            ['id' => 10, 'month' => 2, 'year' => 2025, 'notes' => null],
+            ['id' => 11, 'month' => 3, 'year' => 2025, 'notes' => null],
+            ['id' => 12, 'month' => 4, 'year' => 2025, 'notes' => null],
+            ['id' => 13, 'month' => 5, 'year' => 2025, 'notes' => null],
+            ['id' => 14, 'month' => 6, 'year' => 2025, 'notes' => null],
+            ['id' => 15, 'month' => 7, 'year' => 2025, 'notes' => null],
+            ['id' => 16, 'month' => 8, 'year' => 2025, 'notes' => null],
+            ['id' => 17, 'month' => 9, 'year' => 2025, 'notes' => null],
+        ];
+
+        foreach ($assetsData as $assetData) {
+            Asset::updateOrCreate(
+                ['id' => $assetData['id']],
                 [
-                    'asset_id' => $asset->id,
-                    'account_type_id' => $accountType->id,
-                ],
-                [
-                    'actual_amount' => fake()->randomFloat(2, 1000, 50000),
-                    'currency' => fake()->randomElement(['QAR', 'USD', 'EUR']),
-                    'exchange_rate' => $this->getExchangeRate(fake()->randomElement(['QAR', 'USD', 'EUR'])),
-                    'notes' => fake()->optional()->sentence(),
+                    'user_id' => $user->id,
+                    'month' => $assetData['month'],
+                    'year' => $assetData['year'],
+                    'notes' => $assetData['notes'],
+                    'created_at' => '2025-09-22 12:37:27',
+                    'updated_at' => '2025-09-22 12:37:27',
                 ]
             );
         }
     }
     
-    private function createLentMoney(Asset $asset, User $user): void
-    {
-        $friends = Friend::where('user_id', $user->id)->get();
-        
-        // Create 1-3 lent money entries per asset
-        $lentCount = fake()->numberBetween(1, 3);
-        
-        for ($i = 0; $i < $lentCount; $i++) {
-            AssetLentMoney::updateOrCreate(
-                [
-                    'asset_id' => $asset->id,
-                    'friend_id' => $friends->random()->id,
-                ],
-                [
-                    'actual_amount' => fake()->randomFloat(2, 500, 10000),
-                    'currency' => fake()->randomElement(['QAR', 'USD', 'EUR']),
-                    'exchange_rate' => $this->getExchangeRate(fake()->randomElement(['QAR', 'USD', 'EUR'])),
-                    'notes' => fake()->optional()->sentence(),
-                ]
-            );
-        }
-    }
-    
-    private function createBorrowedMoney(Asset $asset, User $user): void
-    {
-        $friends = Friend::where('user_id', $user->id)->get();
-        
-        // Create 0-2 borrowed money entries per asset
-        $borrowedCount = fake()->numberBetween(0, 2);
-        
-        for ($i = 0; $i < $borrowedCount; $i++) {
-            AssetBorrowedMoney::updateOrCreate(
-                [
-                    'asset_id' => $asset->id,
-                    'friend_id' => $friends->random()->id,
-                ],
-                [
-                    'actual_amount' => fake()->randomFloat(2, 1000, 15000),
-                    'currency' => fake()->randomElement(['QAR', 'USD', 'EUR']),
-                    'exchange_rate' => $this->getExchangeRate(fake()->randomElement(['QAR', 'USD', 'EUR'])),
-                    'notes' => fake()->optional()->sentence(),
-                ]
-            );
-        }
-    }
-    
-    private function createInvestments(Asset $asset, User $user): void
-    {
-        $investmentTypes = InvestmentType::where('user_id', $user->id)->get();
-        
-        // Create 1-2 investment entries per asset
-        $investmentCount = fake()->numberBetween(1, 2);
-        
-        for ($i = 0; $i < $investmentCount; $i++) {
-            AssetInvestment::updateOrCreate(
-                [
-                    'asset_id' => $asset->id,
-                    'investment_type_id' => $investmentTypes->random()->id,
-                ],
-                [
-                    'actual_amount' => fake()->randomFloat(2, 2000, 25000),
-                    'currency' => fake()->randomElement(['QAR', 'USD', 'EUR']),
-                    'exchange_rate' => $this->getExchangeRate(fake()->randomElement(['QAR', 'USD', 'EUR'])),
-                    'notes' => fake()->optional()->sentence(),
-                ]
-            );
-        }
-    }
-    
-    private function createDeposits(Asset $asset, User $user): void
-    {
-        $depositTypes = DepositType::where('user_id', $user->id)->get();
-        
-        // Create 1-2 deposit entries per asset
-        $depositCount = fake()->numberBetween(1, 2);
-        
-        for ($i = 0; $i < $depositCount; $i++) {
-            AssetDeposit::updateOrCreate(
-                [
-                    'asset_id' => $asset->id,
-                    'deposit_type_id' => $depositTypes->random()->id,
-                ],
-                [
-                    'actual_amount' => fake()->randomFloat(2, 5000, 30000),
-                    'currency' => fake()->randomElement(['QAR', 'USD', 'EUR']),
-                    'exchange_rate' => $this->getExchangeRate(fake()->randomElement(['QAR', 'USD', 'EUR'])),
-                    'notes' => fake()->optional()->sentence(),
-                ]
-            );
-        }
-    }
-    
-    private function getExchangeRate(string $currency): float
-    {
-        return match ($currency) {
-            'QAR' => 1.000000,
-            'USD' => 3.640000,
-            'EUR' => 3.950000,
-            default => 1.000000,
-        };
-    }
 }

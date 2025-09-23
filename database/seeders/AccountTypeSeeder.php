@@ -14,27 +14,32 @@ class AccountTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $defaultAccountTypes = [
-            'Cash-in-Hand',
-            'Doha Bank',
-            'Rayyan Bank',
-            'Federal Bank',
+        $user = User::first();
+        if (!$user) {
+            $this->command->error('No user found. Please run UserSeeder first.');
+            return;
+        }
+
+        // Create account types from SQL dump
+        $accountTypesData = [
+            ['id' => 1, 'name' => 'Liquid Cash', 'description' => null, 'is_default' => false],
+            ['id' => 2, 'name' => 'Doha Bank', 'description' => null, 'is_default' => false],
+            ['id' => 3, 'name' => 'Rayyan Bank', 'description' => null, 'is_default' => false],
+            ['id' => 4, 'name' => 'Federal Bank', 'description' => null, 'is_default' => false],
         ];
 
-        // Create default account types for all existing users
-        User::all()->each(function ($user) use ($defaultAccountTypes) {
-            foreach ($defaultAccountTypes as $accountType) {
-                AccountType::updateOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'name' => $accountType,
-                    ],
-                    [
-                        'description' => "Default {$accountType} account type",
-                        'is_default' => true,
-                    ]
-                );
-            }
-        });
+        foreach ($accountTypesData as $accountTypeData) {
+            AccountType::updateOrCreate(
+                ['id' => $accountTypeData['id']],
+                [
+                    'user_id' => $user->id,
+                    'name' => $accountTypeData['name'],
+                    'description' => $accountTypeData['description'],
+                    'is_default' => $accountTypeData['is_default'],
+                    'created_at' => '2025-09-22 12:28:21',
+                    'updated_at' => '2025-09-22 12:28:21',
+                ]
+            );
+        }
     }
 }
