@@ -10,6 +10,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/duas', [DuaController::class, 'index'])->name('duas.index');
+    Route::get('/assets', function () {
+        return Inertia::render('Assets/Index');
+    })->name('assets.index');
 
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
