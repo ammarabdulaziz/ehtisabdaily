@@ -26,9 +26,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserCacheKey($userId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {
-            Log::info("Cache miss for duas for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {            
             return Dua::where('user_id', $userId)
                 ->orderBy('sort_order')
                 ->orderBy('title')
@@ -49,9 +47,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserCategoryCacheKey($userId, $category);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $category) {
-            Log::info("Cache miss for duas category '{$category}' for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $category) {            
             return Dua::where('user_id', $userId)
                 ->whereJsonContains('categories', $category)
                 ->orderBy('sort_order')
@@ -73,9 +69,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserSourceCacheKey($userId, $source);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $source) {
-            Log::info("Cache miss for duas source '{$source}' for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $source) {            
             return Dua::where('user_id', $userId)
                 ->where('source', $source)
                 ->orderBy('sort_order')
@@ -97,9 +91,7 @@ class DuaCacheService
 
         $cacheKey = $this->getDuaCacheKey($duaId, $userId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($duaId, $userId) {
-            Log::info("Cache miss for dua {$duaId} for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($duaId, $userId) {            
             return Dua::where('user_id', $userId)
                 ->where('id', $duaId)
                 ->first();
@@ -119,9 +111,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserCountCacheKey($userId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {
-            Log::info("Cache miss for duas count for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {            
             return Dua::where('user_id', $userId)->count();
         });
     }
@@ -139,9 +129,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserCategoriesCacheKey($userId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {
-            Log::info("Cache miss for categories for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {            
             $duas = Dua::where('user_id', $userId)
                 ->whereNotNull('categories')
                 ->get();
@@ -170,9 +158,7 @@ class DuaCacheService
 
         $cacheKey = $this->getUserSourcesCacheKey($userId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {
-            Log::info("Cache miss for sources for user {$userId}, fetching from database");
-            
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId) {            
             return Dua::where('user_id', $userId)
                 ->whereNotNull('source')
                 ->distinct()
@@ -193,8 +179,6 @@ class DuaCacheService
         if (!$userId) {
             return;
         }
-
-        Log::info("Clearing all duas cache for user {$userId}");
 
         // Clear all user-specific cache keys
         $cacheKeys = [
@@ -231,8 +215,6 @@ class DuaCacheService
             return;
         }
 
-        Log::info("Clearing cache for dua {$duaId} for user {$userId}");
-
         // Clear the specific dua cache
         Cache::forget($this->getDuaCacheKey($duaId, $userId));
         
@@ -244,9 +226,7 @@ class DuaCacheService
      * Clear all duas cache (for admin operations)
      */
     public function clearAllCache(): void
-    {
-        Log::info("Clearing all duas cache");
-        
+    {        
         // Since we can't use tags, we need to clear cache keys manually
         // This is a simplified approach - in production you might want to use Redis with tags
         $this->clearCacheByPattern(self::CACHE_PREFIX . '*');
@@ -278,8 +258,6 @@ class DuaCacheService
         if (!$userId) {
             return;
         }
-
-        Log::info("Warming up duas cache for user {$userId}");
 
         // Pre-load all user duas
         $this->getAllDuasForUser($userId);

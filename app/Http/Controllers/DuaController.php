@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dua;
+use App\Services\DuaCacheService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -10,16 +11,18 @@ class DuaController extends Controller
 {
     public function index(Request $request): \Inertia\Response
     {
-        $query = Dua::query()->ofCurrentUser()->with('user')->ordered();
-
+        $cacheService = app(DuaCacheService::class);
+        
+        // Get duas from cache
         if ($request->filled('category')) {
-            $query->byCategory($request->category);
+            $duas = $cacheService->getDuasByCategory($request->category);
+        } else {
+            $duas = $cacheService->getAllDuasForUser();
         }
 
-        $duas = $query->get();
-
-        $categories = Dua::query()->ofCurrentUser()->pluck('categories')
-            ->flatten()->unique()->filter()->sort()->values()
+        // Get categories from cache
+        $cachedCategories = $cacheService->getCategoriesForUser();
+        $categories = collect($cachedCategories)
             ->mapWithKeys(fn($category) => [$category => $category])
             ->toArray();
 
