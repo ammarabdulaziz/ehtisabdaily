@@ -102,3 +102,4 @@ class AssetAccountSeeder extends Seeder
         }
     }
 }
+

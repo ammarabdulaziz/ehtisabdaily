@@ -97,3 +97,4 @@ class AssetInvestmentSeeder extends Seeder
         }
     }
 }
+
