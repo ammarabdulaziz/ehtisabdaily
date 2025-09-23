@@ -7,6 +7,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -21,48 +23,48 @@ class AssetTable
             ->columns([
                 TextColumn::make('formatted_period')
                     ->label('Period')
-                    ->sortable()
+                    ->sortable(['year', 'month'])
                     ->toggleable()
                     ->searchable(),
                 TextColumn::make('total_accounts')
                     ->label('Total Accounts')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_lent_money')
                     ->label('Total Lent')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_borrowed_money')
                     ->label('Total Borrowed')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_investments')
                     ->label('Total Investments')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_deposits')
                     ->label('Total Deposits')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('total_in_hand')
                     ->label('Cash in Hand')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('grand_total')
                     ->label('Grand Total')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->weight('bold')
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                 TextColumn::make('savings')
                     ->label('Savings')
-                    ->sortable()
+                    ->sortable(false)
                     ->toggleable()
                     ->color(fn ($state) => $state >= 0 ? 'success' : 'danger')
                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
@@ -98,13 +100,16 @@ class AssetTable
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
+                ForceDeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('year', 'desc')
-            ->defaultSort('month', 'desc');
+            ->defaultSort(function (Builder $query): Builder {
+                return $query->orderBy('year', 'desc')->orderBy('month', 'desc');
+            });
     }
 }
