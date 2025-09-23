@@ -8,6 +8,7 @@ use App\Filament\Resources\Duas\Pages\ListDuas;
 use App\Filament\Resources\Duas\Schemas\DuaForm;
 use App\Filament\Resources\Duas\Tables\DuasTable;
 use App\Models\Dua;
+use App\Services\DuaCacheService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -44,6 +45,42 @@ class DuaResource extends Resource
         $query->orderBy('sort_order');
 
         return $query;
+    }
+
+    /**
+     * Get cached duas for the current user
+     */
+    public static function getCachedDuas(): \Illuminate\Database\Eloquent\Collection
+    {
+        $cacheService = app(DuaCacheService::class);
+        return $cacheService->getAllDuasForUser(Filament::auth()->id());
+    }
+
+    /**
+     * Get cached duas count for the current user
+     */
+    public static function getCachedDuasCount(): int
+    {
+        $cacheService = app(DuaCacheService::class);
+        return $cacheService->getDuasCount(Filament::auth()->id());
+    }
+
+    /**
+     * Get cached categories for the current user
+     */
+    public static function getCachedCategories(): array
+    {
+        $cacheService = app(DuaCacheService::class);
+        return $cacheService->getCategoriesForUser(Filament::auth()->id());
+    }
+
+    /**
+     * Get cached sources for the current user
+     */
+    public static function getCachedSources(): array
+    {
+        $cacheService = app(DuaCacheService::class);
+        return $cacheService->getSourcesForUser(Filament::auth()->id());
     }
 
     public static function form(Schema $schema): Schema

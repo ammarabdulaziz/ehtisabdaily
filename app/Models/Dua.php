@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\DuaCacheService;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class Dua extends Model
 {
@@ -41,6 +43,21 @@ class Dua extends Model
             if (is_null($dua->sort_order)) {
                 $dua->sort_order = static::max('sort_order') + 1;
             }
+        });
+
+        // Clear cache when a dua is created
+        static::created(function (Dua $dua) {
+            app(DuaCacheService::class)->clearUserCache($dua->user_id);
+        });
+
+        // Clear cache when a dua is updated
+        static::updated(function (Dua $dua) {
+            app(DuaCacheService::class)->clearUserCache($dua->user_id);
+        });
+
+        // Clear cache when a dua is deleted
+        static::deleted(function (Dua $dua) {
+            app(DuaCacheService::class)->clearUserCache($dua->user_id);
         });
     }
 
@@ -81,7 +98,7 @@ class Dua extends Model
     #[Scope]
     public function ofCurrentUser(Builder $query): Builder
     {
-        return $query->where('user_id', auth()->id());
+        return $query->where('user_id', Auth::check() ? Auth::id() : 0);
     }
 
     // Accessors

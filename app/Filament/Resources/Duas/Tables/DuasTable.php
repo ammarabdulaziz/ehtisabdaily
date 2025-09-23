@@ -110,7 +110,14 @@ class DuasTable
             ->filters([
                 SelectFilter::make('categories')
                     ->label('Categories')
-                    ->options(Dua::getCategories())
+                    ->options(function () {
+                        // Use cached categories if available, fallback to static method
+                        $cachedCategories = DuaResource::getCachedCategories();
+                        if (!empty($cachedCategories)) {
+                            return array_combine($cachedCategories, $cachedCategories);
+                        }
+                        return Dua::getCategories();
+                    })
                     ->multiple()
                     ->query(function (Builder $query, array $data) {
                         if (filled($data['values'])) {
@@ -134,7 +141,14 @@ class DuasTable
 
                 SelectFilter::make('source')
                     ->label('Source')
-                    ->options(Dua::getSources())
+                    ->options(function () {
+                        // Use cached sources if available, fallback to static method
+                        $cachedSources = DuaResource::getCachedSources();
+                        if (!empty($cachedSources)) {
+                            return array_combine($cachedSources, $cachedSources);
+                        }
+                        return Dua::getSources();
+                    })
                     ->multiple(),
 
                 /*TernaryFilter::make('is_featured')
@@ -172,9 +186,6 @@ class DuasTable
                     ->modalCancelAction(false),
                 EditAction::make(),
                 DeleteAction::make(),
-            ])
-            ->recordActions([
-                ViewAction::make(),
             ])
             ->recordUrl(null)
             ->headerActions([
