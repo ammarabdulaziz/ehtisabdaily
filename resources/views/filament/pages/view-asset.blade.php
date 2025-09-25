@@ -10,7 +10,7 @@
                             {{ $relationManager::getTitle($this->record, static::class) }}
                         </h3>
                     </div> --}}
-                    <div class="p-6 mt-6">
+                    <div class="p-6">
                         @livewire($relationManager, [
                             'ownerRecord' => $this->record,
                             'pageClass' => static::class,
