@@ -43,7 +43,7 @@ class HisabatPanelProvider extends PanelProvider
             ->brandName('Ehtisab Daily')
             ->viteTheme('resources/css/filament/hisabat/theme.css')
             ->font('Instrument Sans')
-            ->colors(['primary' => Color::Violet])
+            ->colors(['primary' => '#2b8474'])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
