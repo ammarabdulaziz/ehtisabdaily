@@ -86,7 +86,7 @@ test('can view asset infolist', function () {
         ->assertSee('QAR 1,374'); // Total deposits (5000/3.64)
 });
 
-test('can see relation manager tabs', function () {
+test('can see relation managers in stacked layout', function () {
     Livewire::test(ViewAsset::class, ['record' => $this->asset->id])
         ->assertOk()
         ->assertSee('Accounts')
