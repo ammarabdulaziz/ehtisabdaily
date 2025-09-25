@@ -13,40 +13,41 @@ class AssetInfolist
     {
         return $schema
             ->components([
-                Section::make('Asset Information')
+                Section::make('Asset Information & Financial Summary')
+                    ->columnSpanFull()
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(3)
                             ->schema([
+                                // Asset Information
                                 TextEntry::make('formatted_period')
                                     ->label('Period'),
                                 TextEntry::make('notes')
-                                    ->label('Notes')
-                                    ->columnSpanFull(),
-                            ]),
-                    ]),
-                
-                Section::make('Financial Summary')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
+                                    ->label('Notes'),
+
+                                // Financial Summary - Assets
                                 TextEntry::make('total_accounts')
                                     ->label('Total Accounts')
-                                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
-                                TextEntry::make('total_lent_money')
-                                    ->label('Total Lent Money')
                                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                                 TextEntry::make('total_investments')
                                     ->label('Total Investments')
                                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+
+                                // Financial Summary - Money Flow
+                                TextEntry::make('total_lent_money')
+                                    ->label('Total Lent Money')
+                                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                                 TextEntry::make('total_deposits')
                                     ->label('Total Deposits')
                                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+
+                                // Financial Summary - Borrowed & Total
                                 TextEntry::make('total_borrowed_money')
                                     ->label('Total Borrowed Money')
                                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
                                 TextEntry::make('grand_total')
                                     ->label('Grand Total')
-                                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0))
+                                    ->weight('bold'),
                             ]),
                     ]),
             ]);
