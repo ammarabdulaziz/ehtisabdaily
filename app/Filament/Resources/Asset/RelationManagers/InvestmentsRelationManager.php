@@ -49,7 +49,10 @@ class InvestmentsRelationManager extends RelationManager
                     ->label('Investment Type'),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount (QAR)')
-                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0)),
+                    ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0))
+                    ->summarize(Tables\Columns\Summarizers\Sum::make()
+                        ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0))
+                        ->label('Total')),
                 Tables\Columns\TextColumn::make('notes')
                     ->limit(50),
             ])
