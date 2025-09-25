@@ -9,6 +9,7 @@ use App\Filament\Resources\Asset\Schemas\AssetForm;
 use App\Filament\Resources\Asset\Tables\AssetTable;
 use App\Models\Asset;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,6 +29,11 @@ class AssetResource extends Resource
     protected static UnitEnum|string|null $navigationGroup = 'Finance';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getSlug(?Panel $panel = null): string
+    {
+        return 'assets';
+    }
 
     public static function getEloquentQuery(): Builder
     {
