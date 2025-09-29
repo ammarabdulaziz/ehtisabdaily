@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AssetsSecurityMiddleware
+class FilamentAssetsSecurityMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,7 @@ class AssetsSecurityMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         // Skip security check for the security page itself to avoid redirect loop
-        if (str_contains($request->url(), '/assets/security')) {
-            return $next($request);
-        }
-        
-        // Skip Filament routes - they have their own middleware
-        if (str_contains($request->url(), '/hisabat')) {
+        if (str_contains($request->url(), '/assets-security') || !str_contains($request->url(), '/assets')) {
             return $next($request);
         }
         
@@ -50,11 +45,6 @@ class AssetsSecurityMiddleware
     
     private function requireSecurityCode(Request $request): Response
     {
-        // For Inertia requests, redirect to security page
-        if ($request->header('X-Inertia')) {
-            return redirect()->route('assets.security');
-        }
-        
         // For AJAX requests, return JSON response
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -63,7 +53,7 @@ class AssetsSecurityMiddleware
             ], 403);
         }
         
-        // For regular requests, redirect to frontend security page
-        return redirect()->route('assets.security');
+        // Redirect to Filament security page
+        return redirect()->route('filament.hisabat.pages.assets-security');
     }
 }

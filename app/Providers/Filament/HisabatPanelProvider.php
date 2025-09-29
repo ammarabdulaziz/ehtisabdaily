@@ -72,7 +72,7 @@ class HisabatPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->middleware([
-                \App\Http\Middleware\AssetsSecurityMiddleware::class,
+                \App\Http\Middleware\FilamentAssetsSecurityMiddleware::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

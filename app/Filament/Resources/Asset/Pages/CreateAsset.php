@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Asset\Pages;
 
 use App\Filament\Resources\Asset\AssetResource;
 use App\Models\Asset;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -15,6 +17,34 @@ class CreateAsset extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('lockPage')
+                ->label('Lock Page')
+                ->icon('heroicon-o-lock-closed')
+                ->color('danger')
+                ->action(function () {
+                    session(['assets_security_locked' => true]);
+                    // Clear security session when locked
+                    session()->forget(['assets_security_code', 'assets_security_timestamp']);
+                    
+                    Notification::make()
+                        ->title('Page Locked')
+                        ->body('This page is now secured. A security code will be required to access it.')
+                        ->warning()
+                        ->send();
+                    
+                    // Redirect to security page
+                    $this->redirect(route('filament.hisabat.pages.assets-security'));
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Lock Page')
+                ->modalDescription('Are you sure you want to lock this page? A security code will be required to access it.')
+                ->modalSubmitActionLabel('Lock'),
+        ];
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
