@@ -15,6 +15,11 @@ class AssetsSecurityMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip security check for the security page itself to avoid redirect loop
+        if (str_contains($request->url(), '/assets-security')) {
+            return $next($request);
+        }
+        
         // Check if the user has valid assets security session
         $securityCode = session('assets_security_code');
         $securityTimestamp = session('assets_security_timestamp');
@@ -30,8 +35,12 @@ class AssetsSecurityMiddleware
             return $next($request);
         }
         
-        // Require security code
-        return $this->requireSecurityCode($request);
+        // Require security code for assets-related routes
+        if (str_contains($request->url(), '/assets')) {
+            return $this->requireSecurityCode($request);
+        }
+
+        return $next($request);
     }
     
     private function requireSecurityCode(Request $request): Response
@@ -46,7 +55,7 @@ class AssetsSecurityMiddleware
         
         // For regular requests, redirect to security page
         // Check if this is a Filament request
-        if (str_contains($request->url(), '/hisabat/assets')) {
+        if (str_contains($request->url(), '/hisabat')) {
             return redirect()->route('filament.hisabat.pages.assets-security');
         }
         

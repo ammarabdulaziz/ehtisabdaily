@@ -71,6 +71,9 @@ class HisabatPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->middleware([
+                \App\Http\Middleware\AssetsSecurityMiddleware::class,
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ])

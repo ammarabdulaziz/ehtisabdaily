@@ -16,6 +16,8 @@ use App\Filament\Resources\Asset\Tables\AssetTable;
 use App\Filament\Schemas\AssetInfolist;
 use App\Models\Asset;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -81,6 +83,44 @@ class AssetResource extends Resource
             'create' => CreateAsset::route('/create'),
             'view' => ViewAsset::route('/{record}'),
             'edit' => EditAsset::route('/{record}/edit'),
+        ];
+    }
+    
+    public static function getGlobalActions(): array
+    {
+        return [
+            Action::make('toggleSecurity')
+                ->label(fn () => session('assets_security_locked', false) ? 'Unlock Assets' : 'Lock Assets')
+                ->icon(fn () => session('assets_security_locked', false) ? 'heroicon-o-lock-open' : 'heroicon-o-lock-closed')
+                ->color(fn () => session('assets_security_locked', false) ? 'success' : 'danger')
+                ->action(function () {
+                    $isLocked = !session('assets_security_locked', false);
+                    session(['assets_security_locked' => $isLocked]);
+                    
+                    if ($isLocked) {
+                        // Clear security session when locked
+                        session()->forget(['assets_security_code', 'assets_security_timestamp']);
+                        
+                        Notification::make()
+                            ->title('Assets Locked')
+                            ->body('Assets are now secured. A security code will be required to access them.')
+                            ->warning()
+                            ->send();
+                    } else {
+                        Notification::make()
+                            ->title('Assets Unlocked')
+                            ->body('Assets are now accessible without a security code.')
+                            ->success()
+                            ->send();
+                    }
+                })
+                ->requiresConfirmation()
+                ->modalHeading(fn () => session('assets_security_locked', false) ? 'Unlock Assets' : 'Lock Assets')
+                ->modalDescription(fn () => session('assets_security_locked', false) 
+                    ? 'Are you sure you want to unlock assets? This will allow access without a security code.'
+                    : 'Are you sure you want to lock assets? A security code will be required to access them.'
+                )
+                ->modalSubmitActionLabel(fn () => session('assets_security_locked', false) ? 'Unlock' : 'Lock'),
         ];
     }
 }
