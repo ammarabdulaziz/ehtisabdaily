@@ -76,6 +76,90 @@ class AssetChartController extends Controller
     }
 
     /**
+     * Get lent money analysis data
+     */
+    public function getLentMoneyAnalysis(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Get time range from request (default: last 2 years)
+        $years = $request->get('years', 2);
+        $startDate = Carbon::now()->subYears($years);
+        
+        // Get assets data for the user within the time range
+        $assets = Asset::where('user_id', $user->id)
+            ->where(function ($query) use ($startDate) {
+                $query->where('year', '>', $startDate->year)
+                    ->orWhere(function ($subQuery) use ($startDate) {
+                        $subQuery->where('year', $startDate->year)
+                            ->where('month', '>=', $startDate->month);
+                    });
+            })
+            ->with(['lentMoney.friend'])
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
+        // Prepare trend data
+        $trendData = [];
+        foreach ($assets as $asset) {
+            $period = sprintf('%04d-%02d', $asset->year, $asset->month);
+            $trendData[] = [
+                'period' => $period,
+                'month' => $asset->month_name,
+                'year' => $asset->year,
+                'totalLentMoney' => round($asset->total_lent_money, 2),
+                'lentMoneyCount' => $asset->lentMoney->count(),
+            ];
+        }
+
+        // Get friend breakdown for current period
+        $latestAsset = $assets->last();
+        $friendBreakdown = [];
+        $totalLentToFriends = 0;
+        
+        if ($latestAsset) {
+            $friendTotals = [];
+            foreach ($latestAsset->lentMoney as $lentMoney) {
+                $friendName = $lentMoney->friend->name;
+                if (!isset($friendTotals[$friendName])) {
+                    $friendTotals[$friendName] = 0;
+                }
+                $friendTotals[$friendName] += $lentMoney->amount ?? 0;
+                $totalLentToFriends += $lentMoney->amount ?? 0;
+            }
+            
+            foreach ($friendTotals as $friendName => $amount) {
+                $friendBreakdown[] = [
+                    'name' => $friendName,
+                    'value' => round($amount, 2),
+                    'percentage' => $totalLentToFriends > 0 ? round(($amount / $totalLentToFriends) * 100, 1) : 0,
+                ];
+            }
+        }
+
+        // Calculate summary statistics
+        $summary = [
+            'totalLentMoney' => $totalLentToFriends,
+            'totalFriends' => count($friendBreakdown),
+            'averageLentPerFriend' => count($friendBreakdown) > 0 ? round($totalLentToFriends / count($friendBreakdown), 2) : 0,
+            'peakLentMoney' => count($trendData) > 0 ? max(array_column($trendData, 'totalLentMoney')) : 0,
+            'lowestLentMoney' => count($trendData) > 0 ? min(array_column($trendData, 'totalLentMoney')) : 0,
+        ];
+
+        return response()->json([
+            'trendData' => $trendData,
+            'friendBreakdown' => $friendBreakdown,
+            'summary' => $summary,
+            'timeRange' => [
+                'years' => $years,
+                'startDate' => $startDate->format('Y-m'),
+                'endDate' => Carbon::now()->format('Y-m'),
+            ]
+        ]);
+    }
+
+    /**
      * Get asset allocation breakdown for current period
      */
     public function getAllocationBreakdown(Request $request)

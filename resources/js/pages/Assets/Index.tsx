@@ -5,9 +5,9 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, CreditCard, Users, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Users, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
 
 interface ChartDataPoint {
   period: string
@@ -53,6 +53,37 @@ interface AllocationResponse {
   netWorth: number
 }
 
+interface LentMoneyTrendData {
+  period: string
+  month: string
+  year: number
+  totalLentMoney: number
+  lentMoneyCount: number
+}
+
+interface FriendBreakdownData {
+  name: string
+  value: number
+  percentage: number
+}
+
+interface LentMoneyAnalysisResponse {
+  trendData: LentMoneyTrendData[]
+  friendBreakdown: FriendBreakdownData[]
+  summary: {
+    totalLentMoney: number
+    totalFriends: number
+    averageLentPerFriend: number
+    peakLentMoney: number
+    lowestLentMoney: number
+  }
+  timeRange: {
+    years: number
+    startDate: string
+    endDate: string
+  }
+}
+
 const chartConfig = {
   totalAccounts: {
     label: "Accounts",
@@ -82,6 +113,10 @@ const chartConfig = {
     label: "Monthly Savings",
     color: "#16a34a",
   },
+  lentMoneyCount: {
+    label: "Number of Friends",
+    color: "#059669",
+  },
 } satisfies ChartConfig
 
 const allocationColors = [
@@ -95,6 +130,7 @@ const allocationColors = [
 export default function AssetsIndex() {
   const [chartData, setChartData] = useState<ChartData | null>(null)
   const [allocationData, setAllocationData] = useState<AllocationResponse | null>(null)
+  const [lentMoneyData, setLentMoneyData] = useState<LentMoneyAnalysisResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState(2)
 
@@ -121,9 +157,20 @@ export default function AssetsIndex() {
     }
   }
 
+  const fetchLentMoneyData = async (years: number) => {
+    try {
+      const response = await fetch(`/api/assets/lent-money-analysis?years=${years}`)
+      const data = await response.json()
+      setLentMoneyData(data)
+    } catch (error) {
+      console.error('Error fetching lent money data:', error)
+    }
+  }
+
   useEffect(() => {
     fetchChartData(timeRange)
     fetchAllocationData()
+    fetchLentMoneyData(timeRange)
   }, [timeRange])
 
   const formatCurrency = (value: number) => {
@@ -135,8 +182,8 @@ export default function AssetsIndex() {
     }).format(value)
   }
 
-  const formatTooltipValue = (value: number) => {
-    return formatCurrency(value)
+  const formatTooltipValue = (value: unknown) => {
+    return formatCurrency(Number(value))
   }
 
   const formatXAxisLabel = (tickItem: string) => {
@@ -302,6 +349,7 @@ export default function AssetsIndex() {
                     <YAxis 
                       tickFormatter={(value) => formatCurrency(value)}
                       tick={{ fontSize: 12 }}
+                      width={80}
                     />
                     <ChartTooltip 
                       content={<ChartTooltipContent formatter={formatTooltipValue} />}
@@ -412,7 +460,7 @@ export default function AssetsIndex() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+                <TrendingUp className="h-5 w-5" /> 
                 Monthly Savings Trend
               </CardTitle>
               <CardDescription>
@@ -432,6 +480,7 @@ export default function AssetsIndex() {
                     <YAxis 
                       tickFormatter={(value) => formatCurrency(value)}
                       tick={{ fontSize: 12 }}
+                      width={80}
                     />
                     <ChartTooltip 
                       content={<ChartTooltipContent formatter={formatTooltipValue} />}
@@ -489,6 +538,258 @@ export default function AssetsIndex() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Lent Money Analysis Section */}
+        {lentMoneyData && (
+          <>
+            {/* Lent Money Summary Cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Lent Money</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatCurrency(lentMoneyData.summary.totalLentMoney)}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Across {lentMoneyData.summary.totalFriends} friends
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Average per Friend</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatCurrency(lentMoneyData.summary.averageLentPerFriend)}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Per friend average
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Peak Lent Amount</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatCurrency(lentMoneyData.summary.peakLentMoney)}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Highest recorded
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Lowest Lent Amount</CardTitle>
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatCurrency(lentMoneyData.summary.lowestLentMoney)}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Lowest recorded
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Lent Money Charts */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Lent Money Trend Chart */}
+              <Card className="col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Lent Money Trends Over Time
+                  </CardTitle>
+                  <CardDescription>
+                    Track your total lent money and number of friends over time
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {lentMoneyData.trendData.length > 0 ? (
+                    <ChartContainer config={chartConfig} className="h-96 w-full">
+                      <LineChart data={lentMoneyData.trendData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="period" 
+                          tickFormatter={formatXAxisLabel}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis 
+                          yAxisId="left"
+                          tickFormatter={(value) => formatCurrency(value)}
+                          tick={{ fontSize: 12 }}
+                          width={80}
+                        />
+                        <YAxis 
+                          yAxisId="right" 
+                          orientation="right"
+                          tick={{ fontSize: 12 }}
+                        />
+                        <ChartTooltip 
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="rounded-lg border bg-background p-2 shadow-md">
+                                  <div className="grid gap-2">
+                                    <div className="flex flex-col">
+                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                        {label}
+                                      </span>
+                                      <div className="text-sm font-bold">
+                                        {payload.map((entry, index) => (
+                                          <div key={index} className="flex items-center gap-2">
+                                            <div 
+                                              className="h-2 w-2 rounded-full" 
+                                              style={{ backgroundColor: entry.color }}
+                                            />
+                                            <span className="text-sm">
+                                              {entry.dataKey === 'lentMoneyCount' 
+                                                ? `${entry.value} friends`
+                                                : formatCurrency(Number(entry.value))
+                                              }
+                                            </span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            }
+                            return null
+                          }}
+                        />
+                        <ChartLegend content={<ChartLegendContent />} />
+                        <Line 
+                          yAxisId="left"
+                          type="monotone" 
+                          dataKey="totalLentMoney" 
+                          stroke="var(--color-totalLentMoney)" 
+                          strokeWidth={3}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                        />
+                        <Line 
+                          yAxisId="right"
+                          type="monotone" 
+                          dataKey="lentMoneyCount" 
+                          stroke="#059669" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                          name="Number of Friends"
+                        />
+                      </LineChart>
+                    </ChartContainer>
+                  ) : (
+                    <div className="flex h-96 items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No lent money data available for the selected time range</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Friend Breakdown Pie Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChartIcon className="h-5 w-5" />
+                    Lent Money by Friend
+                  </CardTitle>
+                  <CardDescription>
+                    Current distribution of lent money among friends
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {lentMoneyData.friendBreakdown.length > 0 ? (
+                    <ChartContainer config={chartConfig} className="h-80">
+                      <PieChart>
+                        <Pie
+                          data={lentMoneyData.friendBreakdown}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percentage }) => `${name}: ${percentage}%`}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {lentMoneyData.friendBreakdown.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={allocationColors[index % allocationColors.length]} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip 
+                          content={<ChartTooltipContent formatter={formatTooltipValue} />}
+                        />
+                      </PieChart>
+                    </ChartContainer>
+                  ) : (
+                    <div className="flex h-80 items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <PieChartIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No friend breakdown data available</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Friend Details Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Friend Details
+                  </CardTitle>
+                  <CardDescription>
+                    Detailed breakdown of lent money by friend
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {lentMoneyData.friendBreakdown.length > 0 ? (
+                    <div className="space-y-4">
+                      {lentMoneyData.friendBreakdown.map((friend, index) => (
+                        <div key={friend.name} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-4 h-4 rounded-full" 
+                              style={{ backgroundColor: allocationColors[index % allocationColors.length] }}
+                            />
+                            <div>
+                              <p className="font-medium">{friend.name}</p>
+                              <p className="text-sm text-muted-foreground">{friend.percentage}% of total</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">{formatCurrency(friend.value)}</p>
+                            <Badge variant="outline">
+                              Lent Amount
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex h-80 items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No friend data available</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </>
         )}
       </div>
     </AppLayout>

@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Asset chart API routes
     Route::get('/api/assets/chart-data', [AssetChartController::class, 'getChartData'])->name('assets.chart-data');
     Route::get('/api/assets/allocation-breakdown', [AssetChartController::class, 'getAllocationBreakdown'])->name('assets.allocation-breakdown');
+    Route::get('/api/assets/lent-money-analysis', [AssetChartController::class, 'getLentMoneyAnalysis'])->name('assets.lent-money-analysis');
 
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
