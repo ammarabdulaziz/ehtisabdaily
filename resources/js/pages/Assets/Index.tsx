@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Users, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Users, BarChart3, PieChart as PieChartIcon, Lock } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface ChartDataPoint {
   period: string
@@ -133,6 +134,7 @@ export default function AssetsIndex() {
   const [lentMoneyData, setLentMoneyData] = useState<LentMoneyAnalysisResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState(2)
+  const [isLocked, setIsLocked] = useState(false)
 
   const fetchChartData = async (years: number) => {
     try {
@@ -171,7 +173,44 @@ export default function AssetsIndex() {
     fetchChartData(timeRange)
     fetchAllocationData()
     fetchLentMoneyData(timeRange)
+    checkSecurityStatus()
   }, [timeRange])
+
+  const checkSecurityStatus = async () => {
+    try {
+      const response = await fetch('/api/assets/security-status')
+      if (response.ok) {
+        const data = await response.json()
+        setIsLocked(data.is_locked || false)
+      }
+    } catch (error) {
+      console.error('Failed to check security status:', error)
+    }
+  }
+
+  const handleLockToggle = async () => {
+    try {
+      const response = await fetch('/api/assets/toggle-lock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setIsLocked(data.is_locked)
+        
+        if (data.is_locked) {
+          // Redirect to security page when locked
+          window.location.href = '/assets/security'
+        }
+      }
+    } catch (error) {
+      console.error('Failed to toggle lock:', error)
+    }
+  }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-QA', {
@@ -252,6 +291,15 @@ export default function AssetsIndex() {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLockToggle}
+              className="flex items-center gap-2"
+            >
+              <Lock className="h-4 w-4" />
+              Lock Page
+            </Button>
             <Select value={timeRange.toString()} onValueChange={(value) => setTimeRange(parseInt(value))}>
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Time Range" />
