@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetChartController;
 use App\Http\Controllers\DuaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,6 +15,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assets', function () {
         return Inertia::render('Assets/Index');
     })->name('assets.index');
+
+    // Asset chart API routes
+    Route::get('/api/assets/chart-data', [AssetChartController::class, 'getChartData'])->name('assets.chart-data');
+    Route::get('/api/assets/allocation-breakdown', [AssetChartController::class, 'getAllocationBreakdown'])->name('assets.allocation-breakdown');
 
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
