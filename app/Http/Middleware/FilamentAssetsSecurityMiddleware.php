@@ -32,7 +32,16 @@ class FilamentAssetsSecurityMiddleware
         
         // Check if security code is valid and not expired (1 hour = 3600 seconds)
         if ($securityCode === '80313' && $securityTimestamp && (time() - $securityTimestamp) < 3600) {
-            return $next($request);
+            $response = $next($request);
+            
+            // Add cache prevention headers to asset pages
+            if (str_contains($request->url(), '/assets')) {
+                $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+                $response->headers->set('Pragma', 'no-cache');
+                $response->headers->set('Expires', '0');
+            }
+            
+            return $response;
         }
         
         // Require security code for assets-related routes
@@ -53,7 +62,10 @@ class FilamentAssetsSecurityMiddleware
             ], 403);
         }
         
-        // Redirect to Filament security page
-        return redirect()->route('filament.hisabat.pages.assets-security');
+        // Redirect to Filament security page with cache prevention headers
+        return redirect()->route('filament.hisabat.pages.assets-security')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 }

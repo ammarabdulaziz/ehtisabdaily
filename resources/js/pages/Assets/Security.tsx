@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import AssetsSecurityModal from '@/components/AssetsSecurityModal';
 
 export default function AssetsSecurity() {
-    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [isModalOpen] = useState(true);
 
     useEffect(() => {
         // Check if user already has a valid session
@@ -32,6 +32,10 @@ export default function AssetsSecurity() {
         // setIsModalOpen(false);
     };
 
+    const handleGoToDashboard = () => {
+        router.visit('/dashboard');
+    };
+
 
     return (
         <AppLayout>
@@ -51,6 +55,7 @@ export default function AssetsSecurity() {
             <AssetsSecurityModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
+                onGoToDashboard={handleGoToDashboard}
             />
         </AppLayout>
     );

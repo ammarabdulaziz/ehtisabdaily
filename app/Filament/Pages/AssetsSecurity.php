@@ -119,4 +119,9 @@ class AssetsSecurity extends Page implements HasForms
     {
         return 'Enter the 5-digit security code to access assets';
     }
+    
+    public function goToDashboard(): void
+    {
+        $this->redirect(route('filament.hisabat.pages.dashboard'));
+    }
 }

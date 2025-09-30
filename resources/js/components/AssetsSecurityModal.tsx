@@ -8,11 +8,13 @@ import { router } from '@inertiajs/react';
 interface AssetsSecurityModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onGoToDashboard?: () => void;
 }
 
 export default function AssetsSecurityModal({ 
     isOpen, 
-    onClose
+    onClose,
+    onGoToDashboard
 }: AssetsSecurityModalProps) {
     const [securityCode, setSecurityCode] = useState('');
     const [error, setError] = useState('');
@@ -63,9 +65,17 @@ export default function AssetsSecurityModal({
     };
 
 
+    const handleGoToDashboard = () => {
+        if (onGoToDashboard) {
+            onGoToDashboard();
+        } else {
+            router.visit('/dashboard');
+        }
+    };
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-md" showCloseButton={false}>
+        <Dialog open={isOpen} onOpenChange={handleGoToDashboard}>
+            <DialogContent className="sm:max-w-md">
                 <DialogHeader className="text-center">
                     <div className="mx-auto mb-4 p-3 rounded-full bg-red-100 dark:bg-red-900/20 w-fit">
                         <Shield className="h-8 w-8 text-red-600 dark:text-red-400" />

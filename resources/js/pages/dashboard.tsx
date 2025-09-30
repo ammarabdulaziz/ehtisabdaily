@@ -21,7 +21,7 @@ export default function Dashboard() {
                 {/* Navigation Cards */}
                 <div className="grid gap-6 md:grid-cols-3">
                     {/* Manage Hisabat Card */}
-                    <a href="/hisabat" target="_blank" rel="noopener noreferrer" className="block">
+                    <a href="/hisabat" rel="noopener noreferrer" className="block">
                         <Card className="group hover:shadow-md transition-all duration-300 cursor-pointer h-full">
                             <CardHeader className="text-center pb-4">
                                 <div className="mx-auto mb-4 p-3 rounded-full bg-blue-100 dark:bg-blue-900/20 w-fit">
