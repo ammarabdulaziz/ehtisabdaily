@@ -23,7 +23,7 @@ class FilamentAssetsSecurityMiddleware
         // Check if the user has valid assets security session
         $securityCode = session('assets_security_code');
         $securityTimestamp = session('assets_security_timestamp');
-        $isLocked = session('assets_security_locked', false);
+        $isLocked = session('assets_security_locked', true);
         
         // If locked, always require security code
         if ($isLocked) {
