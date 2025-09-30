@@ -134,7 +134,7 @@ export default function AssetsIndex() {
   const [lentMoneyData, setLentMoneyData] = useState<LentMoneyAnalysisResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState(2)
-  const [isLocked, setIsLocked] = useState(false)
+  const [, setIsLocked] = useState(false)
 
   const fetchChartData = async (years: number) => {
     try {
@@ -240,7 +240,7 @@ export default function AssetsIndex() {
             <h1 className="text-3xl font-bold">Assets Dashboard</h1>
             <Skeleton className="h-10 w-32" />
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -254,7 +254,7 @@ export default function AssetsIndex() {
               </Card>
             ))}
           </div>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <Skeleton className="h-6 w-48" />
@@ -283,25 +283,24 @@ export default function AssetsIndex() {
       
       <div className="container mx-auto px-4 py-8 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold">Assets Dashboard</h1>
             <p className="text-muted-foreground">
               Track your financial growth and asset allocation over time
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <Button
               variant="outline"
-              size="sm"
               onClick={handleLockToggle}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Lock className="h-4 w-4" />
               Lock Page
             </Button>
             <Select value={timeRange.toString()} onValueChange={(value) => setTimeRange(parseInt(value))}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="Time Range" />
               </SelectTrigger>
               <SelectContent>
@@ -316,7 +315,7 @@ export default function AssetsIndex() {
 
         {/* Summary Cards */}
         {chartData && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Current Net Worth</CardTitle>
@@ -372,9 +371,9 @@ export default function AssetsIndex() {
         )}
 
         {/* Charts */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
           {/* Multi-line Net Trend Chart */}
-          <Card className="col-span-2">
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
@@ -386,68 +385,72 @@ export default function AssetsIndex() {
             </CardHeader>
             <CardContent>
               {chartData && chartData.chartData.length > 0 ? (
-                <ChartContainer config={chartConfig} className="h-96 w-full">
-                  <LineChart data={chartData.chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="period" 
-                      tickFormatter={formatXAxisLabel}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => formatCurrency(value)}
-                      tick={{ fontSize: 12 }}
-                      width={80}
-                    />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent formatter={formatTooltipValue} />}
-                    />
-                    <ChartLegend content={<ChartLegendContent />} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="grandTotal" 
-                      stroke="var(--color-grandTotal)" 
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalAccounts" 
-                      stroke="var(--color-totalAccounts)" 
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalInvestments" 
-                      stroke="var(--color-totalInvestments)" 
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalDeposits" 
-                      stroke="var(--color-totalDeposits)" 
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalLentMoney" 
-                      stroke="var(--color-totalLentMoney)" 
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalBorrowedMoney" 
-                      stroke="var(--color-totalBorrowedMoney)" 
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                  </LineChart>
-                </ChartContainer>
+                <div className="overflow-x-auto">
+                  <div className="min-w-[600px]">
+                    <ChartContainer config={chartConfig} className="h-96 w-full">
+                      <LineChart data={chartData.chartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="period" 
+                          tickFormatter={formatXAxisLabel}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis 
+                          tickFormatter={(value) => formatCurrency(value)}
+                          tick={{ fontSize: 12 }}
+                          width={80}
+                        />
+                        <ChartTooltip 
+                          content={<ChartTooltipContent formatter={formatTooltipValue} />}
+                        />
+                        <ChartLegend content={<ChartLegendContent />} />
+                        <Line 
+                          type="monotone" 
+                          dataKey="grandTotal" 
+                          stroke="var(--color-grandTotal)" 
+                          strokeWidth={3}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="totalAccounts" 
+                          stroke="var(--color-totalAccounts)" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="totalInvestments" 
+                          stroke="var(--color-totalInvestments)" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="totalDeposits" 
+                          stroke="var(--color-totalDeposits)" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="totalLentMoney" 
+                          stroke="var(--color-totalLentMoney)" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="totalBorrowedMoney" 
+                          stroke="var(--color-totalBorrowedMoney)" 
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                        />
+                      </LineChart>
+                    </ChartContainer>
+                  </div>
+                </div>
               ) : (
                 <div className="flex h-96 items-center justify-center text-muted-foreground">
                   <div className="text-center">
@@ -472,27 +475,35 @@ export default function AssetsIndex() {
             </CardHeader>
             <CardContent>
               {allocationData && allocationData.allocations.length > 0 ? (
-                <ChartContainer config={chartConfig} className="h-80">
-                  <PieChart>
-                    <Pie
-                      data={allocationData.allocations}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percentage }) => `${name}: ${percentage}%`}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {allocationData.allocations.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={allocationColors[index % allocationColors.length]} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip 
-                      content={<ChartTooltipContent formatter={formatTooltipValue} />}
-                    />
-                  </PieChart>
-                </ChartContainer>
+                <div className="overflow-x-auto">
+                  <div className="min-w-[300px]">
+                    <ChartContainer config={chartConfig} className="h-80 w-full">
+                      <PieChart>
+                        <Pie
+                          data={allocationData.allocations}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percentage }) => {
+                            // Show shorter labels on small screens
+                            const shortName = name.length > 8 ? name.substring(0, 8) + '...' : name;
+                            return `${shortName}: ${percentage}%`;
+                          }}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {allocationData.allocations.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={allocationColors[index % allocationColors.length]} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip 
+                          content={<ChartTooltipContent formatter={formatTooltipValue} />}
+                        />
+                      </PieChart>
+                    </ChartContainer>
+                  </div>
+                </div>
               ) : (
                 <div className="flex h-80 items-center justify-center text-muted-foreground">
                   <div className="text-center">
@@ -517,29 +528,33 @@ export default function AssetsIndex() {
             </CardHeader>
             <CardContent>
               {chartData && chartData.chartData.length > 0 ? (
-                <ChartContainer config={chartConfig} className="h-80">
-                  <BarChart data={chartData.chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="period" 
-                      tickFormatter={formatXAxisLabel}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => formatCurrency(value)}
-                      tick={{ fontSize: 12 }}
-                      width={80}
-                    />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent formatter={formatTooltipValue} />}
-                    />
-                    <Bar 
-                      dataKey="savings" 
-                      fill="var(--color-savings)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ChartContainer>
+                <div className="overflow-x-auto">
+                  <div className="min-w-[400px]">
+                    <ChartContainer config={chartConfig} className="h-80">
+                      <BarChart data={chartData.chartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="period" 
+                          tickFormatter={formatXAxisLabel}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis 
+                          tickFormatter={(value) => formatCurrency(value)}
+                          tick={{ fontSize: 12 }}
+                          width={80}
+                        />
+                        <ChartTooltip 
+                          content={<ChartTooltipContent formatter={formatTooltipValue} />}
+                        />
+                        <Bar 
+                          dataKey="savings" 
+                          fill="var(--color-savings)"
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ChartContainer>
+                  </div>
+                </div>
               ) : (
                 <div className="flex h-80 items-center justify-center text-muted-foreground">
                   <div className="text-center">
@@ -562,7 +577,7 @@ export default function AssetsIndex() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {allocationData.allocations.map((allocation, index) => (
                   <div key={allocation.name} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center gap-3">
@@ -592,7 +607,7 @@ export default function AssetsIndex() {
         {lentMoneyData && (
           <>
             {/* Lent Money Summary Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Lent Money</CardTitle>
@@ -647,9 +662,9 @@ export default function AssetsIndex() {
             </div>
 
             {/* Lent Money Charts */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
               {/* Lent Money Trend Chart */}
-              <Card className="col-span-2">
+              <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5" />
@@ -661,80 +676,84 @@ export default function AssetsIndex() {
                 </CardHeader>
                 <CardContent>
                   {lentMoneyData.trendData.length > 0 ? (
-                    <ChartContainer config={chartConfig} className="h-96 w-full">
-                      <LineChart data={lentMoneyData.trendData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="period" 
-                          tickFormatter={formatXAxisLabel}
-                          tick={{ fontSize: 12 }}
-                        />
-                        <YAxis 
-                          yAxisId="left"
-                          tickFormatter={(value) => formatCurrency(value)}
-                          tick={{ fontSize: 12 }}
-                          width={80}
-                        />
-                        <YAxis 
-                          yAxisId="right" 
-                          orientation="right"
-                          tick={{ fontSize: 12 }}
-                        />
-                        <ChartTooltip 
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="rounded-lg border bg-background p-2 shadow-md">
-                                  <div className="grid gap-2">
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        {label}
-                                      </span>
-                                      <div className="text-sm font-bold">
-                                        {payload.map((entry, index) => (
-                                          <div key={index} className="flex items-center gap-2">
-                                            <div 
-                                              className="h-2 w-2 rounded-full" 
-                                              style={{ backgroundColor: entry.color }}
-                                            />
-                                            <span className="text-sm">
-                                              {entry.dataKey === 'lentMoneyCount' 
-                                                ? `${entry.value} friends`
-                                                : formatCurrency(Number(entry.value))
-                                              }
-                                            </span>
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[600px]">
+                        <ChartContainer config={chartConfig} className="h-96 w-full">
+                          <LineChart data={lentMoneyData.trendData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis 
+                              dataKey="period" 
+                              tickFormatter={formatXAxisLabel}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <YAxis 
+                              yAxisId="left"
+                              tickFormatter={(value) => formatCurrency(value)}
+                              tick={{ fontSize: 12 }}
+                              width={80}
+                            />
+                            <YAxis 
+                              yAxisId="right" 
+                              orientation="right"
+                              tick={{ fontSize: 12 }}
+                            />
+                            <ChartTooltip 
+                              content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                  return (
+                                    <div className="rounded-lg border bg-background p-2 shadow-md">
+                                      <div className="grid gap-2">
+                                        <div className="flex flex-col">
+                                          <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                            {label}
+                                          </span>
+                                          <div className="text-sm font-bold">
+                                            {payload.map((entry, index) => (
+                                              <div key={index} className="flex items-center gap-2">
+                                                <div 
+                                                  className="h-2 w-2 rounded-full" 
+                                                  style={{ backgroundColor: entry.color }}
+                                                />
+                                                <span className="text-sm">
+                                                  {entry.dataKey === 'lentMoneyCount' 
+                                                    ? `${entry.value} friends`
+                                                    : formatCurrency(Number(entry.value))
+                                                  }
+                                                </span>
+                                              </div>
+                                            ))}
                                           </div>
-                                        ))}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                              )
-                            }
-                            return null
-                          }}
-                        />
-                        <ChartLegend content={<ChartLegendContent />} />
-                        <Line 
-                          yAxisId="left"
-                          type="monotone" 
-                          dataKey="totalLentMoney" 
-                          stroke="var(--color-totalLentMoney)" 
-                          strokeWidth={3}
-                          dot={{ r: 4 }}
-                          activeDot={{ r: 6 }}
-                        />
-                        <Line 
-                          yAxisId="right"
-                          type="monotone" 
-                          dataKey="lentMoneyCount" 
-                          stroke="#059669" 
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                          name="Number of Friends"
-                        />
-                      </LineChart>
-                    </ChartContainer>
+                                  )
+                                }
+                                return null
+                              }}
+                            />
+                            <ChartLegend content={<ChartLegendContent />} />
+                            <Line 
+                              yAxisId="left"
+                              type="monotone" 
+                              dataKey="totalLentMoney" 
+                              stroke="var(--color-totalLentMoney)" 
+                              strokeWidth={3}
+                              dot={{ r: 4 }}
+                              activeDot={{ r: 6 }}
+                            />
+                            <Line 
+                              yAxisId="right"
+                              type="monotone" 
+                              dataKey="lentMoneyCount" 
+                              stroke="#059669" 
+                              strokeWidth={2}
+                              dot={{ r: 3 }}
+                              name="Number of Friends"
+                            />
+                          </LineChart>
+                        </ChartContainer>
+                      </div>
+                    </div>
                   ) : (
                     <div className="flex h-96 items-center justify-center text-muted-foreground">
                       <div className="text-center">
@@ -759,27 +778,35 @@ export default function AssetsIndex() {
                 </CardHeader>
                 <CardContent>
                   {lentMoneyData.friendBreakdown.length > 0 ? (
-                    <ChartContainer config={chartConfig} className="h-80">
-                      <PieChart>
-                        <Pie
-                          data={lentMoneyData.friendBreakdown}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percentage }) => `${name}: ${percentage}%`}
-                          outerRadius={100}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {lentMoneyData.friendBreakdown.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={allocationColors[index % allocationColors.length]} />
-                          ))}
-                        </Pie>
-                        <ChartTooltip 
-                          content={<ChartTooltipContent formatter={formatTooltipValue} />}
-                        />
-                      </PieChart>
-                    </ChartContainer>
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[300px]">
+                        <ChartContainer config={chartConfig} className="h-80 w-full">
+                          <PieChart>
+                            <Pie
+                              data={lentMoneyData.friendBreakdown}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percentage }) => {
+                                // Show shorter labels on small screens
+                                const shortName = name.length > 8 ? name.substring(0, 8) + '...' : name;
+                                return `${shortName}: ${percentage}%`;
+                              }}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {lentMoneyData.friendBreakdown.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={allocationColors[index % allocationColors.length]} />
+                              ))}
+                            </Pie>
+                            <ChartTooltip 
+                              content={<ChartTooltipContent formatter={formatTooltipValue} />}
+                            />
+                          </PieChart>
+                        </ChartContainer>
+                      </div>
+                    </div>
                   ) : (
                     <div className="flex h-80 items-center justify-center text-muted-foreground">
                       <div className="text-center">
