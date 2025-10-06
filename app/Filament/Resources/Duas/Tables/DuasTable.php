@@ -44,6 +44,7 @@ class DuasTable
                 TextColumn::make('arabic_text')
                     ->label('Arabic Text')
                     ->limit(75)
+                    ->extraAttributes(['class' => 'font-arabic'])
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 75) {

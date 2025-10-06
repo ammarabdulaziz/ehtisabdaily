@@ -107,8 +107,8 @@ class DuaResource extends Resource
                             ->formatStateUsing(fn (string $state): string => $state)
                             ->extraAttributes([
                                 'dir' => 'rtl',
-                                'style' => "font-family: 'Amiri', 'Arabic Typesetting', serif; line-height: 2; font-size: 1.25rem; text-align: right;",
-                                'class' => 'text-gray-800 dark:text-gray-200 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700',
+                                'style' => "line-height: 2; font-size: 1.25rem; text-align: right;",
+                                'class' => 'font-arabic text-gray-800 dark:text-gray-200 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700',
                             ]),
                     ])
                     ->icon(Heroicon::CheckCircle)

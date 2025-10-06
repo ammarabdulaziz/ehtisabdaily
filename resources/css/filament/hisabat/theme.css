@@ -1,5 +1,21 @@
+/* Webfonts for Arabic typography */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');
+
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 /*@import '../../../../vendor/filafly/brisk/resources/css/theme.css';*/
 
-@source '../../../../app/Filament/**/*';
-@source '../../../../resources/views/filament/**/*';
+/* Responsive grid helper to guarantee 2 columns on >=640px */
+.widget-two-cols {
+    grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+    .widget-two-cols {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Arabic font utility for Filament UI */
+.font-arabic {
+    font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Arabic Typesetting', serif;
+}
