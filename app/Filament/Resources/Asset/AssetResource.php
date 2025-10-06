@@ -13,6 +13,7 @@ use App\Filament\Resources\Asset\RelationManagers\InvestmentsRelationManager;
 use App\Filament\Resources\Asset\RelationManagers\LentMoneyRelationManager;
 use App\Filament\Resources\Asset\Schemas\AssetForm;
 use App\Filament\Resources\Asset\Tables\AssetTable;
+use App\Filament\Resources\Asset\Widgets\AssetsReminderWidget;
 use App\Filament\Schemas\AssetInfolist;
 use App\Models\Asset;
 use BackedEnum;
@@ -73,6 +74,13 @@ class AssetResource extends Resource
             BorrowedMoneyRelationManager::class,
             InvestmentsRelationManager::class,
             DepositsRelationManager::class,
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            AssetsReminderWidget::class,
         ];
     }
 

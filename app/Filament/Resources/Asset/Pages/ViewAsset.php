@@ -6,6 +6,7 @@ use App\Filament\Resources\Asset\AssetResource;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\Asset\Widgets\AssetsReminderWidget;
 
 class ViewAsset extends ViewRecord
 {
@@ -39,6 +40,13 @@ class ViewAsset extends ViewRecord
                 ->modalHeading('Lock Page')
                 ->modalDescription('Are you sure you want to lock this page? A security code will be required to access it.')
                 ->modalSubmitActionLabel('Lock'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            AssetsReminderWidget::class,
         ];
     }
 }

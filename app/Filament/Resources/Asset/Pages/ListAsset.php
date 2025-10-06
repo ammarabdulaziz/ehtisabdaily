@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Asset\Widgets\AssetsReminderWidget;
 
 class ListAsset extends ListRecords
 {
@@ -38,6 +39,13 @@ class ListAsset extends ListRecords
                 ->modalHeading('Lock Page')
                 ->modalDescription('Are you sure you want to lock this page? A security code will be required to access it.')
                 ->modalSubmitActionLabel('Lock'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            AssetsReminderWidget::class,
         ];
     }
 }

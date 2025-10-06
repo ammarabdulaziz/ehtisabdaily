@@ -9,6 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, BarC
 import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Wallet, PiggyBank, Users, BarChart3, PieChart as PieChartIcon, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import AssetsReminder from '@/components/AssetsReminder'
 
 interface ChartDataPoint {
   period: string
@@ -282,6 +283,7 @@ export default function AssetsIndex() {
       <Head title="Assets Dashboard" />
       
       <div className="container mx-auto px-4 py-8 space-y-6">
+        <AssetsReminder />
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
