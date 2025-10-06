@@ -283,7 +283,6 @@ export default function AssetsIndex() {
       <Head title="Assets Dashboard" />
       
       <div className="container mx-auto px-4 py-8 space-y-6">
-        <AssetsReminder />
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -314,6 +313,8 @@ export default function AssetsIndex() {
             </Select>
           </div>
         </div>
+
+        <AssetsReminder />
 
         {/* Summary Cards */}
         {chartData && (
