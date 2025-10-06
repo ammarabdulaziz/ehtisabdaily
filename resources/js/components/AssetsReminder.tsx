@@ -10,7 +10,7 @@ export default function AssetsReminder() {
             <div className="space-y-1">
               {/* <p className="text-sm font-medium">18:39-40</p> */}
               <p className="text-xl font-arabic pt-5 pb-3" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>
-                وَلَوْلَا إِذْ دَخَلْتَ جَنَّتَكَ <b>قُلْتَ مَا شَاءَ ٱللَّهُ لَا قُوَّةَ إِلَّا بِٱللَّهِ</b>
+                وَلَوْلَا إِذْ دَخَلْتَ جَنَّتَكَ قُلْتَ <b>مَا شَاءَ ٱللَّهُ لَا قُوَّةَ إِلَّا بِٱللَّهِ</b>
               </p>
               <p className="text-sm text-muted-foreground">If only, when you entered your garden, you had said, “What Allah wills; there is no power except with Allah.”</p>
               <p className="text-sm text-muted-foreground">നിങ്ങൾ നിങ്ങളുടെ താഴ്വരയിൽ പ്രവേശിക്കുമ്പോൾ പറഞ്ഞിരുന്നെങ്കിൽ യാഥാർത്ഥ്യത്തിൽ അല്ലാഹുവിന്റെ ഇഷ്ടം മാത്രമാണ് ഉണ്ടായിരിക്കുന്നതെന്നും അല്ലാഹുവിനെ ഒഴികെ യാതൊരു ശക്തിയും ഇല്ലെന്നും.</p>
