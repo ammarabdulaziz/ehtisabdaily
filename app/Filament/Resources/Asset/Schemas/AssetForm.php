@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -48,11 +49,11 @@ class AssetForm
                                             $month = $get('month');
                                             $year = $get('year');
                                             $recordId = $get('id'); // Get the current record ID
-                                            
+
                                             if ($month && $year) {
                                                 return new UniqueAssetForUser($month, $year, $recordId);
                                             }
-                                            
+
                                             return null;
                                         }
                                     ]),
@@ -68,11 +69,11 @@ class AssetForm
                                             $month = $get('month');
                                             $year = $get('year');
                                             $recordId = $get('id'); // Get the current record ID
-                                            
+
                                             if ($month && $year) {
                                                 return new UniqueAssetForUser($month, $year, $recordId);
                                             }
-                                            
+
                                             return null;
                                         }
                                     ]),
@@ -159,52 +160,55 @@ class AssetForm
                                 Repeater::make('accounts')
                                     ->label('Accounts')
                                     ->relationship('accounts')
+                                    ->compact()
+                                    ->table([
+                                        TableColumn::make('Account Type'),
+                                        TableColumn::make('Currency'),
+                                        TableColumn::make('Exchange Rate'),
+                                        TableColumn::make('Actual Amount'),
+                                        TableColumn::make('Notes'),
+                                    ])
                                     ->schema([
-                                        Grid::make(2)
-                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
-                                            ->schema([
-                                                Select::make('account_type_id')
-                                                    ->label('Account Type')
-                                                    ->relationship(
-                                                        name: 'accountType',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
-                                                    )
-                                                    ->searchable()
-                                                    ->required()
-                                                    ->preload()
-                                                    ->live(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::options())
-                                                    ->default('QAR')
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->live(),
-                                                TextInput::make('exchange_rate')
-                                                    ->label('Exchange Rate')
-                                                    ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000)
-                                                    ->required()
-                                                    ->rules(['numeric'])
-                                                    ->step(0.001)
-                                                    ->minValue(0.001),
-                                                TextInput::make('actual_amount')
-                                                    ->label('Actual Amount')
-                                                    ->placeholder('Enter amount in original currency')
-                                                    ->rules(['numeric'])
-                                                    ->required()
-                                                    ->minValue(0)
-                                                    ->prefix(function ($get) {
-                                                        $currency = $get('currency') ?? 'QAR';
-                                                        return Currency::from($currency)?->getSymbol() ?? 'QAR';
-                                                    })
-                                                    ->live(),
-                                            ]),
+                                        Select::make('account_type_id')
+                                            ->label('Account Type')
+                                            ->relationship(
+                                                name: 'accountType',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
+                                            )
+                                            ->searchable()
+                                            ->required()
+                                            ->preload()
+                                            ->live(),
+                                        Select::make('currency')
+                                            ->label('Currency')
+                                            ->options(Currency::options())
+                                            ->default('QAR')
+                                            ->required()
+                                            ->searchable()
+                                            ->live(),
+                                        TextInput::make('exchange_rate')
+                                            ->label('Exchange Rate')
+                                            ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
+                                            ->default(1.000)
+                                            ->required()
+                                            ->rules(['numeric'])
+                                            ->step(0.001)
+                                            ->minValue(0.001),
+                                        TextInput::make('actual_amount')
+                                            ->label('Actual Amount')
+                                            ->placeholder('Enter amount in original currency')
+                                            ->rules(['numeric'])
+                                            ->required()
+                                            ->minValue(0)
+                                            ->prefix(function ($get) {
+                                                $currency = $get('currency') ?? 'QAR';
+                                                return Currency::from($currency)?->getSymbol() ?? 'QAR';
+                                            })
+                                            ->live(),
                                         TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this account')
-                                            ->columnSpanFull(),
+                                            ->placeholder('Optional notes about this account'),
                                     ])
                                     ->addActionLabel('Add Account')
                                     ->collapsible()
@@ -246,52 +250,55 @@ class AssetForm
                                 Repeater::make('lentMoney')
                                     ->label('Lent Money')
                                     ->relationship('lentMoney')
+                                    ->compact()
+                                    ->table([
+                                        TableColumn::make('Friend/Person Name'),
+                                        TableColumn::make('Currency'),
+                                        TableColumn::make('Exchange Rate'),
+                                        TableColumn::make('Actual Amount'),
+                                        TableColumn::make('Notes'),
+                                    ])
                                     ->schema([
-                                        Grid::make(2)
-                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
-                                            ->schema([
-                                                Select::make('friend_id')
-                                                    ->label('Friend/Person Name')
-                                                    ->relationship(
-                                                        name: 'friend',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
-                                                    )
-                                                    ->searchable()
-                                                    ->required()
-                                                    ->live()
-                                                    ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::options())
-                                                    ->default('QAR')
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->live(),
-                                                TextInput::make('exchange_rate')
-                                                    ->label('Exchange Rate')
-                                                    ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000)
-                                                    ->required()
-                                                    ->rules(['numeric'])
-                                                    ->step(0.001)
-                                                    ->minValue(0.001),
-                                                TextInput::make('actual_amount')
-                                                    ->label('Actual Amount')
-                                                    ->placeholder('Enter amount in original currency')
-                                                    ->rules(['numeric'])
-                                                    ->required()
-                                                    ->minValue(0)
-                                                    ->prefix(function ($get) {
-                                                        $currency = $get('currency') ?? 'QAR';
-                                                        return Currency::from($currency)?->getSymbol() ?? 'QAR';
-                                                    })
-                                                    ->live(),
-                                            ]),
+                                        Select::make('friend_id')
+                                            ->label('Friend/Person Name')
+                                            ->relationship(
+                                                name: 'friend',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
+                                            )
+                                            ->searchable()
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
+                                        Select::make('currency')
+                                            ->label('Currency')
+                                            ->options(Currency::options())
+                                            ->default('QAR')
+                                            ->required()
+                                            ->searchable()
+                                            ->live(),
+                                        TextInput::make('exchange_rate')
+                                            ->label('Exchange Rate')
+                                            ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
+                                            ->default(1.000)
+                                            ->required()
+                                            ->rules(['numeric'])
+                                            ->step(0.001)
+                                            ->minValue(0.001),
+                                        TextInput::make('actual_amount')
+                                            ->label('Actual Amount')
+                                            ->placeholder('Enter amount in original currency')
+                                            ->rules(['numeric'])
+                                            ->required()
+                                            ->minValue(0)
+                                            ->prefix(function ($get) {
+                                                $currency = $get('currency') ?? 'QAR';
+                                                return Currency::from($currency)?->getSymbol() ?? 'QAR';
+                                            })
+                                            ->live(),
                                         TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this loan')
-                                            ->columnSpanFull(),
+                                            ->placeholder('Optional notes about this loan'),
                                     ])
                                     ->addActionLabel('Add Lent Money')
                                     ->collapsible()
@@ -333,52 +340,55 @@ class AssetForm
                                 Repeater::make('borrowedMoney')
                                     ->label('Borrowed Money')
                                     ->relationship('borrowedMoney')
+                                    ->compact()
+                                    ->table([
+                                        TableColumn::make('Friend/Person Name'),
+                                        TableColumn::make('Currency'),
+                                        TableColumn::make('Exchange Rate'),
+                                        TableColumn::make('Actual Amount'),
+                                        TableColumn::make('Notes'),
+                                    ])
                                     ->schema([
-                                        Grid::make(2)
-                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
-                                            ->schema([
-                                                Select::make('friend_id')
-                                                    ->label('Friend/Person Name')
-                                                    ->relationship(
-                                                        name: 'friend',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
-                                                    )
-                                                    ->searchable()
-                                                    ->required()
-                                                    ->live()
-                                                    ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::options())
-                                                    ->default('QAR')
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->live(),
-                                                TextInput::make('exchange_rate')
-                                                    ->label('Exchange Rate')
-                                                    ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000)
-                                                    ->required()
-                                                    ->rules(['numeric'])
-                                                    ->step(0.001)
-                                                    ->minValue(0.001),
-                                                TextInput::make('actual_amount')
-                                                    ->label('Actual Amount')
-                                                    ->placeholder('Enter amount in original currency')
-                                                    ->rules(['numeric'])
-                                                    ->required()
-                                                    ->minValue(0)
-                                                    ->prefix(function ($get) {
-                                                        $currency = $get('currency') ?? 'QAR';
-                                                        return Currency::from($currency)?->getSymbol() ?? 'QAR';
-                                                    })
-                                                    ->live(),
-                                            ]),
+                                        Select::make('friend_id')
+                                            ->label('Friend/Person Name')
+                                            ->relationship(
+                                                name: 'friend',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
+                                            )
+                                            ->searchable()
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
+                                        Select::make('currency')
+                                            ->label('Currency')
+                                            ->options(Currency::options())
+                                            ->default('QAR')
+                                            ->required()
+                                            ->searchable()
+                                            ->live(),
+                                        TextInput::make('exchange_rate')
+                                            ->label('Exchange Rate')
+                                            ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
+                                            ->default(1.000)
+                                            ->required()
+                                            ->rules(['numeric'])
+                                            ->step(0.001)
+                                            ->minValue(0.001),
+                                        TextInput::make('actual_amount')
+                                            ->label('Actual Amount')
+                                            ->placeholder('Enter amount in original currency')
+                                            ->rules(['numeric'])
+                                            ->required()
+                                            ->minValue(0)
+                                            ->prefix(function ($get) {
+                                                $currency = $get('currency') ?? 'QAR';
+                                                return Currency::from($currency)?->getSymbol() ?? 'QAR';
+                                            })
+                                            ->live(),
                                         TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this loan')
-                                            ->columnSpanFull(),
+                                            ->placeholder('Optional notes about this loan'),
                                     ])
                                     ->addActionLabel('Add Borrowed Money')
                                     ->collapsible()
@@ -420,52 +430,55 @@ class AssetForm
                                 Repeater::make('investments')
                                     ->label('Investments')
                                     ->relationship('investments')
+                                    ->compact()
+                                    ->table([
+                                        TableColumn::make('Investment Type'),
+                                        TableColumn::make('Currency'),
+                                        TableColumn::make('Exchange Rate'),
+                                        TableColumn::make('Actual Amount'),
+                                        TableColumn::make('Notes'),
+                                    ])
                                     ->schema([
-                                        Grid::make(2)
-                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
-                                            ->schema([
-                                                Select::make('investment_type_id')
-                                                    ->label('Investment Type')
-                                                    ->relationship(
-                                                        name: 'investmentType',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
-                                                    )
-                                                    ->searchable()
-                                                    ->required()
-                                                    ->live()
-                                                    ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::options())
-                                                    ->default('QAR')
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->live(),
-                                                TextInput::make('exchange_rate')
-                                                    ->label('Exchange Rate')
-                                                    ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000)
-                                                    ->required()
-                                                    ->rules(['numeric'])
-                                                    ->step(0.001)
-                                                    ->minValue(0.001),
-                                                TextInput::make('actual_amount')
-                                                    ->label('Actual Amount')
-                                                    ->placeholder('Enter amount in original currency')
-                                                    ->rules(['numeric'])
-                                                    ->required()
-                                                    ->minValue(0)
-                                                    ->prefix(function ($get) {
-                                                        $currency = $get('currency') ?? 'QAR';
-                                                        return Currency::from($currency)?->getSymbol() ?? 'QAR';
-                                                    })
-                                                    ->live(),
-                                            ]),
+                                        Select::make('investment_type_id')
+                                            ->label('Investment Type')
+                                            ->relationship(
+                                                name: 'investmentType',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
+                                            )
+                                            ->searchable()
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
+                                        Select::make('currency')
+                                            ->label('Currency')
+                                            ->options(Currency::options())
+                                            ->default('QAR')
+                                            ->required()
+                                            ->searchable()
+                                            ->live(),
+                                        TextInput::make('exchange_rate')
+                                            ->label('Exchange Rate')
+                                            ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
+                                            ->default(1.000)
+                                            ->required()
+                                            ->rules(['numeric'])
+                                            ->step(0.001)
+                                            ->minValue(0.001),
+                                        TextInput::make('actual_amount')
+                                            ->label('Actual Amount')
+                                            ->placeholder('Enter amount in original currency')
+                                            ->rules(['numeric'])
+                                            ->required()
+                                            ->minValue(0)
+                                            ->prefix(function ($get) {
+                                                $currency = $get('currency') ?? 'QAR';
+                                                return Currency::from($currency)?->getSymbol() ?? 'QAR';
+                                            })
+                                            ->live(),
                                         TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this investment')
-                                            ->columnSpanFull(),
+                                            ->placeholder('Optional notes about this investment'),
                                     ])
                                     ->addActionLabel('Add Investment')
                                     ->collapsible()
@@ -507,52 +520,55 @@ class AssetForm
                                 Repeater::make('deposits')
                                     ->label('Deposits')
                                     ->relationship('deposits')
+                                    ->compact()
+                                    ->table([
+                                        TableColumn::make('Deposit Type'),
+                                        TableColumn::make('Currency'),
+                                        TableColumn::make('Exchange Rate'),
+                                        TableColumn::make('Actual Amount'),
+                                        TableColumn::make('Notes'),
+                                    ])
                                     ->schema([
-                                        Grid::make(2)
-                                            ->columns(['default' => 2, 'sm' => 2, 'md' => 2, 'lg' => 2, 'xl' => 2])
-                                            ->schema([
-                                                Select::make('deposit_type_id')
-                                                    ->label('Deposit Type')
-                                                    ->relationship(
-                                                        name: 'depositType',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
-                                                    )
-                                                    ->searchable()
-                                                    ->required()
-                                                    ->live()
-                                                    ->preload(),
-                                                Select::make('currency')
-                                                    ->label('Currency')
-                                                    ->options(Currency::options())
-                                                    ->default('QAR')
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->live(),
-                                                TextInput::make('exchange_rate')
-                                                    ->label('Exchange Rate')
-                                                    ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
-                                                    ->default(1.000)
-                                                    ->required()
-                                                    ->rules(['numeric'])
-                                                    ->step(0.001)
-                                                    ->minValue(0.001),
-                                                TextInput::make('actual_amount')
-                                                    ->label('Actual Amount')
-                                                    ->placeholder('Enter amount in original currency')
-                                                    ->rules(['numeric'])
-                                                    ->required()
-                                                    ->minValue(0)
-                                                    ->prefix(function ($get) {
-                                                        $currency = $get('currency') ?? 'QAR';
-                                                        return Currency::from($currency)?->getSymbol() ?? 'QAR';
-                                                    })
-                                                    ->live(),
-                                            ]),
+                                        Select::make('deposit_type_id')
+                                            ->label('Deposit Type')
+                                            ->relationship(
+                                                name: 'depositType',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn($query) => $query->whereUserId(Auth::id())
+                                            )
+                                            ->searchable()
+                                            ->required()
+                                            ->live()
+                                            ->preload(),
+                                        Select::make('currency')
+                                            ->label('Currency')
+                                            ->options(Currency::options())
+                                            ->default('QAR')
+                                            ->required()
+                                            ->searchable()
+                                            ->live(),
+                                        TextInput::make('exchange_rate')
+                                            ->label('Exchange Rate')
+                                            ->placeholder('Enter exchange rate (e.g., 24.20 for QAR to INR)')
+                                            ->default(1.000)
+                                            ->required()
+                                            ->rules(['numeric'])
+                                            ->step(0.001)
+                                            ->minValue(0.001),
+                                        TextInput::make('actual_amount')
+                                            ->label('Actual Amount')
+                                            ->placeholder('Enter amount in original currency')
+                                            ->rules(['numeric'])
+                                            ->required()
+                                            ->minValue(0)
+                                            ->prefix(function ($get) {
+                                                $currency = $get('currency') ?? 'QAR';
+                                                return Currency::from($currency)?->getSymbol() ?? 'QAR';
+                                            })
+                                            ->live(),
                                         TextInput::make('notes')
                                             ->label('Notes')
-                                            ->placeholder('Optional notes about this deposit')
-                                            ->columnSpanFull(),
+                                            ->placeholder('Optional notes about this deposit'),
                                     ])
                                     ->addActionLabel('Add Deposit')
                                     ->collapsible()
