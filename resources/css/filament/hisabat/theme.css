@@ -3,6 +3,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');
 
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
 /*@import '../../../../vendor/filafly/brisk/resources/css/theme.css';*/
 
 /* Responsive grid helper to guarantee 2 columns on >=640px */
