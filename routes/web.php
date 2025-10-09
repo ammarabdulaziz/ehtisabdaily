@@ -14,6 +14,15 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/duas', [DuaController::class, 'index'])->name('duas.index');
     
+    // Adhkar routes
+    Route::get('/morning-adhkar', function () {
+        return Inertia::render('MorningAdhkar/Index');
+    })->name('morning-adhkar.index');
+    
+    Route::get('/evening-adhkar', function () {
+        return Inertia::render('EveningAdhkar/Index');
+    })->name('evening-adhkar.index');
+    
     // Assets security routes (outside security middleware to allow access)
     Route::get('/assets/security', [App\Http\Controllers\AssetsSecurityController::class, 'show'])->name('assets.security');
     Route::post('/api/assets/verify-security', [App\Http\Controllers\AssetsSecurityController::class, 'verify'])->name('assets.verify-security');

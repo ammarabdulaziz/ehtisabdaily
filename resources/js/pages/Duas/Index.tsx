@@ -210,7 +210,7 @@ function DuaCard({ dua }: { dua: Dua }) {
       <CardContent className="flex-1 flex flex-col">
         {/* Arabic Text */}
         <div className="mb-4">
-          <div className="text-right border text-xl leading-loose font-arabic bg-muted/50 p-4 pt-5 pb-3 rounded-lg" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>
+          <div dir="rtl" className="text-right border text-xl leading-loose font-arabic bg-muted/50 p-4 pt-5 pb-3 rounded-lg" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>
             {dua.arabic_text}
           </div>
         </div>
