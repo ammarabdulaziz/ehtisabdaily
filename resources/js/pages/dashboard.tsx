@@ -4,6 +4,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Calculator, BookMarked, Wallet, ArrowRight } from 'lucide-react';
+import ProgressTracker from '@/components/ProgressTracker';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,6 +18,9 @@ export default function Dashboard() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+
+                {/* Progress Tracker */}
+                <ProgressTracker />
 
                 {/* Navigation Cards */}
                 <div className="grid gap-6 md:grid-cols-3">

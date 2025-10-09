@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssetChartController;
 use App\Http\Controllers\DuaController;
+use App\Http\Controllers\MotivationalQuoteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -41,6 +42,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+    
+    // Motivational quotes API
+    Route::post('/api/motivational-quote', [MotivationalQuoteController::class, 'generate'])->name('motivational-quote.generate');
 });
 
 require __DIR__.'/settings.php';

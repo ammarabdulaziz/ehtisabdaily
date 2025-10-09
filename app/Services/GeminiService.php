@@ -61,6 +61,50 @@ class GeminiService
         }
     }
 
+    public function generateMotivationalQuote(int $daysCompleted, int $daysRemaining, float $percentage): array
+    {
+        try {
+            $prompt = $this->buildMotivationalPrompt($daysCompleted, $daysRemaining, $percentage);
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'X-goog-api-key' => $this->apiKey,
+            ])->post($this->baseUrl, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            [
+                                'text' => $prompt,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            if ($response->successful()) {
+                $content = $response->json('candidates.0.content.parts.0.text');
+
+                return $this->parseMotivationalResponse($content);
+            }
+
+            Log::error('Gemini API error for motivational quote', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            return $this->getFallbackQuote();
+        } catch (\Exception $e) {
+            Log::error('Gemini service error for motivational quote', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return $this->getFallbackQuote();
+        }
+    }
+
     private function buildPrompt(string $glimpse): string
     {
         return "Based on this glimpse of a dua: '{$glimpse}', please provide the following information in JSON format:
@@ -139,5 +183,88 @@ Please ensure the response is valid JSON and all fields are appropriate for Isla
         }
 
         return $sanitized;
+    }
+
+    private function buildMotivationalPrompt(int $daysCompleted, int $daysRemaining, float $percentage): string
+    {
+        return "Generate a motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.
+
+Please provide the response in JSON format with these fields:
+
+{
+    \"quote\": \"A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)\",
+    \"type\": \"islamic|general|realistic\",
+    \"context\": \"Brief context about why this quote is relevant to their current progress\"
+}
+
+Guidelines:
+- Include Islamic wisdom, general motivation, and realistic encouragement
+- Make it relevant to their current progress stage
+- Keep quotes between 10-30 words
+- Be encouraging but realistic
+- Mix different types of motivation (spiritual, practical, emotional)
+- Consider their progress percentage when crafting the message";
+    }
+
+    private function parseMotivationalResponse(string $content): array
+    {
+        try {
+            // Clean the response content
+            $cleanedContent = trim($content);
+
+            // Try to extract JSON from the response
+            if (preg_match('/\{.*\}/s', $cleanedContent, $matches)) {
+                $jsonContent = $matches[0];
+                $parsed = json_decode($jsonContent, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $this->sanitizeMotivationalData($parsed);
+                }
+            }
+
+            Log::warning('Failed to parse Gemini motivational response as JSON', ['content' => $content]);
+
+            return $this->getFallbackQuote();
+
+        } catch (\Exception $e) {
+            Log::error('Error parsing Gemini motivational response', [
+                'message' => $e->getMessage(),
+                'content' => $content,
+            ]);
+
+            return $this->getFallbackQuote();
+        }
+    }
+
+    private function sanitizeMotivationalData(array $data): array
+    {
+        return [
+            'quote' => $data['quote'] ?? 'Keep going, you\'re doing great!',
+            'type' => in_array($data['type'] ?? '', ['islamic', 'general', 'realistic']) ? $data['type'] : 'general',
+            'context' => $data['context'] ?? 'Stay strong on your journey!',
+        ];
+    }
+
+    private function getFallbackQuote(): array
+    {
+        $fallbackQuotes = [
+            [
+                'quote' => 'Every step forward is a victory worth celebrating!',
+                'type' => 'general',
+                'context' => 'Keep moving forward on your journey!',
+            ],
+            [
+                'quote' => 'And whoever relies upon Allah - then He is sufficient for him.',
+                'type' => 'islamic',
+                'context' => 'Trust in Allah\'s plan for you.',
+            ],
+            [
+                'quote' => 'Progress, not perfection - you\'re doing amazing!',
+                'type' => 'realistic',
+                'context' => 'Focus on consistent progress.',
+            ],
+        ];
+
+        return $fallbackQuotes[array_rand($fallbackQuotes)];
     }
 }
