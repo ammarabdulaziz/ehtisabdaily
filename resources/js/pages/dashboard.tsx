@@ -20,7 +20,7 @@ export default function Dashboard() {
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
 
                 {/* Progress Tracker */}
-                <ProgressTracker />
+                <ProgressTracker useFallback={true} />
 
                 {/* Navigation Cards */}
                 <div className="grid gap-6 md:grid-cols-3">

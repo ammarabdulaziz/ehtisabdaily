@@ -28,15 +28,72 @@ const milestones = [
   { days: 120, message: "Four months of progress! 🚀", color: "bg-pink-500" },
 ];
 
-export default function ProgressTracker() {
+interface ProgressTrackerProps {
+  useFallback?: boolean;
+}
+
+export default function ProgressTracker({ useFallback }: ProgressTrackerProps = {}) {
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
   const [currentQuote, setCurrentQuote] = useState<MotivationalQuote | null>(null);
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
   const [milestoneMessage, setMilestoneMessage] = useState('');
 
+  // Determine if we should use fallback quotes
+  const shouldUseFallback = useFallback ?? (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname.includes('.test')
+  );
+
   const fetchMotivationalQuote = async (daysCompleted: number, daysRemaining: number, percentage: number) => {
     setIsLoadingQuote(true);
+    
+    // Use fallback quotes if explicitly set or in local environment
+    if (shouldUseFallback) {
+      // Simulate API delay
+      setTimeout(() => {
+        const fallbackQuotes = [
+          {
+            quote: 'And whoever relies upon Allah - then He is sufficient for him.',
+            type: 'islamic' as const,
+            context: 'Trust in Allah\'s plan for you.',
+          },
+          {
+            quote: 'Every step forward is a victory worth celebrating!',
+            type: 'general' as const,
+            context: 'Keep moving forward on your journey!',
+          },
+          {
+            quote: 'Progress, not perfection - you\'re doing amazing!',
+            type: 'realistic' as const,
+            context: 'Focus on consistent progress.',
+          },
+          {
+            quote: 'The best time to plant a tree was 20 years ago. The second best time is now.',
+            type: 'realistic' as const,
+            context: 'It\'s never too late to start your journey.',
+          },
+          {
+            quote: 'And it is He who created the heavens and earth in truth. And the day He says, "Be," and it is.',
+            type: 'islamic' as const,
+            context: 'Allah\'s power is beyond our understanding.',
+          },
+          {
+            quote: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
+            type: 'general' as const,
+            context: 'Persistence is the key to success.',
+          },
+        ];
+        
+        const randomQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+        setCurrentQuote(randomQuote);
+        setIsLoadingQuote(false);
+      }, 800); // Simulate API delay
+      return;
+    }
+
+    // Production: Use actual API
     try {
       const response = await fetch('/api/motivational-quote', {
         method: 'POST',
@@ -143,7 +200,7 @@ export default function ProgressTracker() {
                 <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                   "{currentQuote.quote}"
                 </p>
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {currentQuote.context}
                   </span>
