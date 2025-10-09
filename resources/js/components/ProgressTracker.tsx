@@ -233,7 +233,7 @@ export default function ProgressTracker() {
                 <Calendar className="h-4 w-4 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">Last Skip</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white">Count Started On</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">Oct 9, 2025</div>
               </div>
             </div>
