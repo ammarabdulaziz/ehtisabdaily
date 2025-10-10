@@ -46,10 +46,19 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
   // const shouldUseFallback = false;
 
   const fetchMotivationalQuote = useCallback(async (daysCompleted: number, daysRemaining: number, percentage: number) => {
+    console.log('🚀 Starting motivational quote fetch', {
+      daysCompleted,
+      daysRemaining,
+      percentage,
+      shouldUseFallback,
+      timestamp: new Date().toISOString(),
+    });
+
     setIsLoadingQuote(true);
     
     // Use fallback quotes if explicitly set or in local environment
     if (shouldUseFallback) {
+      console.log('📝 Using fallback mode - skipping API call');
       // Simulate API delay
       setTimeout(() => {
         // Commented out fallback quotes - show message instead
@@ -96,54 +105,115 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
 
     // Production: Use actual API
     try {
+      const requestData = {
+        days_completed: daysCompleted,
+        days_remaining: daysRemaining,
+        percentage: percentage,
+      };
+
+      console.log('📤 Sending API request', {
+        url: '/api/motivational-quote',
+        method: 'POST',
+        data: requestData,
+        csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 'NOT_FOUND',
+      });
+
       const response = await fetch('/api/motivational-quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
-        body: JSON.stringify({
-          days_completed: daysCompleted,
-          days_remaining: daysRemaining,
-          percentage: percentage,
-        }),
+        body: JSON.stringify(requestData),
+      });
+
+      console.log('📥 Received API response', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries()),
+        url: response.url,
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Successfully received quote data', {
+          data,
+          hasQuote: !!data.quote,
+          quoteType: data.type,
+          dataKeys: Object.keys(data),
+        });
         setCurrentQuote(data);
       } else if (response.status === 503) {
         // Service unavailable - quote generation failed
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Service Unavailable (503):', {
+        console.error('❌ Service Unavailable (503) - Quote generation failed', {
           status: response.status,
           statusText: response.statusText,
-          errorData: errorData,
-          responseText: await response.text().catch(() => 'Unable to read response text')
+          url: response.url,
+          headers: Object.fromEntries(response.headers.entries()),
         });
+
+        try {
+          const errorData = await response.json();
+          console.error('📋 Error response data:', {
+            errorData,
+            debugInfo: errorData.debug_info,
+            error: errorData.error,
+            message: errorData.message,
+          });
+        } catch (jsonError) {
+          console.error('⚠️ Failed to parse error response as JSON:', {
+            jsonError: jsonError instanceof Error ? jsonError.message : 'Unknown JSON error',
+            responseText: await response.text().catch(() => 'Unable to read response text'),
+          });
+        }
+
         setCurrentQuote(null);
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        const responseText = await response.text().catch(() => 'Unable to read response text');
-        console.error('API Error Response:', {
+        console.error('❌ API Error Response (Non-503)', {
           status: response.status,
           statusText: response.statusText,
-          errorData: errorData,
-          responseText: responseText,
-          url: response.url
+          url: response.url,
+          headers: Object.fromEntries(response.headers.entries()),
         });
+
+        try {
+          const errorData = await response.json();
+          console.error('📋 Error response data:', errorData);
+        } catch (jsonError) {
+          console.error('⚠️ Failed to parse error response as JSON:', {
+            jsonError: jsonError instanceof Error ? jsonError.message : 'Unknown JSON error',
+            responseText: await response.text().catch(() => 'Unable to read response text'),
+          });
+        }
+
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Error fetching motivational quote:', {
+      console.error('💥 Error fetching motivational quote:', {
         error: error,
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
         name: error instanceof Error ? error.name : 'Unknown',
-        daysCompleted: daysCompleted,
-        daysRemaining: daysRemaining,
-        percentage: percentage
+        requestData: {
+          daysCompleted: daysCompleted,
+          daysRemaining: daysRemaining,
+          percentage: percentage,
+        },
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
       });
+
+      // Additional debugging for network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.error('🌐 Network error detected:', {
+          message: 'This might be a network connectivity issue or CORS problem',
+          error: error.message,
+          stack: error.stack,
+        });
+      }
+
       // Commented out fallback quote - show message instead
       // setCurrentQuote({
       //   quote: 'Keep going, you\'re doing great!',
@@ -152,6 +222,10 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
       // });
       setCurrentQuote(null); // Show message instead of fallback quote
     } finally {
+      console.log('🏁 Quote fetch completed', {
+        timestamp: new Date().toISOString(),
+        isLoadingQuote: false,
+      });
       setIsLoadingQuote(false);
     }
   }, [shouldUseFallback]);
@@ -254,9 +328,26 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
                 <div className="text-gray-500 dark:text-gray-400 mb-2">
                   Unable to generate motivational quote at this time
                 </div>
-                <div className="text-sm text-gray-400 dark:text-gray-500">
+                <div className="text-sm text-gray-400 dark:text-gray-500 mb-3">
                   Please try again later or continue your journey without a quote
                 </div>
+                <button
+                  onClick={async () => {
+                    try {
+                      console.log('🔍 Testing debug endpoint...');
+                      const response = await fetch('/api/motivational-quote/debug');
+                      const debugData = await response.json();
+                      console.log('🔍 Debug information:', debugData);
+                      alert('Debug info logged to console. Check browser console for details.');
+                    } catch (error) {
+                      console.error('🔍 Debug endpoint failed:', error);
+                      alert('Debug endpoint failed. Check console for details.');
+                    }
+                  }}
+                  className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  🔍 Debug Info
+                </button>
               </div>
             )}
           </div>
