@@ -39,11 +39,11 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
   const [milestoneMessage, setMilestoneMessage] = useState('');
 
   // Determine if we should use fallback quotes
-  const shouldUseFallback = useFallback ?? (
-    window.location.hostname === 'ehtisabdaily.test'
-  );
+  // const shouldUseFallback = useFallback ?? (
+  //   window.location.hostname === 'ehtisabdaily.test'
+  // );
 
-  // const shouldUseFallback = false;
+  const shouldUseFallback = false;
 
   const fetchMotivationalQuote = useCallback(async (daysCompleted: number, daysRemaining: number, percentage: number) => {
     setIsLoadingQuote(true);
