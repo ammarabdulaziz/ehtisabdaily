@@ -40,9 +40,7 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
 
   // Determine if we should use fallback quotes
   const shouldUseFallback = useFallback ?? (
-    window.location.hostname === 'localhost' || 
-    window.location.hostname === '127.0.0.1' || 
-    window.location.hostname.includes('.test')
+    window.location.hostname === 'ehtisabdaily.test'
   );
 
   // const shouldUseFallback = false;
@@ -116,12 +114,36 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
         setCurrentQuote(data);
       } else if (response.status === 503) {
         // Service unavailable - quote generation failed
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Service Unavailable (503):', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: errorData,
+          responseText: await response.text().catch(() => 'Unable to read response text')
+        });
         setCurrentQuote(null);
       } else {
-        throw new Error('Failed to fetch quote');
+        const errorData = await response.json().catch(() => ({}));
+        const responseText = await response.text().catch(() => 'Unable to read response text');
+        console.error('API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: errorData,
+          responseText: responseText,
+          url: response.url
+        });
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Error fetching motivational quote:', error);
+      console.error('Error fetching motivational quote:', {
+        error: error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : 'Unknown',
+        daysCompleted: daysCompleted,
+        daysRemaining: daysRemaining,
+        percentage: percentage
+      });
       // Commented out fallback quote - show message instead
       // setCurrentQuote({
       //   quote: 'Keep going, you\'re doing great!',

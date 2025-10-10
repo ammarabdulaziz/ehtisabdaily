@@ -83,7 +83,6 @@ class GeminiService
 
             if ($response->successful()) {
                 $content = $response->json('candidates.0.content.parts.0.text');
-
                 return $this->parseMotivationalResponse($content);
             }
 
@@ -92,8 +91,6 @@ class GeminiService
                 'response' => $response->body(),
             ]);
 
-            // Commented out fallback quote - return empty array to indicate failure
-            // return $this->getFallbackQuote();
             return [];
         } catch (\Exception $e) {
             Log::error('Gemini service error for motivational quote', [
@@ -103,8 +100,6 @@ class GeminiService
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            // Commented out fallback quote - return empty array to indicate failure
-            // return $this->getFallbackQuote();
             return [];
         }
     }
@@ -244,8 +239,6 @@ Guidelines:
 
             Log::warning('Failed to parse Gemini motivational response as JSON', ['content' => $content]);
 
-            // Commented out fallback quote - return empty array to indicate failure
-            // return $this->getFallbackQuote();
             return [];
 
         } catch (\Exception $e) {
@@ -254,8 +247,6 @@ Guidelines:
                 'content' => $content,
             ]);
 
-            // Commented out fallback quote - return empty array to indicate failure
-            // return $this->getFallbackQuote();
             return [];
         }
     }
