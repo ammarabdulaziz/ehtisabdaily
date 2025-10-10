@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet, Sun, Moon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -13,6 +13,16 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Morning Adhkar',
+        href: '/morning-adhkar',
+        icon: Sun,
+    },
+    {
+        title: 'Evening Adhkar',
+        href: '/evening-adhkar',
+        icon: Moon,
     },
     {
         title: 'Duas',

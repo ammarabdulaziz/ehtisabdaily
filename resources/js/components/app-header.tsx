@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Menu, BookMarked } from 'lucide-react';
+import { LayoutGrid, Menu, BookMarked, Sun, Moon, Wallet } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -23,9 +23,24 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Morning Adhkar',
+        href: '/morning-adhkar',
+        icon: Sun,
+    },
+    {
+        title: 'Evening Adhkar',
+        href: '/evening-adhkar',
+        icon: Moon,
+    },
+    {
         title: 'Duas',
         href: '/duas',
         icon: BookMarked,
+    },
+    {
+        title: 'Assets',
+        href: '/assets',
+        icon: Wallet,
     },
 ];
 
