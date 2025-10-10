@@ -81,12 +81,12 @@ export default function EveningAdhkarIndex() {
         )}
 
         {/* Stats */}
-        <div className="mt-12 flex justify-center gap-20 max-w-2xl mx-auto">
+        {/* <div className="mt-12 flex justify-center gap-20 max-w-2xl mx-auto">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary">{eveningAdhkar.length}</div>
             <div className="text-sm text-muted-foreground">Total Adhkar</div>
           </div>
-        </div>
+        </div> */}
       </div>
     </AppLayout>
   )
@@ -94,8 +94,8 @@ export default function EveningAdhkarIndex() {
 
 function AdhkarCard({ adhkar }: { adhkar: AdhkarItem }) {
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-4">
+    <Card className="h-[69vh] flex flex-col hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+      <CardHeader className="pb-4 flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-lg leading-tight mb-2">
@@ -116,7 +116,7 @@ function AdhkarCard({ adhkar }: { adhkar: AdhkarItem }) {
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="flex-1 flex flex-col overflow-y-auto">
         {/* Arabic Text */}
         <div className="mb-4">
           <div dir="rtl" className="text-right border text-xl leading-loose font-arabic bg-muted/50 p-4 pt-5 pb-3 rounded-lg" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>

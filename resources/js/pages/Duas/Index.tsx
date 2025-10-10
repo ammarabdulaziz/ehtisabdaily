@@ -164,7 +164,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
         )}
 
         {/* Stats */}
-        <div className="mt-12 flex justify-center gap-20 max-w-2xl mx-auto">
+        {/* <div className="mt-12 flex justify-center gap-20 max-w-2xl mx-auto">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary">{duas.length}</div>
             <div className="text-sm text-muted-foreground">Total Duas</div>
@@ -177,7 +177,7 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
             <div className="text-3xl font-bold text-primary">{filteredDuas.length}</div>
             <div className="text-sm text-muted-foreground">Showing</div>
           </div>
-        </div>
+        </div> */}
       </div>
     </AppLayout>
   )
@@ -185,8 +185,8 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
 
 function DuaCard({ dua }: { dua: Dua }) {
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-4">
+    <Card className="h-[80vh] flex flex-col hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+      <CardHeader className="pb-4 flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-lg leading-tight mb-2">
@@ -207,7 +207,7 @@ function DuaCard({ dua }: { dua: Dua }) {
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="flex-1 flex flex-col overflow-y-auto">
         {/* Arabic Text */}
         <div className="mb-4">
           <div dir="rtl" className="text-right border text-xl leading-loose font-arabic bg-muted/50 p-4 pt-5 pb-3 rounded-lg" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>
