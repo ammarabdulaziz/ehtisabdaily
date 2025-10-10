@@ -128,7 +128,7 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
 
   useEffect(() => {
     // Set dates
-    const lastSkip = new Date('2025-10-09');
+    const lastSkip = new Date('2025-10-10');
     const targetDate = new Date('2026-02-17'); // Ramadan 2026 start
     const currentDate = new Date();
 
@@ -233,12 +233,61 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
               {percentage}%
             </span>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out relative"
-              style={{ width: `${percentage}%` }}
-            >
-              <div className="absolute right-0 top-0 w-1 h-full bg-white/30 animate-pulse"></div>
+          <div className="relative">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-1000 ease-out relative"
+                style={{ width: `${percentage}%` }}
+              >
+                <div className="absolute right-0 top-0 w-1 h-full bg-white/30 animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Milestone Markers */}
+            <div className="absolute top-0 left-0 w-full h-3 flex items-center">
+              {milestones.map((milestone, index) => {
+                const milestonePercentage = (milestone.days / totalDays) * 100;
+                const isCompleted = daysCompleted >= milestone.days;
+                const isCurrent = daysCompleted >= milestone.days - 3 && daysCompleted < milestone.days + 3;
+                
+                return (
+                  <div
+                    key={milestone.days}
+                    className="absolute flex flex-col items-center group"
+                    style={{ left: `${milestonePercentage}%`, transform: 'translateX(-50%)' }}
+                  >
+                    {/* Milestone Dot */}
+                    <div 
+                      className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                        isCompleted 
+                          ? `${milestone.color} border-white shadow-lg scale-110` 
+                          : isCurrent
+                          ? `bg-white ${milestone.color.replace('bg-', 'border-')} border-2 shadow-md scale-105`
+                          : 'bg-white border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    
+                    {/* Milestone Label */}
+                    <div className={`absolute top-5 text-xs font-medium whitespace-nowrap transition-all duration-300 ${
+                      isCompleted 
+                        ? 'text-gray-900 dark:text-white' 
+                        : isCurrent
+                        ? 'text-gray-700 dark:text-gray-300'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {milestone.days}d
+                    </div>
+                    
+                    {/* Tooltip on Hover */}
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                      <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                        {milestone.message}
+                      </div>
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
