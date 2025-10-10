@@ -64,21 +64,7 @@ class GeminiService
     public function generateMotivationalQuote(int $daysCompleted, int $daysRemaining, float $percentage): array
     {
         try {
-            Log::info('GeminiService: Starting motivational quote generation', [
-                'days_completed' => $daysCompleted,
-                'days_remaining' => $daysRemaining,
-                'percentage' => $percentage,
-                'api_key_configured' => !empty($this->apiKey),
-                'api_key_length' => strlen($this->apiKey ?? ''),
-                'base_url' => $this->baseUrl,
-            ]);
-
             $prompt = $this->buildMotivationalPrompt($daysCompleted, $daysRemaining, $percentage);
-            
-            Log::debug('GeminiService: Generated prompt', [
-                'prompt_length' => strlen($prompt),
-                'prompt_preview' => substr($prompt, 0, 200) . '...',
-            ]);
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
@@ -95,41 +81,14 @@ class GeminiService
                 ],
             ]);
 
-            Log::info('GeminiService: API response received', [
-                'status' => $response->status(),
-                'successful' => $response->successful(),
-                'response_size' => strlen($response->body()),
-                'headers' => $response->headers(),
-            ]);
-
             if ($response->successful()) {
                 $content = $response->json('candidates.0.content.parts.0.text');
-                
-                Log::debug('GeminiService: Raw content from API', [
-                    'content_length' => strlen($content ?? ''),
-                    'content_preview' => substr($content ?? '', 0, 300) . '...',
-                ]);
-
-                $parsedQuote = $this->parseMotivationalResponse($content);
-                
-                Log::info('GeminiService: Quote parsing completed', [
-                    'parsing_successful' => !empty($parsedQuote),
-                    'parsed_quote' => $parsedQuote,
-                ]);
-
-                return $parsedQuote;
+                return $this->parseMotivationalResponse($content);
             }
 
             Log::error('Gemini API error for motivational quote', [
                 'status' => $response->status(),
-                'response_headers' => $response->headers(),
-                'response_body' => $response->body(),
-                'response_size' => strlen($response->body()),
-                'request_data' => [
-                    'days_completed' => $daysCompleted,
-                    'days_remaining' => $daysRemaining,
-                    'percentage' => $percentage,
-                ],
+                'response' => $response->body(),
             ]);
 
             return [];
@@ -139,13 +98,6 @@ class GeminiService
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
-                'request_data' => [
-                    'days_completed' => $daysCompleted,
-                    'days_remaining' => $daysRemaining,
-                    'percentage' => $percentage,
-                ],
-                'api_key_configured' => !empty($this->apiKey),
-                'base_url' => $this->baseUrl,
             ]);
 
             return [];
@@ -258,11 +210,6 @@ Guidelines:
     private function parseMotivationalResponse(string $content): array
     {
         try {
-            Log::debug('GeminiService: Starting to parse motivational response', [
-                'content_length' => strlen($content),
-                'content_preview' => substr($content, 0, 500) . '...',
-            ]);
-
             // Clean the response content
             $cleanedContent = trim($content);
 
@@ -270,70 +217,34 @@ Guidelines:
             $cleanedContent = preg_replace('/```json\s*/', '', $cleanedContent);
             $cleanedContent = preg_replace('/```\s*$/', '', $cleanedContent);
 
-            Log::debug('GeminiService: Cleaned content for parsing', [
-                'cleaned_length' => strlen($cleanedContent),
-                'cleaned_preview' => substr($cleanedContent, 0, 500) . '...',
-            ]);
-
             // Try to extract JSON from the response (both single object and array)
             if (preg_match('/\[.*\]/s', $cleanedContent, $arrayMatches)) {
-                Log::debug('GeminiService: Found array pattern in response');
                 // Handle array response
                 $jsonContent = $arrayMatches[0];
                 $parsed = json_decode($jsonContent, true);
 
                 if (json_last_error() === JSON_ERROR_NONE && is_array($parsed) && !empty($parsed)) {
-                    Log::debug('GeminiService: Successfully parsed array response', [
-                        'array_length' => count($parsed),
-                        'first_item' => $parsed[0] ?? null,
-                    ]);
                     // Return the first quote from the array
                     return $this->sanitizeMotivationalData($parsed[0]);
-                } else {
-                    Log::warning('GeminiService: Failed to parse array JSON', [
-                        'json_error' => json_last_error_msg(),
-                        'json_content' => $jsonContent,
-                    ]);
                 }
             } elseif (preg_match('/\{.*\}/s', $cleanedContent, $objectMatches)) {
-                Log::debug('GeminiService: Found object pattern in response');
                 // Handle single object response
                 $jsonContent = $objectMatches[0];
                 $parsed = json_decode($jsonContent, true);
 
                 if (json_last_error() === JSON_ERROR_NONE) {
-                    Log::debug('GeminiService: Successfully parsed object response', [
-                        'parsed_data' => $parsed,
-                    ]);
                     return $this->sanitizeMotivationalData($parsed);
-                } else {
-                    Log::warning('GeminiService: Failed to parse object JSON', [
-                        'json_error' => json_last_error_msg(),
-                        'json_content' => $jsonContent,
-                    ]);
                 }
-            } else {
-                Log::warning('GeminiService: No JSON pattern found in response', [
-                    'content' => $content,
-                    'cleaned_content' => $cleanedContent,
-                ]);
             }
 
-            Log::warning('Failed to parse Gemini motivational response as JSON', [
-                'content' => $content,
-                'cleaned_content' => $cleanedContent,
-                'content_length' => strlen($content),
-            ]);
+            Log::warning('Failed to parse Gemini motivational response as JSON', ['content' => $content]);
 
             return [];
 
         } catch (\Exception $e) {
             Log::error('Error parsing Gemini motivational response', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
                 'content' => $content,
-                'content_length' => strlen($content),
             ]);
 
             return [];

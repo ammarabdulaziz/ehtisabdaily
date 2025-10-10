@@ -54,7 +54,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Motivational quotes API
     Route::post('/api/motivational-quote', [MotivationalQuoteController::class, 'generate'])->name('motivational-quote.generate');
-    Route::get('/api/motivational-quote/debug', [MotivationalQuoteController::class, 'debug'])->name('motivational-quote.debug');
 });
 
 require __DIR__.'/settings.php';
