@@ -26,6 +26,14 @@ class MotivationalQuoteController extends Controller
             $request->percentage
         );
 
+        // If quote generation failed (empty array), return error response
+        if (empty($quote)) {
+            return response()->json([
+                'error' => 'Unable to generate motivational quote at this time',
+                'message' => 'Please try again later'
+            ], 503); // Service Unavailable
+        }
+
         return response()->json($quote);
     }
 }

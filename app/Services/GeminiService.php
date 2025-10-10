@@ -92,7 +92,9 @@ class GeminiService
                 'response' => $response->body(),
             ]);
 
-            return $this->getFallbackQuote();
+            // Commented out fallback quote - return empty array to indicate failure
+            // return $this->getFallbackQuote();
+            return [];
         } catch (\Exception $e) {
             Log::error('Gemini service error for motivational quote', [
                 'message' => $e->getMessage(),
@@ -101,7 +103,9 @@ class GeminiService
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return $this->getFallbackQuote();
+            // Commented out fallback quote - return empty array to indicate failure
+            // return $this->getFallbackQuote();
+            return [];
         }
     }
 
@@ -187,9 +191,9 @@ Please ensure the response is valid JSON and all fields are appropriate for Isla
 
     private function buildMotivationalPrompt(int $daysCompleted, int $daysRemaining, float $percentage): string
     {
-        return "Generate a motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.
+        return "Generate a single motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.
 
-Please provide the response in JSON format with these fields:
+Please provide the response as a single JSON object (not an array) with these fields:
 
 {
     \"quote\": \"A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)\",
@@ -198,12 +202,14 @@ Please provide the response in JSON format with these fields:
 }
 
 Guidelines:
+- Return ONLY a single JSON object, not an array
 - Include Islamic wisdom, general motivation, and realistic encouragement
 - Make it relevant to their current progress stage
 - Keep quotes between 10-30 words
 - Be encouraging but realistic
 - Mix different types of motivation (spiritual, practical, emotional)
-- Consider their progress percentage when crafting the message";
+- Consider their progress percentage when crafting the message
+- Do not wrap the response in markdown code blocks";
     }
 
     private function parseMotivationalResponse(string $content): array
@@ -212,9 +218,23 @@ Guidelines:
             // Clean the response content
             $cleanedContent = trim($content);
 
-            // Try to extract JSON from the response
-            if (preg_match('/\{.*\}/s', $cleanedContent, $matches)) {
-                $jsonContent = $matches[0];
+            // Remove markdown code blocks if present
+            $cleanedContent = preg_replace('/```json\s*/', '', $cleanedContent);
+            $cleanedContent = preg_replace('/```\s*$/', '', $cleanedContent);
+
+            // Try to extract JSON from the response (both single object and array)
+            if (preg_match('/\[.*\]/s', $cleanedContent, $arrayMatches)) {
+                // Handle array response
+                $jsonContent = $arrayMatches[0];
+                $parsed = json_decode($jsonContent, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && is_array($parsed) && !empty($parsed)) {
+                    // Return the first quote from the array
+                    return $this->sanitizeMotivationalData($parsed[0]);
+                }
+            } elseif (preg_match('/\{.*\}/s', $cleanedContent, $objectMatches)) {
+                // Handle single object response
+                $jsonContent = $objectMatches[0];
                 $parsed = json_decode($jsonContent, true);
 
                 if (json_last_error() === JSON_ERROR_NONE) {
@@ -224,7 +244,9 @@ Guidelines:
 
             Log::warning('Failed to parse Gemini motivational response as JSON', ['content' => $content]);
 
-            return $this->getFallbackQuote();
+            // Commented out fallback quote - return empty array to indicate failure
+            // return $this->getFallbackQuote();
+            return [];
 
         } catch (\Exception $e) {
             Log::error('Error parsing Gemini motivational response', [
@@ -232,7 +254,9 @@ Guidelines:
                 'content' => $content,
             ]);
 
-            return $this->getFallbackQuote();
+            // Commented out fallback quote - return empty array to indicate failure
+            // return $this->getFallbackQuote();
+            return [];
         }
     }
 
@@ -245,26 +269,27 @@ Guidelines:
         ];
     }
 
-    private function getFallbackQuote(): array
-    {
-        $fallbackQuotes = [
-            [
-                'quote' => 'Every step forward is a victory worth celebrating!',
-                'type' => 'general',
-                'context' => 'Keep moving forward on your journey!',
-            ],
-            [
-                'quote' => 'And whoever relies upon Allah - then He is sufficient for him.',
-                'type' => 'islamic',
-                'context' => 'Trust in Allah\'s plan for you.',
-            ],
-            [
-                'quote' => 'Progress, not perfection - you\'re doing amazing!',
-                'type' => 'realistic',
-                'context' => 'Focus on consistent progress.',
-            ],
-        ];
+    // Commented out fallback quote method - no longer used
+    // private function getFallbackQuote(): array
+    // {
+    //     $fallbackQuotes = [
+    //         [
+    //             'quote' => 'Every step forward is a victory worth celebrating!',
+    //             'type' => 'general',
+    //             'context' => 'Keep moving forward on your journey!',
+    //         ],
+    //         [
+    //             'quote' => 'And whoever relies upon Allah - then He is sufficient for him.',
+    //             'type' => 'islamic',
+    //             'context' => 'Trust in Allah\'s plan for you.',
+    //         ],
+    //         [
+    //             'quote' => 'Progress, not perfection - you\'re doing amazing!',
+    //             'type' => 'realistic',
+    //             'context' => 'Focus on consistent progress.',
+    //         ],
+    //     ];
 
-        return $fallbackQuotes[array_rand($fallbackQuotes)];
-    }
+    //     return $fallbackQuotes[array_rand($fallbackQuotes)];
+    // }
 }

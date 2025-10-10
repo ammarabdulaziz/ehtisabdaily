@@ -1,8 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Target, Calendar, Sparkles, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import { Target, Calendar, Sparkles, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface ProgressData {
   lastSkip: Date;
@@ -46,48 +45,52 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
     window.location.hostname.includes('.test')
   );
 
-  const fetchMotivationalQuote = async (daysCompleted: number, daysRemaining: number, percentage: number) => {
+  // const shouldUseFallback = false;
+
+  const fetchMotivationalQuote = useCallback(async (daysCompleted: number, daysRemaining: number, percentage: number) => {
     setIsLoadingQuote(true);
     
     // Use fallback quotes if explicitly set or in local environment
     if (shouldUseFallback) {
       // Simulate API delay
       setTimeout(() => {
-        const fallbackQuotes = [
-          {
-            quote: 'And whoever relies upon Allah - then He is sufficient for him.',
-            type: 'islamic' as const,
-            context: 'Trust in Allah\'s plan for you.',
-          },
-          {
-            quote: 'Every step forward is a victory worth celebrating!',
-            type: 'general' as const,
-            context: 'Keep moving forward on your journey!',
-          },
-          {
-            quote: 'Progress, not perfection - you\'re doing amazing!',
-            type: 'realistic' as const,
-            context: 'Focus on consistent progress.',
-          },
-          {
-            quote: 'The best time to plant a tree was 20 years ago. The second best time is now.',
-            type: 'realistic' as const,
-            context: 'It\'s never too late to start your journey.',
-          },
-          {
-            quote: 'And it is He who created the heavens and earth in truth. And the day He says, "Be," and it is.',
-            type: 'islamic' as const,
-            context: 'Allah\'s power is beyond our understanding.',
-          },
-          {
-            quote: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
-            type: 'general' as const,
-            context: 'Persistence is the key to success.',
-          },
-        ];
+        // Commented out fallback quotes - show message instead
+        // const fallbackQuotes = [
+        //   {
+        //     quote: 'And whoever relies upon Allah - then He is sufficient for him.',
+        //     type: 'islamic' as const,
+        //     context: 'Trust in Allah\'s plan for you.',
+        //   },
+        //   {
+        //     quote: 'Every step forward is a victory worth celebrating!',
+        //     type: 'general' as const,
+        //     context: 'Keep moving forward on your journey!',
+        //   },
+        //   {
+        //     quote: 'Progress, not perfection - you\'re doing amazing!',
+        //     type: 'realistic' as const,
+        //     context: 'Focus on consistent progress.',
+        //   },
+        //   {
+        //     quote: 'The best time to plant a tree was 20 years ago. The second best time is now.',
+        //     type: 'realistic' as const,
+        //     context: 'It\'s never too late to start your journey.',
+        //   },
+        //   {
+        //     quote: 'And it is He who created the heavens and earth in truth. And the day He says, "Be," and it is.',
+        //     type: 'islamic' as const,
+        //     context: 'Allah\'s power is beyond our understanding.',
+        //   },
+        //   {
+        //     quote: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
+        //     type: 'general' as const,
+        //     context: 'Persistence is the key to success.',
+        //   },
+        // ];
         
-        const randomQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
-        setCurrentQuote(randomQuote);
+        // const randomQuote = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+        // setCurrentQuote(randomQuote);
+        setCurrentQuote(null); // Show message instead of fallback quote
         setIsLoadingQuote(false);
       }, 800); // Simulate API delay
       return;
@@ -111,20 +114,25 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
       if (response.ok) {
         const data = await response.json();
         setCurrentQuote(data);
+      } else if (response.status === 503) {
+        // Service unavailable - quote generation failed
+        setCurrentQuote(null);
       } else {
         throw new Error('Failed to fetch quote');
       }
     } catch (error) {
       console.error('Error fetching motivational quote:', error);
-      setCurrentQuote({
-        quote: 'Keep going, you\'re doing great!',
-        type: 'general',
-        context: 'Stay strong on your journey!',
-      });
+      // Commented out fallback quote - show message instead
+      // setCurrentQuote({
+      //   quote: 'Keep going, you\'re doing great!',
+      //   type: 'general',
+      //   context: 'Stay strong on your journey!',
+      // });
+      setCurrentQuote(null); // Show message instead of fallback quote
     } finally {
       setIsLoadingQuote(false);
     }
-  };
+  }, [shouldUseFallback]);
 
   useEffect(() => {
     // Set dates
@@ -158,7 +166,7 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
       setShowMilestone(true);
       setTimeout(() => setShowMilestone(false), 5000);
     }
-  }, []);
+  }, [fetchMotivationalQuote]);
 
   if (!progressData) {
     return (
@@ -220,7 +228,14 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
                 </div>
               </div>
             ) : (
-              <div className="py-4 text-gray-500">Loading motivational message...</div>
+              <div className="py-4 text-center">
+                <div className="text-gray-500 dark:text-gray-400 mb-2">
+                  Unable to generate motivational quote at this time
+                </div>
+                <div className="text-sm text-gray-400 dark:text-gray-500">
+                  Please try again later or continue your journey without a quote
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -245,7 +260,7 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
             
             {/* Milestone Markers */}
             <div className="absolute top-0 left-0 w-full h-3 flex items-center">
-              {milestones.map((milestone, index) => {
+              {milestones.map((milestone) => {
                 const milestonePercentage = (milestone.days / totalDays) * 100;
                 const isCompleted = daysCompleted >= milestone.days;
                 const isCurrent = daysCompleted >= milestone.days - 3 && daysCompleted < milestone.days + 3;
