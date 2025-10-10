@@ -37,7 +37,6 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
   const [milestoneMessage, setMilestoneMessage] = useState('');
-  const [quoteError, setQuoteError] = useState<string | null>(null);
 
   // Determine if we should use fallback quotes
   const shouldUseFallback = useFallback ?? (
@@ -50,7 +49,6 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
 
   const fetchMotivationalQuote = useCallback(async (daysCompleted: number, daysRemaining: number, percentage: number) => {
     setIsLoadingQuote(true);
-    setQuoteError(null); // Clear any previous errors
     
     // Use fallback quotes if explicitly set or in local environment
     if (shouldUseFallback) {
@@ -116,30 +114,21 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
       if (response.ok) {
         const data = await response.json();
         setCurrentQuote(data);
-        setQuoteError(null); // Clear any previous errors
-      } else {
-        // Try to get error message from response
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch (parseError) {
-          // If we can't parse the error response, use the status text
-          console.warn('Could not parse error response:', parseError);
-        }
-        
-        setQuoteError(errorMessage);
+      } else if (response.status === 503) {
+        // Service unavailable - quote generation failed
         setCurrentQuote(null);
+      } else {
+        throw new Error('Failed to fetch quote');
       }
     } catch (error) {
       console.error('Error fetching motivational quote:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Network error occurred';
-      setQuoteError(errorMessage);
-      setCurrentQuote(null);
+      // Commented out fallback quote - show message instead
+      // setCurrentQuote({
+      //   quote: 'Keep going, you\'re doing great!',
+      //   type: 'general',
+      //   context: 'Stay strong on your journey!',
+      // });
+      setCurrentQuote(null); // Show message instead of fallback quote
     } finally {
       setIsLoadingQuote(false);
     }
@@ -236,20 +225,6 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
                     {currentQuote.type === 'islamic' ? '🕌 Islamic' : 
                      currentQuote.type === 'realistic' ? '💡 Realistic' : '🌟 General'}
                   </Badge>
-                </div>
-              </div>
-            ) : quoteError ? (
-              <div className="py-4 text-center">
-                <div className="text-red-600 dark:text-red-400 mb-2 font-medium">
-                  Quote Generation Failed
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                  <div className="font-mono text-xs break-words">
-                    {quoteError}
-                  </div>
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
-                  Please check the console for more details or try again later
                 </div>
               </div>
             ) : (
