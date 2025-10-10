@@ -14,7 +14,6 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentView;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -60,13 +59,6 @@ class HisabatPanelProvider extends PanelProvider
                     ->url('/')
                     ->icon('heroicon-o-arrow-left')
                     ->sort(-2),
-                NavigationItem::make('Log Viewer')
-                    ->url('/log-viewer')
-                    ->icon('heroicon-o-document-text')
-                    ->group('Settings')
-                    ->openUrlInNewTab()
-                    ->sort(100)
-                    ->visible(fn (): bool => Auth::user()?->email === 'ammarabdulaziz99@gmail.com'),
             ])
             ->middleware([
                 EncryptCookies::class,

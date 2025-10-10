@@ -24,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'assets.security' => \App\Http\Middleware\AssetsSecurityMiddleware::class,
-            'log.viewer.auth' => \App\Http\Middleware\AuthorizeLogViewerAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
