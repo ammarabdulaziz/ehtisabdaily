@@ -3,36 +3,51 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
+import { type NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet, Sun, Moon } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const mainNavGroups: NavGroup[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        title: 'Main',
+        items: [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+                icon: LayoutGrid,
+            },
+        ],
     },
     {
-        title: 'Morning Adhkar',
-        href: '/morning-adhkar',
-        icon: Sun,
+        title: 'Spiritual',
+        items: [
+            {
+                title: 'Morning Adhkar',
+                href: '/morning-adhkar',
+                icon: Sun,
+            },
+            {
+                title: 'Evening Adhkar',
+                href: '/evening-adhkar',
+                icon: Moon,
+            },
+            {
+                title: 'Duas',
+                href: '/duas',
+                icon: BookMarked,
+            },
+        ],
     },
     {
-        title: 'Evening Adhkar',
-        href: '/evening-adhkar',
-        icon: Moon,
-    },
-    {
-        title: 'Duas',
-        href: '/duas',
-        icon: BookMarked,
-    },
-    {
-        title: 'Assets',
-        href: '/assets',
-        icon: Wallet,
+        title: 'Resources',
+        items: [
+            {
+                title: 'Assets',
+                href: '/assets',
+                icon: Wallet,
+            },
+        ],
     },
 ];
 
@@ -65,7 +80,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={mainNavGroups} />
             </SidebarContent>
 
             <SidebarFooter>
