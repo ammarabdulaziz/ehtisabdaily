@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Target, Calendar, Sparkles, Loader2 } from 'lucide-react';
+import { Target, Calendar, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 
 interface ProgressData {
@@ -17,6 +17,10 @@ interface MotivationalQuote {
   quote: string;
   type: 'islamic' | 'general' | 'realistic';
   context: string;
+  milestone_warning?: {
+    message: string;
+    milestone_days: number;
+  };
 }
 
 const milestones = [
@@ -256,6 +260,18 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
                 </div>
                 <div className="text-sm text-gray-400 dark:text-gray-500">
                   Please try again later or continue your journey without a quote
+                </div>
+              </div>
+            )}
+            
+            {/* Milestone Warning */}
+            {currentQuote?.milestone_warning && (
+              <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
+                  <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                    {currentQuote.milestone_warning.message}
+                  </p>
                 </div>
               </div>
             )}

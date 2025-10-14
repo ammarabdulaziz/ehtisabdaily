@@ -61,10 +61,10 @@ class GeminiService
         }
     }
 
-    public function generateMotivationalQuote(int $daysCompleted, int $daysRemaining, float $percentage): array
+    public function generateMotivationalQuote(int $daysCompleted, int $daysRemaining, float $percentage, ?int $nearMilestone = null): array
     {
         try {
-            $prompt = $this->buildMotivationalPrompt($daysCompleted, $daysRemaining, $percentage);
+            $prompt = $this->buildMotivationalPrompt($daysCompleted, $daysRemaining, $percentage, $nearMilestone);
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
@@ -184,17 +184,43 @@ Please ensure the response is valid JSON and all fields are appropriate for Isla
         return $sanitized;
     }
 
-    private function buildMotivationalPrompt(int $daysCompleted, int $daysRemaining, float $percentage): string
+    private function buildMotivationalPrompt(int $daysCompleted, int $daysRemaining, float $percentage, ?int $nearMilestone = null): string
     {
-        return "Generate a single motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.
+        $basePrompt = "Generate a motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.";
+
+        $milestoneGuidance = "";
+        if ($nearMilestone !== null) {
+            $milestoneGuidance = "
+
+IMPORTANT: This person is at or near a significant milestone ({$nearMilestone} days). This is a critical time when people are most vulnerable to relapse. The quote should:
+- Emphasize staying strong and not giving up
+- Acknowledge the milestone achievement while warning against complacency
+- Include specific relapse prevention messaging
+- Be more cautious and protective in tone
+- Focus on maintaining momentum rather than celebrating too much";
+        }
+
+        $jsonFields = $nearMilestone !== null ? 
+            '{
+    "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
+    "type": "islamic|general|realistic",
+    "context": "Brief context about why this quote is relevant to their current progress",
+    "milestone_warning": {
+        "message": "Specific relapse prevention message for this milestone",
+        "milestone_days": ' . $nearMilestone . '
+    }
+}' :
+            '{
+    "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
+    "type": "islamic|general|realistic",
+    "context": "Brief context about why this quote is relevant to their current progress"
+}';
+
+        return $basePrompt . $milestoneGuidance . "
 
 Please provide the response as a single JSON object (not an array) with these fields:
 
-{
-    \"quote\": \"A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)\",
-    \"type\": \"islamic|general|realistic\",
-    \"context\": \"Brief context about why this quote is relevant to their current progress\"
-}
+" . $jsonFields . "
 
 Guidelines:
 - Return ONLY a single JSON object, not an array
@@ -253,11 +279,21 @@ Guidelines:
 
     private function sanitizeMotivationalData(array $data): array
     {
-        return [
+        $sanitized = [
             'quote' => $data['quote'] ?? 'Keep going, you\'re doing great!',
             'type' => in_array($data['type'] ?? '', ['islamic', 'general', 'realistic']) ? $data['type'] : 'general',
             'context' => $data['context'] ?? 'Stay strong on your journey!',
         ];
+
+        // Add milestone warning if present
+        if (isset($data['milestone_warning']) && is_array($data['milestone_warning'])) {
+            $sanitized['milestone_warning'] = [
+                'message' => $data['milestone_warning']['message'] ?? 'Stay strong and don\'t give up now!',
+                'milestone_days' => (int) ($data['milestone_warning']['milestone_days'] ?? 0),
+            ];
+        }
+
+        return $sanitized;
     }
 
     // Commented out fallback quote method - no longer used

@@ -22,10 +22,22 @@ class MotivationalQuoteController extends Controller
                 'percentage' => 'required|numeric|min:0|max:100',
             ]);
 
+            // Detect if near a milestone (within 3 days before/after or exact day)
+            $milestones = [7, 30, 60, 90, 120];
+            $nearMilestone = null;
+
+            foreach ($milestones as $milestone) {
+                if (abs($request->days_completed - $milestone) <= 3) {
+                    $nearMilestone = $milestone;
+                    break;
+                }
+            }
+
             $quote = $this->geminiService->generateMotivationalQuote(
                 $request->days_completed,
                 $request->days_remaining,
-                $request->percentage
+                $request->percentage,
+                $nearMilestone
             );
 
             // If quote generation failed (empty array), return error response
