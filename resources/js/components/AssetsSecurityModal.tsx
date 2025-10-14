@@ -94,6 +94,7 @@ export default function AssetsSecurityModal({
                         <Input
                             id="securityCode"
                             type="text"
+                            inputMode="numeric"
                             value={securityCode}
                             onChange={(e) => {
                                 const value = e.target.value.replace(/\D/g, '').slice(0, 5);
