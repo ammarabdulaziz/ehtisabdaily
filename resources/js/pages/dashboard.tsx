@@ -7,6 +7,8 @@ import { Head, Link } from '@inertiajs/react';
 import { Calculator, BookMarked, Wallet, Sun, Moon } from 'lucide-react';
 import ProgressTracker from '@/components/ProgressTracker';
 import { useGlobalSecurity } from '@/contexts/GlobalSecurityContext';
+import GlobalSecurityModal from '@/components/GlobalSecurityModal';
+import { useState, useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,7 +18,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard() {
-    const { isAccessible } = useGlobalSecurity();
+    const { isAccessible, isLocked, isLoading } = useGlobalSecurity();
+    const [showSecurityModal, setShowSecurityModal] = useState(false);
+
+    // Show security modal by default when user is not accessible
+    useEffect(() => {
+        if (!isLoading && isLocked && !isAccessible) {
+            setShowSecurityModal(true);
+        }
+    }, [isLoading, isLocked, isAccessible]);
+
+    const handleSecurityModalClose = () => {
+        setShowSecurityModal(false);
+    };
+
+    const handleGoToDashboard = () => {
+        setShowSecurityModal(false);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -228,6 +246,13 @@ export default function Dashboard() {
                 </div>
 
             </div>
+            
+            {/* Global Security Modal - Show by default when locked and not accessible */}
+            <GlobalSecurityModal
+                isOpen={showSecurityModal}
+                onClose={handleSecurityModalClose}
+                onGoToDashboard={handleGoToDashboard}
+            />
         </AppLayout>
     );
 }
