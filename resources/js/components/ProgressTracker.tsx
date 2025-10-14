@@ -17,6 +17,11 @@ interface MotivationalQuote {
   quote: string;
   type: 'islamic' | 'general' | 'realistic';
   context: string;
+  quranic_verse?: {
+    arabic: string;
+    translation: string;
+    reference: string;
+  };
   milestone_warning?: {
     message: string;
     milestone_days: number;
@@ -31,11 +36,7 @@ const milestones = [
   { days: 120, message: "Four months of progress! 🚀", color: "bg-pink-500" },
 ];
 
-interface ProgressTrackerProps {
-  useFallback?: boolean;
-}
-
-export default function ProgressTracker({ useFallback }: ProgressTrackerProps = {}) {
+export default function ProgressTracker() {
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
   const [currentQuote, setCurrentQuote] = useState<MotivationalQuote | null>(null);
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
@@ -211,7 +212,7 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
 
   return (
     <Card className="w-full bg-white dark:bg-gray-900 border-0 shadow-sm">
-      <CardContent className="p-8">
+      <CardContent className="p-8 py-4">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -230,28 +231,52 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
                 <span className="text-gray-500">Generating Quote ...</span>
               </div>
             ) : currentQuote ? (
-              <div className="space-y-3">
-                <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  "{currentQuote.quote}"
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {currentQuote.context}
-                  </span>
-                  <Badge 
-                    variant="outline" 
-                    className={`text-xs ${
-                      currentQuote.type === 'islamic' 
-                        ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20' 
-                        : currentQuote.type === 'realistic'
-                        ? 'text-slate-600 border-slate-200 bg-slate-50 dark:bg-slate-950/20'
-                        : 'text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/20'
-                    }`}
-                  >
-                    {currentQuote.type === 'islamic' ? '🕌 Islamic' : 
-                     currentQuote.type === 'realistic' ? '💡 Realistic' : '🌟 General'}
-                  </Badge>
+              <div className="space-y-4">
+                {/* AI Motivational Quote */}
+                <div className="space-y-3">
+                  <p className="text-lg text-gray-700 dark:text-gray-300">
+                    "{currentQuote.quote}"
+                  </p>
+                  {/* <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {currentQuote.context}
+                    </span>
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${
+                        currentQuote.type === 'islamic' 
+                          ? 'text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20' 
+                          : currentQuote.type === 'realistic'
+                          ? 'text-slate-600 border-slate-200 bg-slate-50 dark:bg-slate-950/20'
+                          : 'text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/20'
+                      }`}
+                    >
+                      {currentQuote.type === 'islamic' ? '🕌 Islamic' : 
+                       currentQuote.type === 'realistic' ? '💡 Realistic' : '🌟 General'}
+                    </Badge>
+                  </div> */}
                 </div>
+
+                {/* Quranic Verse */}
+                {currentQuote.quranic_verse && (
+                  <div className="pt-1">
+                    <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 pt-6 border border-emerald-200 dark:border-emerald-800 text-center space-y-2">
+                      <div
+                        dir="rtl"
+                        className="text-l font-arabic text-gray-800 dark:text-gray-200"
+                        style={{ fontFamily: 'Amiri, "Noto Sans Arabic", "Arabic Typesetting", serif' }}
+                      >
+                        {currentQuote.quranic_verse.arabic}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 italic">
+                        "{currentQuote.quranic_verse.translation}"
+                      </div>
+                      <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                        {currentQuote.quranic_verse.reference}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="py-4 text-center">
@@ -267,12 +292,9 @@ export default function ProgressTracker({ useFallback }: ProgressTrackerProps = 
             {/* Milestone Warning */}
             {currentQuote?.milestone_warning && (
               <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-600" />
-                  <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
                     {currentQuote.milestone_warning.message}
-                  </p>
-                </div>
+                </p>
               </div>
             )}
           </div>

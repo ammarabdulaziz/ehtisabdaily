@@ -19,6 +19,33 @@ class MotivationalQuoteWithMilestoneTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
         $this->actingAs($user);
+
+        // Mock the GeminiService to avoid actual API calls during testing
+        $this->mock(GeminiService::class, function ($mock) {
+            $mock->shouldReceive('generateMotivationalQuote')
+                ->andReturnUsing(function ($daysCompleted, $daysRemaining, $percentage, $nearMilestone) {
+                    $baseResponse = [
+                        'quote' => 'Test motivational quote',
+                        'type' => 'general',
+                        'context' => 'Test context',
+                        'quranic_verse' => [
+                            'arabic' => 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
+                            'translation' => 'And whoever relies upon Allah - then He is sufficient for him.',
+                            'reference' => 'At-Talaq (65:3)'
+                        ]
+                    ];
+
+                    // Add milestone warning if nearMilestone is provided
+                    if ($nearMilestone !== null) {
+                        $baseResponse['milestone_warning'] = [
+                            'message' => 'Stay strong and don\'t give up now!',
+                            'milestone_days' => $nearMilestone
+                        ];
+                    }
+
+                    return $baseResponse;
+                });
+        });
     }
 
     public function test_generates_quote_without_milestone_warning_when_far_from_milestones(): void
@@ -36,6 +63,7 @@ class MotivationalQuoteWithMilestoneTest extends TestCase
         $this->assertArrayHasKey('quote', $data);
         $this->assertArrayHasKey('type', $data);
         $this->assertArrayHasKey('context', $data);
+        $this->assertArrayHasKey('quranic_verse', $data);
         $this->assertArrayNotHasKey('milestone_warning', $data);
     }
 
@@ -54,6 +82,7 @@ class MotivationalQuoteWithMilestoneTest extends TestCase
         $this->assertArrayHasKey('quote', $data);
         $this->assertArrayHasKey('type', $data);
         $this->assertArrayHasKey('context', $data);
+        $this->assertArrayHasKey('quranic_verse', $data);
         $this->assertArrayHasKey('milestone_warning', $data);
         $this->assertArrayHasKey('message', $data['milestone_warning']);
         $this->assertArrayHasKey('milestone_days', $data['milestone_warning']);

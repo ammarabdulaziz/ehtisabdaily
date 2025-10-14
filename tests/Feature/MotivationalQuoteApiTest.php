@@ -16,7 +16,12 @@ beforeEach(function () {
             ->andReturn([
                 'quote' => 'Test motivational quote',
                 'type' => 'general',
-                'context' => 'Test context'
+                'context' => 'Test context',
+                'quranic_verse' => [
+                    'arabic' => 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
+                    'translation' => 'And whoever relies upon Allah - then He is sufficient for him.',
+                    'reference' => 'At-Talaq (65:3)'
+                ]
             ]);
     });
 });
@@ -32,12 +37,22 @@ it('can generate motivational quote via API', function () {
         ->assertJsonStructure([
             'quote',
             'type',
-            'context'
+            'context',
+            'quranic_verse' => [
+                'arabic',
+                'translation',
+                'reference'
+            ]
         ])
         ->assertJson([
             'quote' => 'Test motivational quote',
             'type' => 'general',
-            'context' => 'Test context'
+            'context' => 'Test context',
+            'quranic_verse' => [
+                'arabic' => 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
+                'translation' => 'And whoever relies upon Allah - then He is sufficient for him.',
+                'reference' => 'At-Talaq (65:3)'
+            ]
         ]);
 });
 

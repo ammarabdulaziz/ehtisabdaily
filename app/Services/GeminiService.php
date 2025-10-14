@@ -205,6 +205,11 @@ IMPORTANT: This person is at or near a significant milestone ({$nearMilestone} d
     "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
     "type": "islamic|general|realistic",
     "context": "Brief context about why this quote is relevant to their current progress",
+    "quranic_verse": {
+        "arabic": "Arabic text of a relevant Quranic verse that supports the motivational message",
+        "translation": "English translation of the verse",
+        "reference": "Surah Name (Chapter:Verse) - e.g., Al-Baqarah (2:286)"
+    },
     "milestone_warning": {
         "message": "Specific relapse prevention message for this milestone",
         "milestone_days": ' . $nearMilestone . '
@@ -213,7 +218,12 @@ IMPORTANT: This person is at or near a significant milestone ({$nearMilestone} d
             '{
     "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
     "type": "islamic|general|realistic",
-    "context": "Brief context about why this quote is relevant to their current progress"
+    "context": "Brief context about why this quote is relevant to their current progress",
+    "quranic_verse": {
+        "arabic": "Arabic text of a relevant Quranic verse that supports the motivational message",
+        "translation": "English translation of the verse",
+        "reference": "Surah Name (Chapter:Verse) - e.g., Al-Baqarah (2:286)"
+    }
 }';
 
         return $basePrompt . $milestoneGuidance . "
@@ -230,6 +240,9 @@ Guidelines:
 - Be encouraging but realistic
 - Mix different types of motivation (spiritual, practical, emotional)
 - Consider their progress percentage when crafting the message
+- ALWAYS include a relevant Quranic verse that supports and enhances the motivational message, Maybe the rewards which Allah tells in the Quran for those who strive to struggle in the way of Allah.
+- Select verses that align with themes like patience, perseverance, gratitude, trust in Allah, reward from allah or steadfastness
+- Ensure the verse complements the quote rather than repeating the same message
 - Do not wrap the response in markdown code blocks";
     }
 
@@ -239,9 +252,10 @@ Guidelines:
             // Clean the response content
             $cleanedContent = trim($content);
 
-            // Remove markdown code blocks if present
-            $cleanedContent = preg_replace('/```json\s*/', '', $cleanedContent);
+            // Remove markdown code blocks if present - handle both ```json and ``` formats
+            $cleanedContent = preg_replace('/```(?:json)?\s*/', '', $cleanedContent);
             $cleanedContent = preg_replace('/```\s*$/', '', $cleanedContent);
+            $cleanedContent = trim($cleanedContent);
 
             // Try to extract JSON from the response (both single object and array)
             if (preg_match('/\[.*\]/s', $cleanedContent, $arrayMatches)) {
@@ -263,7 +277,16 @@ Guidelines:
                 }
             }
 
-            Log::warning('Failed to parse Gemini motivational response as JSON', ['content' => $content]);
+            // If the above didn't work, try parsing the entire cleaned content
+            $parsed = json_decode($cleanedContent, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
+                return $this->sanitizeMotivationalData($parsed);
+            }
+
+            Log::warning('Failed to parse Gemini motivational response as JSON', [
+                'content' => $content,
+                'cleaned_content' => $cleanedContent
+            ]);
 
             return [];
 
@@ -284,6 +307,18 @@ Guidelines:
             'type' => in_array($data['type'] ?? '', ['islamic', 'general', 'realistic']) ? $data['type'] : 'general',
             'context' => $data['context'] ?? 'Stay strong on your journey!',
         ];
+
+        // Add Quranic verse if present and valid
+        if (isset($data['quranic_verse']) && is_array($data['quranic_verse'])) {
+            $verse = $data['quranic_verse'];
+            if (!empty($verse['arabic']) && !empty($verse['translation']) && !empty($verse['reference'])) {
+                $sanitized['quranic_verse'] = [
+                    'arabic' => trim($verse['arabic']),
+                    'translation' => trim($verse['translation']),
+                    'reference' => trim($verse['reference']),
+                ];
+            }
+        }
 
         // Add milestone warning if present
         if (isset($data['milestone_warning']) && is_array($data['milestone_warning'])) {
