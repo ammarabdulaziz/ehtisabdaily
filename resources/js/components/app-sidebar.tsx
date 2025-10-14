@@ -7,8 +7,9 @@ import { type NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet, Sun, Moon } from 'lucide-react';
 import AppLogo from './app-logo';
+import { useGlobalSecurity } from '@/contexts/GlobalSecurityContext';
 
-const mainNavGroups: NavGroup[] = [
+const getMainNavGroups = (isAccessible: boolean): NavGroup[] => [
     {
         title: 'Main',
         items: [
@@ -39,7 +40,7 @@ const mainNavGroups: NavGroup[] = [
             },
         ],
     },
-    {
+    ...(isAccessible ? [{
         title: 'Resources',
         items: [
             {
@@ -48,7 +49,7 @@ const mainNavGroups: NavGroup[] = [
                 icon: Wallet,
             },
         ],
-    },
+    }] : []),
 ];
 
 const footerNavItems: NavItem[] = [
@@ -65,6 +66,9 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { isAccessible } = useGlobalSecurity();
+    const mainNavGroups = getMainNavGroups(isAccessible);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'assets.security' => \App\Http\Middleware\AssetsSecurityMiddleware::class,
+            'global.security' => \App\Http\Middleware\CheckGlobalSecurity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

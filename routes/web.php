@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssetChartController;
 use App\Http\Controllers\DuaController;
+use App\Http\Controllers\GlobalSecurityController;
 use App\Http\Controllers\MotivationalQuoteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,21 +24,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('EveningAdhkar/Index');
     })->name('evening-adhkar.index');
     
-    // Assets security routes (outside security middleware to allow access)
+    // Global security routes (outside security middleware to allow access)
+    Route::get('/global-security', [GlobalSecurityController::class, 'show'])->name('global-security.show');
+    Route::get('/api/global-security/status', [GlobalSecurityController::class, 'status'])->name('global-security.status');
+    Route::post('/api/global-security/verify', [GlobalSecurityController::class, 'verify'])->name('global-security.verify');
+    Route::post('/api/global-security/toggle', [GlobalSecurityController::class, 'toggleLock'])->name('global-security.toggle');
+    
+    // Legacy Assets security routes (for backward compatibility)
     Route::get('/assets/security', [App\Http\Controllers\AssetsSecurityController::class, 'show'])->name('assets.security');
     Route::post('/api/assets/verify-security', [App\Http\Controllers\AssetsSecurityController::class, 'verify'])->name('assets.verify-security');
     Route::post('/api/assets/toggle-lock', [App\Http\Controllers\AssetsSecurityController::class, 'toggleLock'])->name('assets.toggle-lock');
     Route::get('/api/assets/security-status', function () {
         return response()->json([
-            'is_locked' => session('assets_security_locked', false),
-            'has_valid_session' => session('assets_security_code') === '80313' && 
-                                 session('assets_security_timestamp') && 
-                                 (time() - session('assets_security_timestamp')) < 3600
+            'is_locked' => session('global_security_locked', false),
+            'has_valid_session' => session('global_security_code') === '80313' && 
+                                 session('global_security_timestamp') && 
+                                 (time() - session('global_security_timestamp')) < 3600
         ]);
     })->name('assets.security-status');
     
-    // Assets routes with security middleware
-    Route::middleware(['assets.security'])->group(function () {
+    // Assets routes with global security middleware
+    Route::middleware(['global.security'])->group(function () {
         Route::get('/assets', function () {
             return Inertia::render('Assets/Index');
         })->name('assets.index');
