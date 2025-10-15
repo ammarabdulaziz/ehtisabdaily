@@ -10,10 +10,10 @@ export default function TermsOfService() {
                         <div className="px-8 py-12 sm:px-12">
                             {/* Header Section */}
                             <div className="text-center mb-16">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-6">
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl mb-6">
                                     <Scale className="h-8 w-8 text-white" />
                                 </div>
-                                <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+                                <h1 className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-6">
                                     Terms of Service
                                 </h1>
                                 <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
@@ -22,14 +22,14 @@ export default function TermsOfService() {
                             </div>
                             
                             {/* Last Updated Badge */}
-                            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200/50 dark:border-blue-800/50 rounded-2xl p-6 mb-16">
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl p-6 mb-16">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
                                         <AlertCircle className="h-4 w-4 text-white" />
                                     </div>
                                     <div>
                                         <p className="text-slate-700 dark:text-slate-300 font-medium">
-                                            <span className="text-blue-700 dark:text-blue-300">Last updated:</span> {new Date().toLocaleDateString('en-US', { 
+                                            <span className="text-emerald-700 dark:text-emerald-300">Last updated:</span> {new Date().toLocaleDateString('en-US', { 
                                                 year: 'numeric', 
                                                 month: 'long', 
                                                 day: 'numeric' 
@@ -42,10 +42,10 @@ export default function TermsOfService() {
                             <div className="space-y-16">
                                 {/* Section 1: Acceptance of Terms */}
                                 <section className="group relative">
-                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
                                     <div className="pl-8">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                 <Scale className="h-5 w-5 text-white" />
                                             </div>
                                             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">1. Acceptance of Terms</h2>
@@ -222,10 +222,10 @@ export default function TermsOfService() {
 
                                 {/* Section 6: Privacy and Data Protection */}
                                 <section className="group relative">
-                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full"></div>
+                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
                                     <div className="pl-8">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                 <Shield className="h-5 w-5 text-white" />
                                             </div>
                                             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">6. Privacy and Data Protection</h2>
@@ -238,10 +238,10 @@ export default function TermsOfService() {
 
                                 {/* Section 7: Intellectual Property */}
                                 <section className="group relative">
-                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
+                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
                                     <div className="pl-8">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                 <FileText className="h-5 w-5 text-white" />
                                             </div>
                                             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">7. Intellectual Property</h2>
@@ -334,10 +334,10 @@ export default function TermsOfService() {
 
                                 {/* Section 13: Severability */}
                                 <section className="group relative">
-                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
+                                    <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
                                     <div className="pl-8">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
                                                 <Scale className="h-5 w-5 text-white" />
                                             </div>
                                             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">13. Severability</h2>
@@ -363,7 +363,7 @@ export default function TermsOfService() {
                                         </p>
                                         <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 p-8 rounded-2xl border border-slate-200 dark:border-slate-600">
                                             <div className="flex items-start gap-4">
-                                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
                                                     <Mail className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div className="space-y-3">
