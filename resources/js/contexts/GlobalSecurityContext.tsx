@@ -22,27 +22,14 @@ export function GlobalSecurityProvider({ children }: GlobalSecurityProviderProps
 
   const checkStatus = useCallback(async () => {
     try {
-      const response = await fetch('/api/global-security/status', {
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-      
+      const response = await fetch('/api/global-security/status');
       if (response.ok) {
         const data = await response.json();
         setIsLocked(data.is_locked);
         setIsAccessible(data.is_accessible);
-      } else if (response.status === 401 || response.status === 403) {
-        // User is not authenticated or not authorized
-        setIsLocked(false);
-        setIsAccessible(true);
       }
     } catch (error) {
       console.error('Failed to check global security status:', error);
-      // Set default values on error
-      setIsLocked(false);
-      setIsAccessible(true);
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +41,6 @@ export function GlobalSecurityProvider({ children }: GlobalSecurityProviderProps
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
       });
@@ -76,8 +61,6 @@ export function GlobalSecurityProvider({ children }: GlobalSecurityProviderProps
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
         body: JSON.stringify({ security_code: securityCode }),

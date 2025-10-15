@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\LinkPasswordController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -34,6 +36,12 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // Google OAuth routes
+    Route::get('auth/google', [GoogleAuthController::class, 'redirect'])
+        ->name('auth.google');
+    Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {
@@ -57,4 +65,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Password linking routes for Google users
+    Route::get('auth/link-password', [LinkPasswordController::class, 'show'])
+        ->name('auth.link-password');
+    Route::post('auth/link-password', [LinkPasswordController::class, 'store'])
+        ->name('auth.link-password.store');
+    Route::post('auth/skip-password', [LinkPasswordController::class, 'skip'])
+        ->name('auth.skip-password');
 });

@@ -29,6 +29,10 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'google_id' => null,
+            'google_access_token' => null,
+            'google_refresh_token' => null,
+            'avatar' => null,
         ];
     }
 
@@ -39,6 +43,20 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user signed up with Google.
+     */
+    public function google(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'google_id' => fake()->numerify('##########'),
+            'google_access_token' => fake()->sha256(),
+            'google_refresh_token' => fake()->sha256(),
+            'avatar' => fake()->imageUrl(96, 96, 'people'),
+            'password' => null,
         ]);
     }
 }
