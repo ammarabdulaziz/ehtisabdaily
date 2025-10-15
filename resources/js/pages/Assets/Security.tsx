@@ -10,7 +10,13 @@ export default function AssetsSecurity() {
         // Check if user already has a valid session
         const checkSecurityStatus = async () => {
             try {
-                const response = await fetch('/api/assets/security-status');
+                const response = await fetch('/api/assets/security-status', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                
                 if (response.ok) {
                     const data = await response.json();
                     
