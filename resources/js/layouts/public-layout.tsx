@@ -10,7 +10,7 @@ interface PublicLayoutProps {
 
 export default function PublicLayout({ children, title, showBackButton = true }: PublicLayoutProps) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 to-emerald-50 dark:from-slate-900 dark:to-emerald-950">
             <Head title={title} />
             
             {/* Header */}
@@ -29,10 +29,10 @@ export default function PublicLayout({ children, title, showBackButton = true }:
                             )}
                         </div>
                         <Link href="/home" className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
                                 <Heart className="h-5 w-5 text-white" />
                             </div>
-                            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                                 EhtisabDaily
                             </span>
                         </Link>
@@ -50,11 +50,11 @@ export default function PublicLayout({ children, title, showBackButton = true }:
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <div className="w-6 h-6 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
                                 <Heart className="h-4 w-4 text-white" />
                             </div>
                             <span className="text-sm text-slate-600 dark:text-slate-300">
-                                © 2024 EhtisabDaily. All rights reserved.
+                                © 2025 EhtisabDaily. All rights reserved.
                             </span>
                         </div>
                         <div className="flex gap-6">

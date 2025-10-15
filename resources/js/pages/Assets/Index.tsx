@@ -88,19 +88,19 @@ interface LentMoneyAnalysisResponse {
 const chartConfig = {
   totalAccounts: {
     label: "Accounts",
-    color: "#2b8474",
+    color: "#059669",
   },
   totalInvestments: {
     label: "Investments", 
-    color: "#059669",
+    color: "#10b981",
   },
   totalDeposits: {
     label: "Deposits",
-    color: "#0891b2",
+    color: "#14b8a6",
   },
   totalLentMoney: {
     label: "Lent Money",
-    color: "#7c3aed",
+    color: "#f59e0b",
   },
   totalBorrowedMoney: {
     label: "Borrowed Money",
@@ -108,11 +108,11 @@ const chartConfig = {
   },
   grandTotal: {
     label: "Net Worth",
-    color: "#2b8474",
+    color: "#059669",
   },
   savings: {
     label: "Monthly Savings",
-    color: "#16a34a",
+    color: "#10b981",
   },
   lentMoneyCount: {
     label: "Number of Friends",
@@ -121,11 +121,11 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const allocationColors = [
-  "#2b8474", // Brand color
-  "#059669", // Green
-  "#0891b2", // Blue
-  "#7c3aed", // Purple
-  "#dc2626", // Red
+  "#059669", // Emerald green
+  "#10b981", // Emerald green variant
+  "#14b8a6", // Teal
+  "#f59e0b", // Amber/Gold
+  "#dc2626", // Red (for liabilities)
 ]
 
 export default function AssetsIndex() {

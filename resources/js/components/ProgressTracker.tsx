@@ -29,11 +29,11 @@ interface MotivationalQuote {
 }
 
 const milestones = [
-  { days: 7, message: "One week strong! 🎉", color: "bg-green-500" },
-  { days: 30, message: "One month milestone! 🏆", color: "bg-blue-500" },
-  { days: 60, message: "Two months of growth! 🌟", color: "bg-purple-500" },
-  { days: 90, message: "Three months of strength! 💎", color: "bg-yellow-500" },
-  { days: 120, message: "Four months of progress! 🚀", color: "bg-pink-500" },
+  { days: 7, message: "One week strong! 🎉", color: "bg-emerald-500" },
+  { days: 30, message: "One month milestone! 🏆", color: "bg-teal-500" },
+  { days: 60, message: "Two months of growth! 🌟", color: "bg-amber-500" },
+  { days: 90, message: "Three months of strength! 💎", color: "bg-emerald-600" },
+  { days: 120, message: "Four months of progress! 🚀", color: "bg-teal-600" },
 ];
 
 export default function ProgressTracker() {
