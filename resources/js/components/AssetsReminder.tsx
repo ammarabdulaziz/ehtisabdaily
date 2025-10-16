@@ -22,6 +22,17 @@ export default function AssetsReminder() {
               <p className="text-sm text-muted-foreground">സമ്പത്തും സന്താനങ്ങളും ഈ ലോകജീവിതത്തിലെ അലങ്കാരങ്ങളായിരിക്കും. പക്ഷെ നിനക്ക് പരമാധികാരിയുമായുള്ള നല്ല സൽകാര്യങ്ങൾ ഹിതകരമായ പ്രതിഫലവും ദീര്‍ഘകാല പ്രതീക്ഷയും ഉണ്ടായിരിക്കും.</p>
             </div>
           </div>
+          
+          {/* Barakah in Wealth Dua */}
+          <div className="mt-6 p-4 bg-green-50/70 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="space-y-1">
+              <p className="text-xl font-arabic pt-5 pb-3" style={{ fontFamily: 'Amiri, Scheherazade New, Traditional Arabic, Arabic Typesetting, serif' }}>
+                اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ
+              </p>
+              <p className="text-sm text-muted-foreground">O Allah, bless us in what You have provided us and protect us from the punishment of the Fire</p>
+              <p className="text-sm text-muted-foreground">അല്ലാഹുവേ, നീ ഞങ്ങൾക്ക് നൽകിയതിൽ ബറക്കത്ത് നൽകുകയും നരകാഗ്നിയിൽ നിന്ന് ഞങ്ങളെ സംരക്ഷിക്കുകയും ചെയ്യേണമേ</p>
+            </div>
+          </div>
         </div>
       </AlertDescription>
     </Alert>

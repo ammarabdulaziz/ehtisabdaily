@@ -19,6 +19,15 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400">സമ്പത്തും സന്താനങ്ങളും ഈ ലോകജീവിതത്തിലെ അലങ്കാരങ്ങളായിരിക്കും. പക്ഷെ നിനക്ക് പരമാധികാരിയുമായുള്ള നല്ല സൽകാര്യങ്ങൾ ഹിതകരമായ പ്രതിഫലവും ദീര്‍ഘകാല പ്രതീക്ഷയും ഉണ്ടായിരിക്കും.</p>
                 </div>
             </div>
+            
+            <!-- Barakah in Wealth Dua -->
+            <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div class="space-y-1">
+                    <p class="text-base leading-7 font-arabic" style="line-height: 2; font-size: 1.25rem;">اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">O Allah, bless us in what You have provided us and protect us from the punishment of the Fire</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">അല്ലാഹുവേ, നീ ഞങ്ങൾക്ക് നൽകിയതിൽ ബറക്കത്ത് നൽകുകയും നരകാഗ്നിയിൽ നിന്ന് ഞങ്ങളെ സംരക്ഷിക്കുകയും ചെയ്യേണമേ</p>
+                </div>
+            </div>
         </div>
     </x-filament::section>
 </x-filament-widgets::widget>
