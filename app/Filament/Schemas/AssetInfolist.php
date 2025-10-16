@@ -21,8 +21,6 @@ class AssetInfolist
                                 // Asset Information
                                 TextEntry::make('formatted_period')
                                     ->label('Period'),
-                                TextEntry::make('notes')
-                                    ->label('Notes'),
 
                                 // Financial Summary - Assets
                                 TextEntry::make('total_accounts')
@@ -48,6 +46,9 @@ class AssetInfolist
                                     ->label('Grand Total')
                                     ->formatStateUsing(fn ($state) => 'QAR ' . number_format($state, 0))
                                     ->weight('bold'),
+                                TextEntry::make('notes')
+                                    ->label('Notes')
+                                    ->visible(fn ($record) => $record->notes !== null),
                             ]),
                     ]),
             ]);
