@@ -21,15 +21,30 @@ export function GlobalSecurityProvider({ children }: GlobalSecurityProviderProps
   const [isLoading, setIsLoading] = useState(true);
 
   const checkStatus = useCallback(async () => {
+    // Skip API call if we're on login/register pages
+    const currentPath = window.location.pathname;
+    if (currentPath === '/login' || currentPath === '/register' || currentPath.startsWith('/forgot-password') || currentPath.startsWith('/reset-password')) {
+      setIsLocked(false);
+      setIsAccessible(true);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/global-security/status');
       if (response.ok) {
         const data = await response.json();
         setIsLocked(data.is_locked);
         setIsAccessible(data.is_accessible);
+      } else if (response.status === 401 || response.status === 403) {
+        // User is not authenticated, so global security doesn't apply
+        setIsLocked(false);
+        setIsAccessible(true);
       }
     } catch (error) {
-      console.error('Failed to check global security status:', error);
+      // If the request fails (e.g., user not authenticated), assume no security restrictions
+      setIsLocked(false);
+      setIsAccessible(true);
     } finally {
       setIsLoading(false);
     }

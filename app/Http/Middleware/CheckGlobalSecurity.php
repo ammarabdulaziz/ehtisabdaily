@@ -25,7 +25,7 @@ class CheckGlobalSecurity
                 session(['url.intended' => $request->fullUrl()]);
                 
                 // For API requests, return JSON response instead of redirect
-                if ($request->expectsJson() || $request->ajax() || str_starts_with($request->path(), 'api/')) {
+                if (str_starts_with($request->path(), 'api/')) {
                     return response()->json([
                         'is_locked' => true,
                         'has_valid_code' => false,
@@ -34,12 +34,7 @@ class CheckGlobalSecurity
                     ], 403);
                 }
                 
-                // For Inertia requests, redirect to global security verification page
-                if ($request->header('X-Inertia')) {
-                    return redirect()->route('global-security.show');
-                }
-                
-                // For regular requests, redirect to global security verification page
+                // For all other requests (including Inertia), redirect to global security verification page
                 return redirect()->route('global-security.show');
             }
         }
