@@ -44,7 +44,12 @@ export default function DuasIndex({ duas, categories, currentCategory }: Props) 
     })
     
     // Find the category with the highest count
-    const mostPopularCategory = Object.entries(categoryCounts).reduce((a, b) => 
+    const categoryEntries = Object.entries(categoryCounts)
+    if (categoryEntries.length === 0) {
+      return 'all'
+    }
+    
+    const mostPopularCategory = categoryEntries.reduce((a, b) => 
       categoryCounts[a[0]] > categoryCounts[b[0]] ? a : b
     )
     
