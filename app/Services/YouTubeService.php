@@ -265,7 +265,7 @@ class YouTubeService
                 'playlistItemId' => $item->getId(),
                 'title' => $snippet->getTitle(),
                 'description' => $snippet->getDescription(),
-                'thumbnail' => $snippet->getThumbnails()->getDefault()->getUrl(),
+                'thumbnail' => $this->getBestThumbnail($snippet->getThumbnails()),
                 'channelTitle' => $snippet->getChannelTitle(),
                 'publishedAt' => $snippet->getPublishedAt(),
                 'url' => "https://www.youtube.com/watch?v={$videoId}",
@@ -283,7 +283,7 @@ class YouTubeService
                 'id' => $videoId,
                 'title' => $snippet->getTitle(),
                 'description' => $snippet->getDescription(),
-                'thumbnail' => $snippet->getThumbnails()->getDefault()->getUrl(),
+                'thumbnail' => $this->getBestThumbnail($snippet->getThumbnails()),
                 'channelTitle' => $snippet->getChannelTitle(),
                 'publishedAt' => $snippet->getPublishedAt(),
                 'url' => "https://www.youtube.com/watch?v={$videoId}",
@@ -301,9 +301,36 @@ class YouTubeService
                 'id' => $item->getId(),
                 'title' => $snippet->getTitle(),
                 'description' => $snippet->getDescription(),
-                'thumbnail' => $snippet->getThumbnails()->getDefault()->getUrl(),
+                'thumbnail' => $this->getBestThumbnail($snippet->getThumbnails()),
                 'itemCount' => $contentDetails->getItemCount(),
             ];
         }, $items);
+    }
+
+    /**
+     * Get the best available thumbnail from YouTube thumbnails object
+     * Priority: maxresdefault > sddefault > hqdefault > mqdefault > default
+     */
+    private function getBestThumbnail($thumbnails): string
+    {
+        // Try to get the highest quality thumbnail available
+        if ($thumbnails->getMaxres() && $thumbnails->getMaxres()->getUrl()) {
+            return $thumbnails->getMaxres()->getUrl();
+        }
+        
+        if ($thumbnails->getStandard() && $thumbnails->getStandard()->getUrl()) {
+            return $thumbnails->getStandard()->getUrl();
+        }
+        
+        if ($thumbnails->getHigh() && $thumbnails->getHigh()->getUrl()) {
+            return $thumbnails->getHigh()->getUrl();
+        }
+        
+        if ($thumbnails->getMedium() && $thumbnails->getMedium()->getUrl()) {
+            return $thumbnails->getMedium()->getUrl();
+        }
+        
+        // Fallback to default
+        return $thumbnails->getDefault()->getUrl();
     }
 }

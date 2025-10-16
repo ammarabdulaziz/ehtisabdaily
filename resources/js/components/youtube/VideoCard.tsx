@@ -55,13 +55,11 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
   };
 
   const handleImageError = () => {
-    console.warn('Thumbnail failed to load:', video.thumbnail);
     setImageError(true);
     setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log('Thumbnail loaded successfully:', video.thumbnail);
     setImageLoading(false);
   };
 
@@ -71,21 +69,7 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
       onClick={handleCardClick}
     >
       <div className="relative">
-        {imageLoading && (
-          <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
-          </div>
-        )}
-        
-        {!imageError ? (
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className={`w-full h-48 object-cover rounded-t-lg group-hover:opacity-90 transition-opacity duration-200 ${imageLoading ? 'hidden' : 'block'}`}
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-          />
-        ) : (
+        {imageError ? (
           <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg flex items-center justify-center">
             <div className="text-center text-gray-500 dark:text-gray-400">
               <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,10 +78,25 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
               <p className="text-sm">Thumbnail unavailable</p>
             </div>
           </div>
+        ) : (
+          <>
+            <img
+              src={video.thumbnail}
+              alt={video.title}
+              className="w-full h-48 object-cover rounded-t-lg group-hover:opacity-90 transition-opacity duration-200"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+            />
+            {imageLoading && (
+              <div className="absolute inset-0 w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-t-lg flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+              </div>
+            )}
+          </>
         )}
         
         {/* Play button overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-t-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-transparent group-hover:bg-black group-hover:bg-opacity-20 transition-all duration-200 rounded-t-lg flex items-center justify-center">
           <Button
             variant="ghost"
             size="icon"
