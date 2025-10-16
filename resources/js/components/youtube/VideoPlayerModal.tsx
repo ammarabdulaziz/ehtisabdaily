@@ -1,4 +1,8 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 import { YouTubeVideo } from '@/types/youtube';
 
 interface VideoPlayerModalProps {
@@ -20,12 +24,29 @@ export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayer
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl w-full max-h-[90vh] p-0">
+        <Dialog open={isOpen} onOpenChange={() => {}}>
+            <DialogPrimitive.Portal>
+                <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
+                <DialogPrimitive.Content
+                    className={cn(
+                        "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 sm:max-w-lg",
+                        "max-w-4xl w-full max-h-[90vh] p-0"
+                    )}
+                >
                 <DialogHeader className="p-6 pb-4">
-                    <DialogTitle className="text-xl font-semibold line-clamp-2">
-                        {video.title}
-                    </DialogTitle>
+                    <div className="flex items-center justify-between">
+                        <DialogTitle className="text-xl font-semibold line-clamp-2">
+                            {video.title}
+                        </DialogTitle>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onClose}
+                            className="h-8 w-8"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </DialogHeader>
                 
                 <div className="px-6 pb-6">
@@ -56,7 +77,8 @@ export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayer
                         )}
                     </div>
                 </div>
-            </DialogContent>
+                </DialogPrimitive.Content>
+            </DialogPrimitive.Portal>
         </Dialog>
     );
 }
