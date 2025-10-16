@@ -34,6 +34,10 @@ class GoogleAuthController extends Controller
     public function callback(Request $request): RedirectResponse
     {
         if ($request->has('error')) {
+            // If user is authenticated, redirect to YouTube page, otherwise to login
+            if (Auth::check()) {
+                return redirect()->route('youtube.index')->with('error', 'Google authentication was cancelled.');
+            }
             return redirect()->route('login')->with('error', 'Google authentication was cancelled.');
         }
 
@@ -46,6 +50,9 @@ class GoogleAuthController extends Controller
             $token = $client->fetchAccessTokenWithAuthCode($request->get('code'));
             
             if (isset($token['error'])) {
+                if (Auth::check()) {
+                    return redirect()->route('youtube.index')->with('error', 'Failed to authenticate with Google.');
+                }
                 return redirect()->route('login')->with('error', 'Failed to authenticate with Google.');
             }
 
@@ -60,6 +67,28 @@ class GoogleAuthController extends Controller
             $name = $userInfo->getName();
             $avatar = $userInfo->getPicture();
 
+            // If user is already authenticated, link the Google account
+            if (Auth::check()) {
+                $user = Auth::user();
+                
+                // Check if another user already has this Google ID
+                $existingGoogleUser = User::where('google_id', $googleId)->where('id', '!=', $user->id)->first();
+                if ($existingGoogleUser) {
+                    return redirect()->route('youtube.index')->with('error', 'This Google account is already linked to another user.');
+                }
+
+                // Update the current user with Google account info
+                $user->update([
+                    'google_id' => $googleId,
+                    'google_access_token' => $token['access_token'],
+                    'google_refresh_token' => $token['refresh_token'] ?? $user->google_refresh_token,
+                    'avatar' => $avatar,
+                ]);
+
+                return redirect()->route('youtube.index')->with('success', 'Google account linked successfully!');
+            }
+
+            // Handle guest user authentication
             // Check if user exists by Google ID
             $user = User::where('google_id', $googleId)->first();
 
@@ -106,7 +135,11 @@ class GoogleAuthController extends Controller
             return redirect()->intended(route('dashboard'));
 
         } catch (\Exception $e) {
+            if (Auth::check()) {
+                return redirect()->route('youtube.index')->with('error', 'Failed to link Google account. Please try again.');
+            }
             return redirect()->route('login')->with('error', 'Authentication failed. Please try again.');
         }
     }
+
 }

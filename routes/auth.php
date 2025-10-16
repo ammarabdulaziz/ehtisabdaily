@@ -37,11 +37,6 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
-    // Google OAuth routes
-    Route::get('auth/google', [GoogleAuthController::class, 'redirect'])
-        ->name('auth.google');
-    Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
-        ->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {
@@ -74,3 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::post('auth/skip-password', [LinkPasswordController::class, 'skip'])
         ->name('auth.skip-password');
 });
+
+// Google OAuth routes (accessible by both guest and authenticated users)
+Route::get('auth/google', [GoogleAuthController::class, 'redirect'])
+    ->name('auth.google');
+Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
+    ->name('auth.google.callback');

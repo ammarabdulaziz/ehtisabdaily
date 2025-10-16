@@ -45,6 +45,7 @@ return [
         'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
         'scopes' => [
             'https://www.googleapis.com/auth/youtube.readonly',
+            'https://www.googleapis.com/auth/youtube.force-ssl',
             'https://www.googleapis.com/auth/userinfo.profile',
             'https://www.googleapis.com/auth/userinfo.email',
         ],

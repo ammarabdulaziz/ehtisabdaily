@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet, Sun, Moon } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, BookMarked, Wallet, Sun, Moon, Play } from 'lucide-react';
 import AppLogo from './app-logo';
 import { useGlobalSecurity } from '@/contexts/GlobalSecurityContext';
 
@@ -37,6 +37,16 @@ const getMainNavGroups = (isAccessible: boolean): NavGroup[] => [
                 title: 'Duas',
                 href: '/duas',
                 icon: BookMarked,
+            },
+        ],
+    },
+    {
+        title: 'Media',
+        items: [
+            {
+                title: 'My YouTube',
+                href: '/my-youtube',
+                icon: Play,
             },
         ],
     },

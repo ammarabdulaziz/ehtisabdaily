@@ -4,6 +4,7 @@ use App\Http\Controllers\AssetChartController;
 use App\Http\Controllers\DuaController;
 use App\Http\Controllers\GlobalSecurityController;
 use App\Http\Controllers\MotivationalQuoteController;
+use App\Http\Controllers\YouTubeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -75,6 +76,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Motivational quotes API
     Route::post('/api/motivational-quote', [MotivationalQuoteController::class, 'generate'])->name('motivational-quote.generate');
+    
+    // YouTube main page and API routes
+    Route::get('/my-youtube', [YouTubeController::class, 'index'])->name('youtube.index');
+    Route::get('/test-youtube', [YouTubeController::class, 'testPage'])->name('youtube.test');
+    Route::get('/api/youtube/watch-later', [YouTubeController::class, 'getWatchLater'])->name('youtube.watch-later');
+    Route::get('/api/youtube/search', [YouTubeController::class, 'search'])->name('youtube.search');
+    Route::post('/api/youtube/validate-search', [YouTubeController::class, 'validateSearchQuery'])->name('youtube.validate-search');
+    Route::get('/api/youtube/playlists', [YouTubeController::class, 'getPlaylists'])->name('youtube.playlists');
+    Route::get('/api/youtube/playlist/{playlistId}', [YouTubeController::class, 'getPlaylistVideos'])->name('youtube.playlist.videos');
+    Route::post('/api/youtube/playlist/{playlistId}/add', [YouTubeController::class, 'addToPlaylist'])->name('youtube.playlist.add');
+    Route::delete('/api/youtube/playlist/{playlistId}/item/{playlistItemId}', [YouTubeController::class, 'removeFromPlaylist'])->name('youtube.playlist.remove');
 });
 
 require __DIR__.'/settings.php';

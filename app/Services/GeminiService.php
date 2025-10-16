@@ -331,6 +331,153 @@ Guidelines:
         return $sanitized;
     }
 
+    public function moderateSearchQuery(string $query): array
+    {
+        try {
+            $prompt = $this->buildModerationPrompt($query);
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'X-goog-api-key' => $this->apiKey,
+            ])->post($this->baseUrl, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            [
+                                'text' => $prompt,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            if ($response->successful()) {
+                $content = $response->json('candidates.0.content.parts.0.text');
+                return $this->parseModerationResponse($content);
+            }
+
+            Log::error('Gemini API error for content moderation', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            // Default to blocking if API fails for safety
+            return [
+                'isAppropriate' => false,
+                'reason' => 'Content moderation service unavailable. Please try a different search term.',
+            ];
+        } catch (\Exception $e) {
+            Log::error('Gemini service error for content moderation', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'query' => $query,
+            ]);
+
+            // Default to blocking if service fails for safety
+            return [
+                'isAppropriate' => false,
+                'reason' => 'Content moderation service unavailable. Please try a different search term.',
+            ];
+        }
+    }
+
+    private function buildModerationPrompt(string $query): string
+    {
+        return "Analyze this YouTube search query for inappropriate content: \"{$query}\"
+
+You are a content moderator for an Islamic educational platform. Your job is to block content that is clearly inappropriate, while allowing legitimate educational and beneficial content.
+
+BLOCK content that is clearly:
+1. Explicitly sexual, pornographic, or adult-oriented
+2. Violent, graphic, or disturbing material
+3. Profane, offensive language, or hate speech
+4. Content promoting sinful behavior (gambling, drugs, alcohol, etc.)
+5. Material that clearly contradicts Islamic values
+
+ALLOW content that is:
+- Educational, academic, or informative
+- Religious, spiritual, or Islamic content
+- News, documentaries, or factual content
+- Entertainment that is family-friendly
+- Channel names, usernames, or technical terms
+- General topics like science, history, cooking, etc.
+
+Be reasonable and balanced. Only block content that is clearly inappropriate. Educational content, channel names, and legitimate topics should be allowed.
+
+Return your analysis as a JSON object with this exact structure:
+{
+    \"isAppropriate\": true/false,
+    \"reason\": \"Brief explanation of why the content is appropriate or inappropriate\"
+}
+
+Guidelines:
+- Allow educational and beneficial content
+- Only block clearly inappropriate material
+- Consider context - channel names and educational terms are usually fine
+- Be fair and balanced in your assessment";
+    }
+
+    private function parseModerationResponse(string $content): array
+    {
+        try {
+            // Clean the response content
+            $cleanedContent = trim($content);
+
+            // Remove markdown code blocks if present
+            $cleanedContent = preg_replace('/```(?:json)?\s*/', '', $cleanedContent);
+            $cleanedContent = preg_replace('/```\s*$/', '', $cleanedContent);
+            $cleanedContent = trim($cleanedContent);
+
+            // Try to extract JSON from the response
+            if (preg_match('/\{.*\}/s', $cleanedContent, $matches)) {
+                $jsonContent = $matches[0];
+                $parsed = json_decode($jsonContent, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && isset($parsed['isAppropriate'])) {
+                    return $this->sanitizeModerationData($parsed);
+                }
+            }
+
+            // If the above didn't work, try parsing the entire cleaned content
+            $parsed = json_decode($cleanedContent, true);
+            if (json_last_error() === JSON_ERROR_NONE && isset($parsed['isAppropriate'])) {
+                return $this->sanitizeModerationData($parsed);
+            }
+
+            Log::warning('Failed to parse Gemini moderation response as JSON', [
+                'content' => $content,
+                'cleaned_content' => $cleanedContent
+            ]);
+
+            // Default to blocking if parsing fails for safety
+            return [
+                'isAppropriate' => false,
+                'reason' => 'Unable to analyze content. Please try a different search term.',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error parsing Gemini moderation response', [
+                'message' => $e->getMessage(),
+                'content' => $content,
+            ]);
+
+            // Default to blocking if parsing fails for safety
+            return [
+                'isAppropriate' => false,
+                'reason' => 'Unable to analyze content. Please try a different search term.',
+            ];
+        }
+    }
+
+    private function sanitizeModerationData(array $data): array
+    {
+        return [
+            'isAppropriate' => (bool) ($data['isAppropriate'] ?? false),
+            'reason' => trim($data['reason'] ?? 'Content analysis completed.'),
+        ];
+    }
+
     // Commented out fallback quote method - no longer used
     // private function getFallbackQuote(): array
     // {
