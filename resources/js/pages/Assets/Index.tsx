@@ -88,35 +88,35 @@ interface LentMoneyAnalysisResponse {
 const chartConfig = {
   totalAccounts: {
     label: "Accounts",
-    color: "#059669",
+    color: "#3b82f6", // Blue
   },
   totalInvestments: {
     label: "Investments", 
-    color: "#10b981",
+    color: "#10b981", // Emerald green
   },
   totalDeposits: {
     label: "Deposits",
-    color: "#14b8a6",
+    color: "#8b5cf6", // Purple
   },
   totalLentMoney: {
     label: "Lent Money",
-    color: "#f59e0b",
+    color: "#f59e0b", // Amber/Orange
   },
   totalBorrowedMoney: {
     label: "Borrowed Money",
-    color: "#dc2626",
+    color: "#ef4444", // Red
   },
   grandTotal: {
     label: "Net Worth",
-    color: "#059669",
+    color: "#059669", // Dark green - keep this prominent
   },
   savings: {
     label: "Monthly Savings",
-    color: "#10b981",
+    color: "#06b6d4", // Cyan
   },
   lentMoneyCount: {
     label: "Number of Friends",
-    color: "#059669",
+    color: "#84cc16", // Lime green
   },
 } satisfies ChartConfig
 
