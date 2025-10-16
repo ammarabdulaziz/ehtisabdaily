@@ -181,26 +181,42 @@ export default function SearchTab() {
         }
     };
 
-    // Set up intersection observer for infinite scroll
+    // Set up intersection observer for infinite scroll with visibility awareness
     useEffect(() => {
-        if (observerRef.current) {
-            observerRef.current.disconnect();
-        }
+        const setupObserver = () => {
+            if (document.hidden) return;
+            
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
 
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && nextPageToken && !loadingMore) {
-                    loadMoreVideos();
-                }
-            },
-            { threshold: 0.1 }
-        );
+            observerRef.current = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting && nextPageToken && !loadingMore) {
+                        loadMoreVideos();
+                    }
+                },
+                { threshold: 0.1 }
+            );
 
-        if (loadMoreRef.current) {
-            observerRef.current.observe(loadMoreRef.current);
-        }
+            if (loadMoreRef.current) {
+                observerRef.current.observe(loadMoreRef.current);
+            }
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.hidden && observerRef.current) {
+                observerRef.current.disconnect();
+            } else {
+                setupObserver();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        setupObserver();
 
         return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
             if (observerRef.current) {
                 observerRef.current.disconnect();
             }

@@ -101,10 +101,16 @@ export function GlobalSecurityProvider({ children }: GlobalSecurityProviderProps
     checkStatus();
   }, [checkStatus]);
 
-  // Check status periodically (every 5 minutes)
+  // Check status when tab becomes visible (replaces periodic polling)
   useEffect(() => {
-    const interval = setInterval(checkStatus, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkStatus();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [checkStatus]);
 
   const value: GlobalSecurityContextType = {
