@@ -30,10 +30,11 @@ interface MotivationalQuote {
 
 const milestones = [
   { days: 7, message: "One week strong! 🎉", color: "bg-emerald-500" },
-  { days: 30, message: "One month milestone! 🏆", color: "bg-teal-500" },
-  { days: 60, message: "Two months of growth! 🌟", color: "bg-amber-500" },
-  { days: 90, message: "Three months of strength! 💎", color: "bg-emerald-600" },
-  { days: 120, message: "Four months of progress! 🚀", color: "bg-teal-600" },
+  { days: 21, message: "Three weeks of progress! 💪", color: "bg-teal-500" },
+  { days: 42, message: "Six weeks milestone! (1.4 months) 🌟", color: "bg-amber-500" },
+  { days: 70, message: "Ten weeks of strength! (2.3 months) 💎", color: "bg-emerald-600" },
+  { days: 100, message: "Fourteen weeks of growth! (3.3 months) 🚀", color: "bg-teal-600" },
+  { days: 130, message: "Eighteen weeks of excellence! (4.3 months) 🏆", color: "bg-emerald-600" },
 ];
 
 export default function ProgressTracker() {

@@ -186,25 +186,56 @@ Please ensure the response is valid JSON and all fields are appropriate for Isla
 
     private function buildMotivationalPrompt(int $daysCompleted, int $daysRemaining, float $percentage, ?int $nearMilestone = null): string
     {
-        $basePrompt = "Generate a motivational quote for someone on a personal growth journey. The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.";
+        // Add randomization elements to prevent repetitive quotes
+        $randomSeed = time() . rand(1, 1000);
+        $motivationalThemes = [
+            'patience and perseverance', 'gratitude and appreciation', 'trust in Allah', 
+            'self-discipline and consistency', 'spiritual growth', 'overcoming challenges',
+            'building character', 'seeking Allah\'s pleasure', 'personal transformation',
+            'strength through faith', 'resilience and determination', 'inner peace',
+            'purpose and meaning', 'hope and optimism', 'wisdom and reflection'
+        ];
+        
+        $selectedTheme = $motivationalThemes[array_rand($motivationalThemes)];
+        
+        $progressStage = $this->determineProgressStage($percentage);
+        $timeContext = $this->getTimeContext($daysCompleted);
+        
+        $basePrompt = "Generate a UNIQUE and DIVERSE motivational quote for someone on a personal growth journey. 
+
+CONTEXT: The person has completed {$daysCompleted} days, has {$daysRemaining} days remaining, and is {$percentage}% through their journey to Ramadan 2026.
+PROGRESS STAGE: {$progressStage}
+TIME CONTEXT: {$timeContext}
+FOCUS THEME: {$selectedTheme}
+RANDOMIZATION SEED: {$randomSeed}
+
+CRITICAL REQUIREMENTS FOR VARIETY:
+- NEVER repeat similar quotes or themes from previous requests
+- Use DIFFERENT motivational approaches each time
+- Vary the tone: sometimes gentle, sometimes firm, sometimes inspiring
+- Rotate between different Islamic concepts and general wisdom
+- Use diverse Quranic verses from different surahs
+- Include different emotional appeals (hope, determination, gratitude, reflection)
+- Vary the length and style of quotes (short punchy vs. longer reflective)";
 
         $milestoneGuidance = "";
         if ($nearMilestone !== null) {
             $milestoneGuidance = "
 
-IMPORTANT: This person is at or near a significant milestone ({$nearMilestone} days). This is a critical time when people are most vulnerable to relapse. The quote should:
+MILESTONE ALERT: This person is at or near a significant milestone ({$nearMilestone} days). This is a critical time when people are most vulnerable to relapse. The quote should:
 - Emphasize staying strong and not giving up
 - Acknowledge the milestone achievement while warning against complacency
 - Include specific relapse prevention messaging
 - Be more cautious and protective in tone
-- Focus on maintaining momentum rather than celebrating too much";
+- Focus on maintaining momentum rather than celebrating too much
+- Use a DIFFERENT approach than typical milestone quotes";
         }
 
         $jsonFields = $nearMilestone !== null ? 
             '{
-    "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
+    "quote": "A UNIQUE motivational quote that differs from common motivational phrases",
     "type": "islamic|general|realistic",
-    "context": "Brief context about why this quote is relevant to their current progress",
+    "context": "A SPECIFIC and DETAILED context explaining the psychological, spiritual, or practical relevance of this quote to their exact current situation, progress stage, and selected theme. Make it personal and actionable, not generic.",
     "quranic_verse": {
         "arabic": "Arabic text of a relevant Quranic verse that supports the motivational message",
         "translation": "English translation of the verse",
@@ -216,9 +247,9 @@ IMPORTANT: This person is at or near a significant milestone ({$nearMilestone} d
     }
 }' :
             '{
-    "quote": "A motivational quote (mix Islamic, non-Islamic, and realistic perspectives)",
+    "quote": "A UNIQUE motivational quote that differs from common motivational phrases",
     "type": "islamic|general|realistic",
-    "context": "Brief context about why this quote is relevant to their current progress",
+    "context": "A SPECIFIC and DETAILED context explaining the psychological, spiritual, or practical relevance of this quote to their exact current situation, progress stage, and selected theme. Make it personal and actionable, not generic.",
     "quranic_verse": {
         "arabic": "Arabic text of a relevant Quranic verse that supports the motivational message",
         "translation": "English translation of the verse",
@@ -232,18 +263,64 @@ Please provide the response as a single JSON object (not an array) with these fi
 
 " . $jsonFields . "
 
-Guidelines:
+VARIETY GUIDELINES:
 - Return ONLY a single JSON object, not an array
-- Include Islamic wisdom, general motivation, and realistic encouragement
-- Make it relevant to their current progress stage
-- Keep quotes between 10-30 words
-- Be encouraging but realistic
-- Mix different types of motivation (spiritual, practical, emotional)
+- Create UNIQUE quotes that avoid clichés and common motivational phrases
+- Use diverse Islamic wisdom, general motivation, and realistic encouragement
+- Make it relevant to their current progress stage and selected theme
+- Keep quotes between 8-35 words (vary the length)
+- Be encouraging but realistic with varied emotional tones
+- Mix different types of motivation (spiritual, practical, emotional, philosophical)
 - Consider their progress percentage when crafting the message
-- ALWAYS include a relevant Quranic verse that supports and enhances the motivational message, Maybe the rewards which Allah tells in the Quran for those who strive to struggle in the way of Allah.
-- Select verses that align with themes like patience, perseverance, gratitude, trust in Allah, reward from allah or steadfastness
+- ALWAYS include a relevant Quranic verse from DIFFERENT surahs (avoid repeating the same verses)
+- Select verses that align with themes like patience, perseverance, gratitude, trust in Allah, reward from Allah, steadfastness, wisdom, mercy, guidance
 - Ensure the verse complements the quote rather than repeating the same message
-- Do not wrap the response in markdown code blocks";
+- Use diverse Quranic themes: rewards for the patient, Allah's help for the believers, guidance for the righteous, mercy for the repentant
+- Vary the approach: sometimes focus on Allah's promises, sometimes on human effort, sometimes on spiritual growth
+- Do not wrap the response in markdown code blocks
+- AVOID repetitive phrases like 'keep going', 'stay strong', 'you can do it' - be more creative and specific
+
+CONTEXT GENERATION REQUIREMENTS:
+- Create SPECIFIC and DETAILED contexts that explain WHY this quote matters for their exact situation
+- Connect the quote to their current progress stage, time context, and selected theme
+- Make contexts personal and actionable, not generic motivational statements
+- Vary context approaches: psychological insights, spiritual reflections, practical applications, emotional support
+- Explain the relevance in terms of their journey stage (early habit formation, mid-journey challenges, etc.)
+- Connect to their specific percentage and days completed/remaining
+- Make each context unique and tailored to their current needs
+- Avoid generic phrases like 'this quote is relevant' or 'keep going' - be specific about WHY and HOW";
+    }
+    
+    private function determineProgressStage(float $percentage): string
+    {
+        if ($percentage < 10) {
+            return "Just starting - needs encouragement and foundation building";
+        } elseif ($percentage < 25) {
+            return "Early stage - needs motivation to establish habits";
+        } elseif ($percentage < 50) {
+            return "Building momentum - needs encouragement to continue";
+        } elseif ($percentage < 75) {
+            return "Mid-journey - needs motivation to push through challenges";
+        } elseif ($percentage < 90) {
+            return "Near completion - needs final push motivation";
+        } else {
+            return "Almost there - needs celebration and completion motivation";
+        }
+    }
+    
+    private function getTimeContext(int $daysCompleted): string
+    {
+        if ($daysCompleted < 7) {
+            return "First week - establishing new habits";
+        } elseif ($daysCompleted < 21) {
+            return "Building consistency - crucial habit formation period";
+        } elseif ($daysCompleted < 42) {
+            return "Mid-journey - maintaining established patterns";
+        } elseif ($daysCompleted < 70) {
+            return "Advanced stage - deep commitment and growth";
+        } else {
+            return "Long-term commitment - demonstrating perseverance and dedication";
+        }
     }
 
     private function parseMotivationalResponse(string $content): array

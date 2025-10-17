@@ -23,7 +23,7 @@ class MotivationalQuoteController extends Controller
             ]);
 
             // Detect if near a milestone (within 3 days before/after or exact day)
-            $milestones = [7, 30, 60, 90, 120];
+            $milestones = [7, 21, 42, 70, 100, 130];
             $nearMilestone = null;
 
             foreach ($milestones as $milestone) {
