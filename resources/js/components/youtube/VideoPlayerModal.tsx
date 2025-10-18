@@ -28,6 +28,16 @@ export default function VideoPlayerModal({ isOpen, onClose, video, sourceTab, so
         });
     };
 
+    const formatViewCount = (viewCount: number) => {
+        if (viewCount >= 1000000) {
+            return `${(viewCount / 1000000).toFixed(1)}M views`;
+        } else if (viewCount >= 1000) {
+            return `${(viewCount / 1000).toFixed(1)}K views`;
+        } else {
+            return `${viewCount} views`;
+        }
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={() => {}}>
             <DialogPrimitive.Portal>
@@ -73,13 +83,18 @@ export default function VideoPlayerModal({ isOpen, onClose, video, sourceTab, so
                             <span>{formatDate(video.publishedAt)}</span>
                         </div>
                         
-                        {video.duration && (
-                            <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between">
+                            {video.viewCount && (
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    {formatViewCount(video.viewCount)}
+                                </span>
+                            )}
+                            {video.duration && (
                                 <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded">
                                     {video.duration}
                                 </span>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                     
                     {/* Play Full Video Button */}
@@ -95,6 +110,7 @@ export default function VideoPlayerModal({ isOpen, onClose, video, sourceTab, so
                                     channelTitle: video.channelTitle,
                                     publishedAt: video.publishedAt,
                                     duration: video.duration || '',
+                                    viewCount: video.viewCount?.toString() || '',
                                     url: video.url,
                                     returnUrl: window.location.href,
                                     sourceTab: sourceTab || '',

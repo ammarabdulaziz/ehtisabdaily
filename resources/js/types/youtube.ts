@@ -8,6 +8,7 @@ export interface YouTubeVideo {
   publishedAt: string;
   duration?: string;
   url: string;
+  viewCount?: number;
 }
 
 export interface YouTubePlaylist {

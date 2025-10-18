@@ -220,6 +220,29 @@ class YouTubeService
         }
     }
 
+    public function getVideoDetails(array $videoIds): array
+    {
+        try {
+            $this->ensureValidToken();
+            
+            $youtube = new YouTube($this->client);
+            
+            $response = $youtube->videos->listVideos('snippet,statistics,contentDetails', [
+                'id' => implode(',', $videoIds),
+            ]);
+
+            return $this->formatVideoDetails($response->getItems());
+        } catch (\Exception $e) {
+            Log::error('YouTube Video Details API error', [
+                'message' => $e->getMessage(),
+                'video_ids' => $videoIds,
+                'user_id' => $this->user?->id,
+            ]);
+            
+            throw new \Exception('Failed to fetch video details: ' . $e->getMessage());
+        }
+    }
+
     private function ensureValidToken(): void
     {
         if (!$this->user) {
@@ -269,6 +292,7 @@ class YouTubeService
                 'channelTitle' => $snippet->getChannelTitle(),
                 'publishedAt' => $snippet->getPublishedAt(),
                 'url' => "https://www.youtube.com/watch?v={$videoId}",
+                'viewCount' => 0, // Will be populated later with video details
             ];
         }, $items);
     }
@@ -287,6 +311,7 @@ class YouTubeService
                 'channelTitle' => $snippet->getChannelTitle(),
                 'publishedAt' => $snippet->getPublishedAt(),
                 'url' => "https://www.youtube.com/watch?v={$videoId}",
+                'viewCount' => 0, // Will be populated later with video details
             ];
         }, $items);
     }
@@ -305,6 +330,43 @@ class YouTubeService
                 'itemCount' => $contentDetails->getItemCount(),
             ];
         }, $items);
+    }
+
+    private function formatVideoDetails(array $items): array
+    {
+        return array_map(function ($item) {
+            $snippet = $item->getSnippet();
+            $statistics = $item->getStatistics();
+            $contentDetails = $item->getContentDetails();
+            
+            return [
+                'id' => $item->getId(),
+                'title' => $snippet->getTitle(),
+                'description' => $snippet->getDescription(),
+                'thumbnail' => $this->getBestThumbnail($snippet->getThumbnails()),
+                'channelTitle' => $snippet->getChannelTitle(),
+                'publishedAt' => $snippet->getPublishedAt(),
+                'url' => "https://www.youtube.com/watch?v={$item->getId()}",
+                'viewCount' => $statistics ? (int) $statistics->getViewCount() : 0,
+                'duration' => $contentDetails ? $this->formatDuration($contentDetails->getDuration()) : null,
+            ];
+        }, $items);
+    }
+
+    private function formatDuration(string $duration): string
+    {
+        // Convert ISO 8601 duration (PT4M13S) to readable format (4:13)
+        $interval = new \DateInterval($duration);
+        
+        $hours = $interval->h;
+        $minutes = $interval->i;
+        $seconds = $interval->s;
+        
+        if ($hours > 0) {
+            return sprintf('%d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+        
+        return sprintf('%d:%02d', $minutes, $seconds);
     }
 
     /**

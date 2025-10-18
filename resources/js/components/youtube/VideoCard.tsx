@@ -28,6 +28,16 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
     });
   };
 
+  const formatViewCount = (viewCount: number) => {
+    if (viewCount >= 1000000) {
+      return `${(viewCount / 1000000).toFixed(1)}M views`;
+    } else if (viewCount >= 1000) {
+      return `${(viewCount / 1000).toFixed(1)}K views`;
+    } else {
+      return `${viewCount} views`;
+    }
+  };
+
   const handleCardClick = () => {
     if (onPlay) {
       onPlay(video);
@@ -162,13 +172,18 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
           <span>{formatDate(video.publishedAt)}</span>
         </div>
         
-        {video.duration && (
-          <div className="mt-2">
+        <div className="flex items-center justify-between mt-2">
+          {video.viewCount && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {formatViewCount(video.viewCount)}
+            </span>
+          )}
+          {video.duration && (
             <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded">
               {video.duration}
             </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

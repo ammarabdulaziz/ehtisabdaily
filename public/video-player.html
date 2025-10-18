@@ -215,10 +215,15 @@
                     <span id="published-date">Loading...</span>
                 </div>
                 
-                <div id="duration-container" class="flex items-center gap-2" style="display: none;">
-                    <span class="inline-block bg-muted text-muted-foreground text-xs px-2 py-1 rounded" id="duration">
-                        Loading...
-                    </span>
+                <div class="flex items-center justify-between">
+                    <div id="view-count-container" class="text-sm text-muted-foreground" style="display: none;">
+                        <span id="view-count">Loading...</span>
+                    </div>
+                    <div id="duration-container" class="flex items-center gap-2" style="display: none;">
+                        <span class="inline-block bg-muted text-muted-foreground text-xs px-2 py-1 rounded" id="duration">
+                            Loading...
+                        </span>
+                    </div>
                 </div>
             </div>
         </main>
@@ -236,6 +241,7 @@
                 channelTitle: decodeURIComponent(urlParams.get('channelTitle') || ''),
                 publishedAt: urlParams.get('publishedAt'),
                 duration: urlParams.get('duration'),
+                viewCount: urlParams.get('viewCount'),
                 url: decodeURIComponent(urlParams.get('url') || ''),
                 returnUrl: urlParams.get('returnUrl'),
                 sourceTab: urlParams.get('sourceTab'),
@@ -254,6 +260,18 @@
                 month: 'long',
                 day: 'numeric',
             });
+        }
+
+        // Format view count
+        function formatViewCount(viewCount) {
+            const count = parseInt(viewCount);
+            if (count >= 1000000) {
+                return `${(count / 1000000).toFixed(1)}M views`;
+            } else if (count >= 1000) {
+                return `${(count / 1000).toFixed(1)}K views`;
+            } else {
+                return `${count} views`;
+            }
         }
 
         // Return to app with proper navigation
@@ -322,6 +340,12 @@
             // Set published date
             if (videoData.publishedAt) {
                 document.getElementById('published-date').textContent = formatDate(videoData.publishedAt);
+            }
+
+            // Set view count if available
+            if (videoData.viewCount) {
+                document.getElementById('view-count').textContent = formatViewCount(videoData.viewCount);
+                document.getElementById('view-count-container').style.display = 'block';
             }
 
             // Set duration if available

@@ -65,10 +65,24 @@ class YouTubeController extends Controller
             
             $videos = $this->youtubeService->setUserTokens($user)->getWatchLaterVideos($maxResults);
 
+            // Get video details including view count
+            $videoIds = array_column($videos, 'id');
+            $videoDetails = $this->youtubeService->getVideoDetails($videoIds);
+            
+            // Merge view count and duration data
+            $videosWithDetails = array_map(function ($video) use ($videoDetails) {
+                $details = collect($videoDetails)->firstWhere('id', $video['id']);
+                if ($details) {
+                    $video['viewCount'] = $details['viewCount'];
+                    $video['duration'] = $details['duration'];
+                }
+                return $video;
+            }, $videos);
+
             return response()->json([
                 'success' => true,
-                'videos' => $videos,
-                'count' => count($videos),
+                'videos' => $videosWithDetails,
+                'count' => count($videosWithDetails),
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -105,11 +119,25 @@ class YouTubeController extends Controller
             
             $result = $this->youtubeService->setUserTokens($user)->searchVideos($query, $maxResults, $order, $pageToken);
 
+            // Get video details including view count
+            $videoIds = array_column($result['videos'], 'id');
+            $videoDetails = $this->youtubeService->getVideoDetails($videoIds);
+            
+            // Merge view count and duration data
+            $videosWithDetails = array_map(function ($video) use ($videoDetails) {
+                $details = collect($videoDetails)->firstWhere('id', $video['id']);
+                if ($details) {
+                    $video['viewCount'] = $details['viewCount'];
+                    $video['duration'] = $details['duration'];
+                }
+                return $video;
+            }, $result['videos']);
+
             return response()->json([
                 'success' => true,
-                'videos' => $result['videos'],
+                'videos' => $videosWithDetails,
                 'nextPageToken' => $result['nextPageToken'],
-                'count' => count($result['videos']),
+                'count' => count($videosWithDetails),
                 'query' => $query,
             ]);
         } catch (\Exception $e) {
@@ -168,11 +196,25 @@ class YouTubeController extends Controller
             
             $result = $this->youtubeService->setUserTokens($user)->getPlaylistVideos($playlistId, $maxResults, $pageToken);
 
+            // Get video details including view count
+            $videoIds = array_column($result['videos'], 'id');
+            $videoDetails = $this->youtubeService->getVideoDetails($videoIds);
+            
+            // Merge view count and duration data
+            $videosWithDetails = array_map(function ($video) use ($videoDetails) {
+                $details = collect($videoDetails)->firstWhere('id', $video['id']);
+                if ($details) {
+                    $video['viewCount'] = $details['viewCount'];
+                    $video['duration'] = $details['duration'];
+                }
+                return $video;
+            }, $result['videos']);
+
             return response()->json([
                 'success' => true,
-                'videos' => $result['videos'],
+                'videos' => $videosWithDetails,
                 'nextPageToken' => $result['nextPageToken'],
-                'count' => count($result['videos']),
+                'count' => count($videosWithDetails),
             ]);
         } catch (\Exception $e) {
             return response()->json([
