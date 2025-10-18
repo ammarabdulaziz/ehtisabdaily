@@ -12,9 +12,10 @@ interface VideoCardProps {
   showAddToPlaylistButton?: boolean;
   isAddingToPlaylist?: boolean;
   isAddedToPlaylist?: boolean;
+  isSelected?: boolean;
 }
 
-export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, showRemoveButton = false, showAddToPlaylistButton = false, isAddingToPlaylist = false, isAddedToPlaylist = false }: VideoCardProps) {
+export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, showRemoveButton = false, showAddToPlaylistButton = false, isAddingToPlaylist = false, isAddedToPlaylist = false, isSelected = false }: VideoCardProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -65,8 +66,11 @@ export default function VideoCard({ video, onPlay, onRemove, onAddToPlaylist, sh
 
   return (
     <div 
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 group cursor-pointer"
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 group cursor-pointer ${
+        isSelected ? 'ring-4 ring-blue-500 ring-opacity-75 shadow-lg' : ''
+      }`}
       onClick={handleCardClick}
+      data-video-id={video.id}
     >
       <div className="relative">
         {imageError ? (

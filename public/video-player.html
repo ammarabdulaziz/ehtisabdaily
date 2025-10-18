@@ -177,13 +177,15 @@
         <header class="border-b border-border bg-card">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-xl font-semibold line-clamp-2" id="video-title">Loading...</h1>
                     <button 
                         id="return-btn" 
-                        class="btn btn-outline btn-sm"
+                        class="btn btn-outline flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-800 hover:text-white transition-colors"
                         onclick="returnToApp()"
                     >
-                        Return to App
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Return to Previous page
                     </button>
                 </div>
             </div>
@@ -191,6 +193,9 @@
 
         <!-- Main Content -->
         <main class="flex-1 container mx-auto px-4 py-6 max-w-4xl">
+            <!-- Video Title -->
+            <h1 class="text-2xl font-semibold mb-6 line-clamp-2" id="video-title">Loading...</h1>
+            
             <!-- Video Player -->
             <div class="relative w-full h-0 pb-[56.25%] mb-6">
                 <iframe
@@ -231,7 +236,13 @@
                 channelTitle: decodeURIComponent(urlParams.get('channelTitle') || ''),
                 publishedAt: urlParams.get('publishedAt'),
                 duration: urlParams.get('duration'),
-                url: decodeURIComponent(urlParams.get('url') || '')
+                url: decodeURIComponent(urlParams.get('url') || ''),
+                returnUrl: urlParams.get('returnUrl'),
+                sourceTab: urlParams.get('sourceTab'),
+                sourceVideoId: urlParams.get('sourceVideoId'),
+                searchQuery: urlParams.get('searchQuery'),
+                searchOrder: urlParams.get('searchOrder'),
+                pageToken: urlParams.get('pageToken')
             };
         }
 
@@ -245,11 +256,43 @@
             });
         }
 
-        // Return to app
+        // Return to app with proper navigation
         function returnToApp() {
-            const returnUrl = sessionStorage.getItem('returnUrl');
+            const videoData = getVideoData();
+            const returnUrl = videoData.returnUrl;
+            
             if (returnUrl) {
-                window.location.href = returnUrl;
+                // If we have source tab information, add it to the return URL
+                if (videoData.sourceTab) {
+                    const url = new URL(returnUrl);
+                    
+                    // Add source tab parameter
+                    url.searchParams.set('tab', videoData.sourceTab);
+                    
+                    // Add video ID if available
+                    if (videoData.sourceVideoId) {
+                        url.searchParams.set('videoId', videoData.sourceVideoId);
+                    }
+                    
+                    // Add search query if available (for search tab)
+                    if (videoData.searchQuery) {
+                        url.searchParams.set('search', videoData.searchQuery);
+                    }
+                    
+                    // Add search order if available (for search tab)
+                    if (videoData.searchOrder) {
+                        url.searchParams.set('order', videoData.searchOrder);
+                    }
+                    
+                    // Add page token if available (for pagination)
+                    if (videoData.pageToken) {
+                        url.searchParams.set('pageToken', videoData.pageToken);
+                    }
+                    
+                    window.location.href = url.toString();
+                } else {
+                    window.location.href = returnUrl;
+                }
             } else {
                 window.location.href = '/';
             }

@@ -22,6 +22,8 @@ export default function EhtisabPlay() {
     const [removingVideoId, setRemovingVideoId] = useState<string | null>(null);
     const [videoToRemove, setVideoToRemove] = useState<YouTubeVideo | null>(null);
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+    const [isNavigatingToVideo, setIsNavigatingToVideo] = useState(false);
 
     const observerRef = useRef<IntersectionObserver | null>(null);
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -128,7 +130,7 @@ export default function EhtisabPlay() {
 
             observerRef.current = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting && nextPageToken && !loadingMore) {
+                    if (entries[0].isIntersecting && nextPageToken && !loadingMore && !isNavigatingToVideo) {
                         loadMoreVideos();
                     }
                 },
@@ -157,12 +159,59 @@ export default function EhtisabPlay() {
                 observerRef.current.disconnect();
             }
         };
-    }, [nextPageToken, loadingMore, loadMoreVideos]);
+    }, [nextPageToken, loadingMore, loadMoreVideos, isNavigatingToVideo]);
 
     // Load initial videos
     useEffect(() => {
         loadVideos();
     }, [loadVideos]);
+
+    // Handle URL parameters for navigation
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoIdParam = urlParams.get('videoId');
+
+        // Store video ID for later use
+        if (videoIdParam) {
+            console.log('EhtisabPlay: Captured video ID from URL:', videoIdParam);
+            setSelectedVideoId(videoIdParam);
+            setIsNavigatingToVideo(true);
+        }
+
+        // Clean up URL parameters after processing
+        if (videoIdParam) {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('videoId');
+            window.history.replaceState({}, '', newUrl.toString());
+        }
+    }, []);
+
+    // Handle scrolling to video after videos are loaded
+    useEffect(() => {
+        if (selectedVideoId && videos.length > 0 && !loading && isNavigatingToVideo) {
+            console.log('EhtisabPlay: Looking for video ID:', selectedVideoId, 'in', videos.length, 'videos');
+            const targetVideo = videos.find(video => video.id === selectedVideoId);
+            if (targetVideo) {
+                console.log('EhtisabPlay: Found target video:', targetVideo.title);
+                setIsNavigatingToVideo(false); // Reset navigation flag
+                // Wait a bit more for the DOM to be fully rendered
+                setTimeout(() => {
+                    const videoElement = document.querySelector(`[data-video-id="${targetVideo.id}"]`);
+                    if (videoElement) {
+                        console.log('EhtisabPlay: Scrolling to video element');
+                        videoElement.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    } else {
+                        console.log('EhtisabPlay: Video element not found in DOM');
+                    }
+                }, 500);
+            } else {
+                console.log('EhtisabPlay: Target video not found in videos list');
+            }
+        }
+    }, [videos, loading, selectedVideoId, isNavigatingToVideo]);
 
     return (
         <>
@@ -216,6 +265,7 @@ export default function EhtisabPlay() {
                                         onPlay={handlePlayVideo}
                                         onRemove={handleRemoveVideo}
                                         showRemoveButton={true}
+                                        isSelected={selectedVideoId === video.id}
                                     />
                                 ))}
                             </div>
@@ -276,6 +326,8 @@ export default function EhtisabPlay() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 video={selectedVideo}
+                sourceTab="ehtisab-play"
+                sourceVideoId={selectedVideo?.id}
             />
 
             <ConfirmationDialog

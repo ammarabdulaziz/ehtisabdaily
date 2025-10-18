@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
@@ -22,6 +22,27 @@ interface IndexPageProps {
 
 export default function Index({ needsGoogleAuth, error }: IndexPageProps) {
     const [activeTab, setActiveTab] = useState('search');
+
+    // Handle URL parameters for navigation
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        const position = urlParams.get('position');
+        const search = urlParams.get('search');
+
+        if (tab && (tab === 'search' || tab === 'ehtisab-play')) {
+            setActiveTab(tab);
+        }
+
+        // Clean up URL parameters after setting the tab
+        if (tab || position || search) {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('tab');
+            newUrl.searchParams.delete('position');
+            newUrl.searchParams.delete('search');
+            window.history.replaceState({}, '', newUrl.toString());
+        }
+    }, []);
 
     const handleGoogleAuth = () => {
         window.location.href = '/auth/google';

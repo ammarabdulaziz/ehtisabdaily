@@ -26,9 +26,13 @@ export default function SearchTab() {
     const [addingToPlaylist, setAddingToPlaylist] = useState<Set<string>>(new Set());
     const [addedToPlaylist, setAddedToPlaylist] = useState<Set<string>>(new Set());
     const [validatingQuery, setValidatingQuery] = useState(false);
+    const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+    const [targetVideoPageToken, setTargetVideoPageToken] = useState<string | null>(null);
+    const [isNavigatingToVideo, setIsNavigatingToVideo] = useState(false);
 
     const observerRef = useRef<IntersectionObserver | null>(null);
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
 
     const validateSearchQuery = useCallback(async (query: string): Promise<boolean> => {
         setValidatingQuery(true);
@@ -119,6 +123,86 @@ export default function SearchTab() {
         searchVideos(searchQuery);
     }, [searchQuery, validateSearchQuery, searchVideos]);
 
+    // Handle URL parameters for navigation
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        const videoIdParam = urlParams.get('videoId');
+        const orderParam = urlParams.get('order');
+        const pageTokenParam = urlParams.get('pageToken');
+
+        // Store video ID and page token for later use
+        if (videoIdParam) {
+            console.log('Search: Captured video ID from URL:', videoIdParam);
+            setSelectedVideoId(videoIdParam);
+            setIsNavigatingToVideo(true);
+        }
+
+        if (pageTokenParam) {
+            console.log('Search: Captured page token from URL:', pageTokenParam);
+            setTargetVideoPageToken(pageTokenParam);
+        }
+
+        if (searchParam) {
+            setSearchQuery(searchParam);
+            // Trigger search if we have a search parameter
+            setTimeout(() => {
+                if (searchParam.trim()) {
+                    searchVideos(searchParam);
+                }
+            }, 100);
+        }
+
+        if (orderParam && (orderParam === 'relevance' || orderParam === 'date' || orderParam === 'rating' || orderParam === 'viewCount' || orderParam === 'title')) {
+            setOrder(orderParam as SearchOrder);
+        }
+
+        // Clean up URL parameters after processing
+        if (searchParam || videoIdParam || orderParam || pageTokenParam) {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('search');
+            newUrl.searchParams.delete('videoId');
+            newUrl.searchParams.delete('order');
+            newUrl.searchParams.delete('pageToken');
+            window.history.replaceState({}, '', newUrl.toString());
+        }
+    }, [searchVideos]);
+
+    // Handle scrolling to video after videos are loaded
+    useEffect(() => {
+        if (selectedVideoId && videos.length > 0 && !loading && isNavigatingToVideo) {
+            console.log('Search: Looking for video ID:', selectedVideoId, 'in', videos.length, 'videos');
+            const targetVideo = videos.find(video => video.id === selectedVideoId);
+            
+            if (targetVideo) {
+                console.log('Search: Found target video:', targetVideo.title);
+                setIsNavigatingToVideo(false); // Reset navigation flag
+                // Wait a bit more for the DOM to be fully rendered
+                setTimeout(() => {
+                    const videoElement = document.querySelector(`[data-video-id="${targetVideo.id}"]`);
+                    if (videoElement) {
+                        console.log('Search: Scrolling to video element');
+                        videoElement.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    } else {
+                        console.log('Search: Video element not found in DOM');
+                    }
+                }, 500);
+            } else if (targetVideoPageToken && nextPageToken && !loadingMore) {
+                // Video not found in current results, need to load more pages
+                console.log('Search: Video not found, loading more pages. Current token:', nextPageToken, 'Target token:', targetVideoPageToken);
+                if (nextPageToken !== targetVideoPageToken) {
+                    // Load more videos until we reach the target page
+                    loadMoreVideos();
+                }
+            } else {
+                console.log('Search: Target video not found in videos list');
+            }
+        }
+    }, [videos, loading, selectedVideoId, isNavigatingToVideo, targetVideoPageToken, nextPageToken, loadingMore, loadMoreVideos]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     };
@@ -192,7 +276,7 @@ export default function SearchTab() {
 
             observerRef.current = new IntersectionObserver(
                 (entries) => {
-                    if (entries[0].isIntersecting && nextPageToken && !loadingMore) {
+                    if (entries[0].isIntersecting && nextPageToken && !loadingMore && !isNavigatingToVideo) {
                         loadMoreVideos();
                     }
                 },
@@ -221,7 +305,7 @@ export default function SearchTab() {
                 observerRef.current.disconnect();
             }
         };
-    }, [nextPageToken, loadingMore, loadMoreVideos]);
+    }, [nextPageToken, loadingMore, loadMoreVideos, isNavigatingToVideo]);
 
 
     return (
@@ -305,6 +389,7 @@ export default function SearchTab() {
                                             showAddToPlaylistButton={true}
                                             isAddingToPlaylist={addingToPlaylist.has(video.id)}
                                             isAddedToPlaylist={addedToPlaylist.has(video.id)}
+                                            isSelected={selectedVideoId === video.id}
                                         />
                                     ))}
                                 </div>
@@ -358,6 +443,11 @@ export default function SearchTab() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 video={selectedVideo}
+                sourceTab="search"
+                sourceVideoId={selectedVideo?.id}
+                searchQuery={searchQuery}
+                searchOrder={order}
+                pageToken={nextPageToken || undefined}
             />
         </>
     );

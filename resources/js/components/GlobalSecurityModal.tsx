@@ -47,7 +47,7 @@ export default function GlobalSecurityModal({
       if (success) {
         onClose();
         // Redirect to intended URL or dashboard
-        const intendedUrl = sessionStorage.getItem('url.intended') || '/dashboard';
+        const intendedUrl = localStorage.getItem('url.intended') || '/dashboard';
         window.location.href = intendedUrl;
       } else {
         setError('Invalid security code');

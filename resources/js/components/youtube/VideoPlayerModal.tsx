@@ -9,9 +9,14 @@ interface VideoPlayerModalProps {
     isOpen: boolean;
     onClose: () => void;
     video: YouTubeVideo | null;
+    sourceTab?: string;
+    sourceVideoId?: string;
+    searchQuery?: string;
+    searchOrder?: string;
+    pageToken?: string;
 }
 
-export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayerModalProps) {
+export default function VideoPlayerModal({ isOpen, onClose, video, sourceTab, sourceVideoId, searchQuery, searchOrder, pageToken }: VideoPlayerModalProps) {
     if (!video) return null;
 
     const formatDate = (dateString: string) => {
@@ -81,10 +86,7 @@ export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayer
                     <div className="mt-4">
                         <Button
                             onClick={() => {
-                                // Store current URL for return navigation
-                                sessionStorage.setItem('returnUrl', window.location.href);
-                                
-                                // Build query parameters
+                                // Build query parameters including return navigation info
                                 const params = new URLSearchParams({
                                     id: video.id,
                                     title: video.title,
@@ -93,7 +95,13 @@ export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayer
                                     channelTitle: video.channelTitle,
                                     publishedAt: video.publishedAt,
                                     duration: video.duration || '',
-                                    url: video.url
+                                    url: video.url,
+                                    returnUrl: window.location.href,
+                                    sourceTab: sourceTab || '',
+                                    sourceVideoId: sourceVideoId || '',
+                                    searchQuery: searchQuery || '',
+                                    searchOrder: searchOrder || '',
+                                    pageToken: pageToken || ''
                                 });
                                 
                                 // Redirect to external video player

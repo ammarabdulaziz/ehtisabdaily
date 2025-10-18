@@ -1,9 +1,9 @@
 <script>
 // Check for stored record ID on page load and open the modal
 document.addEventListener('DOMContentLoaded', function() {
-    const openRecordId = sessionStorage.getItem('openRecordId');
+    const openRecordId = localStorage.getItem('openRecordId');
     if (openRecordId) {
-        sessionStorage.removeItem('openRecordId');
+        localStorage.removeItem('openRecordId');
 
         setTimeout(() => {
             const viewBtn = document.querySelector(`button.dua-id-${openRecordId}`);
@@ -53,7 +53,7 @@ window.duaNavigation = function(recordIds, currentId, currentIndex) {
                     viewBtn.click();
                 } else {
                     // Fallback to page reload approach if button not found
-                    sessionStorage.setItem('openRecordId', recordId);
+                    localStorage.setItem('openRecordId', recordId);
                     window.location.reload();
                 }
             }, 300);
