@@ -76,6 +76,36 @@ export default function VideoPlayerModal({ isOpen, onClose, video }: VideoPlayer
                             </div>
                         )}
                     </div>
+                    
+                    {/* Play Full Video Button */}
+                    <div className="mt-4">
+                        <Button
+                            onClick={() => {
+                                // Store current URL for return navigation
+                                sessionStorage.setItem('returnUrl', window.location.href);
+                                
+                                // Build query parameters
+                                const params = new URLSearchParams({
+                                    id: video.id,
+                                    title: video.title,
+                                    description: video.description,
+                                    thumbnail: video.thumbnail,
+                                    channelTitle: video.channelTitle,
+                                    publishedAt: video.publishedAt,
+                                    duration: video.duration || '',
+                                    url: video.url
+                                });
+                                
+                                // Redirect to external video player
+                                // You can set this in your .env file or config
+                                const externalPlayerUrl = import.meta.env.VITE_EXTERNAL_PLAYER_URL || 'https://ammarabdulaziz.github.io/youtube-viewer';
+                                window.location.href = `${externalPlayerUrl}?${params.toString()}`;
+                            }}
+                            className="w-full"
+                        >
+                            Play Full Video
+                        </Button>
+                    </div>
                 </div>
                 </DialogPrimitive.Content>
             </DialogPrimitive.Portal>
